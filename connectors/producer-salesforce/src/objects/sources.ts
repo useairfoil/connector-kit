@@ -248,7 +248,7 @@ const replicationChanges = (
 
   return decodeCursor(WindowCodec, cursor).pipe(
     Effect.flatMap(
-      WindowSchema.match<Effect.Effect<ChangesStep, ConnectorError>>({
+      WindowSchema.match({
         idle: ({ start }) => open(start),
         updated: readUpdated,
         deleted: readDeleted,
@@ -291,7 +291,7 @@ const fullReadChanges = (
 
   return decodeCursor(FullReadCodec, cursor).pipe(
     Effect.flatMap(
-      FullReadSchema.match<Effect.Effect<ChangesStep, ConnectorError>>({
+      FullReadSchema.match({
         idle: ({ last }) =>
           Effect.gen(function* () {
             const now = yield* DateTime.now;

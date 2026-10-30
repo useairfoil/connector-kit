@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Update to Effect 4.1.0.",
+  "packageName": "@useairfoil/producer-salesforce",
+  "email": "jadejajaipal5@gmail.com",
+  "dependentChangeType": "patch"
+}

@@ -83,8 +83,8 @@ export const makeCustomObjects = (client: SalesforceClientService, describer: De
   const changesOf = (object: string) =>
     objectChanges(client, describer, object, { interval: changesInterval, deletes: true });
 
-  const step = (object: string, state: ObjectState) =>
-    ObjectStateSchema.match<Effect.Effect<Step, ConnectorError>>(state, {
+  const step = (object: string, state: ObjectState): Effect.Effect<Step, ConnectorError> =>
+    ObjectStateSchema.match(state, {
       changes: ({ cursor }) =>
         changesOf(object)
           .fetch({ cursor })

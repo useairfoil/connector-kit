@@ -1,4 +1,4 @@
-import { Cause, Config, Effect, Layer, Metric, Option, type Duration } from "effect";
+import { Cause, Config, Effect, Layer, Metric, Option, Schema, type Duration } from "effect";
 import { Headers } from "effect/http";
 import * as Observability from "effect/observability";
 
@@ -60,7 +60,14 @@ const maxErrorMessageLength = 500;
 const OtlpEnvConfig = Config.all({
   enabled: Config.Boolean(PlatformRuntimeKey.otelEnabled).pipe(Config.withDefault(false)),
   baseUrl: Config.option(Config.String(PlatformRuntimeKey.otelExporterOtlpEndpoint)),
-  rawHeaders: Config.option(Config.String(PlatformRuntimeKey.otelExporterOtlpHeaders)),
+  headers: Config.option(
+    Config.Record(
+      Schema.String,
+      Schema.StringFromUriComponent,
+      PlatformRuntimeKey.otelExporterOtlpHeaders,
+      { trim: true },
+    ),
+  ),
 });
 
 const defaultRedactedHeaders: ReadonlyArray<string | RegExp> = [
@@ -73,19 +80,6 @@ const defaultRedactedHeaders: ReadonlyArray<string | RegExp> = [
   /signature/i,
   /token/i,
 ];
-
-const parseOtelHeaders = (value: string): Record<string, string> =>
-  Object.fromEntries(
-    value
-      .split(",")
-      .map((entry) => entry.trim())
-      .filter(Boolean)
-      .flatMap((entry) => {
-        const separator = entry.indexOf("=");
-        if (separator < 1) return [];
-        return [[entry.slice(0, separator).trim(), entry.slice(separator + 1).trim()]];
-      }),
-  );
 
 const appendPath = (baseUrl: string, path: string) =>
   `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
@@ -254,9 +248,7 @@ export const layerOtlpTracing = (options: OtlpTracingOptions = {}) =>
         {
           enabled: raw.enabled,
           endpoint: Option.getOrUndefined(raw.baseUrl),
-          headers: Option.isSome(raw.rawHeaders)
-            ? parseOtelHeaders(raw.rawHeaders.value)
-            : undefined,
+          headers: Option.getOrUndefined(raw.headers),
         },
         options,
       );
@@ -276,7 +268,7 @@ export const layerOtlpMetrics = (options: OtlpMetricsOptions = {}) =>
         );
       return Observability.OtlpMetrics.layer({
         url: appendPath(endpoint, "/v1/metrics"),
-        headers: Option.isSome(raw.rawHeaders) ? parseOtelHeaders(raw.rawHeaders.value) : undefined,
+        headers: Option.getOrUndefined(raw.headers),
         exportInterval: options.exportInterval,
         temporality: "cumulative",
       }).pipe(Layer.provide(Observability.OtlpSerialization.layerJson));

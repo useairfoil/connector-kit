@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Read OTEL_EXPORTER_OTLP_HEADERS with Config.Record and URL-decode header values.",
+  "packageName": "@useairfoil/connector-kit",
+  "email": "jadejajaipal5@gmail.com",
+  "dependentChangeType": "patch"
+}

@@ -5,10 +5,10 @@ packages:
   - "templates/*"
 
 catalog:
-  effect: "^4.0.7"
-  "@effect/vitest": "^4.0.7"
-  "@effect/platform-node": "^4.0.7"
-  "@effect/sql-pg": "^4.0.7"
+  effect: "^4.1.0"
+  "@effect/vitest": "^4.1.0"
+  "@effect/platform-node": "^4.1.0"
+  "@effect/sql-pg": "^4.1.0"
   apache-arrow: "^21.1.0"
   flatbuffers: "^25.9.23"
   iceberg-js: "^1.0.0"

@@ -28,6 +28,7 @@ const layerFailingKeyValue = Layer.succeed(KeyValueStore.KeyValueStore)(
       Effect.fail(new KeyValueStore.KeyValueStoreError({ method: "remove", message: "boom" })),
     clear: Effect.fail(new KeyValueStore.KeyValueStoreError({ method: "clear", message: "boom" })),
     size: Effect.fail(new KeyValueStore.KeyValueStoreError({ method: "size", message: "boom" })),
+    keys: Effect.fail(new KeyValueStore.KeyValueStoreError({ method: "keys", message: "boom" })),
   }),
 );
 
