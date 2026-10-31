@@ -13,9 +13,9 @@ pnpm add @useairfoil/connector-kit effect@^4
 - `Connector`, `Resource`, `Fetch`, and `Cursor` define the data flow.
 - `Manifest` defines user config.
 - `ConnectorApp` checks config and runs the HTTP server.
-- `Ingestor` writes batches to the console or Wings.
-- `StateStore` keeps ingestion progress.
 - `Webhook` defines webhook routes.
+- `Ingestor` writes batches to the console or Iceberg.
+- `StateStore` keeps ingestion progress.
 
 Here is a small resource:
 
@@ -83,25 +83,34 @@ read across runs.
 Each resource in the feed stores the feed cursor, so status shows it per
 resource. A resource in the feed cannot also define its own `changes`.
 
-`fetch` also gets `selected`, the resources that run. Skip the work for the
-others.
+The Airfoil Storage Engine supports upsert operations on Iceberg rows. Use the
+`Iceberg.identifier` helper to annotate identifier rows (primary keys). This
+annotation must always be used last.
 
-`Iceberg.identifier` names the row key. Put it last on the schema. Wings
-upserts rows with the same key, and replaces the whole row.
+Upsert operations replace the full row conten, for this reason the change feed
+must include all fields. If the webhook events don't include all fields, the
+implementation must fetch the resource before pushing it into the engine.
 
-So changes and webhooks return full rows. When a webhook leaves fields out,
-read the record again. For a delete, send only the key, version, and
-`_deleted: true`; the other columns become null. Send `_deleted: false` on other
-rows only when the provider can restore records, so a restore comes back.
-Otherwise leave it out.
+The Airfoil Storage Engine implements soft deletions. To delete a row, push only
+the key, version column (if any), `_deleted = true` and any other required column.
+If the target service supports restoring records, the connector must send
+`_deleted = false` with every row.
 
-For local runs, use `StateStore.layerMemory` and `Ingestor.layerConsole`. For a
-hosted run, use `RuntimeConfig.layerHosted()`, PostgreSQL state, and
-`Ingestor.layerArrowFlightConfig(connector)`.
+### Running
 
-Use `Ingestor.layerArrowFlight({ connector, catalog, tables })` with an existing
-`CatalogManager` layer to configure ingestion directly. Both helpers prepare
-Iceberg tables and send rows over Arrow Flight.
+When testing locally, you can run the connector in memory:
+
+- `StateStore.layerMemory`: stores the connector's state in memory.
+- `Ingestor.layerConsole`: outputs new batches to console.
+
+For a durable run:
+
+- `RuntimeConfig.layerHosted()`: loads the configuration from a file.
+- `StateStore.layerSql()`: stores the connector's state in PostgreSQL.
+- `Ingestor.layerArrowFlightConfig(connector)`: publish data to Apache Iceberg
+  using the Airfoil Storage Engine and Arrow Flight.
+
+The built-in HTTP server has `/health`, `/status`, and `/metrics` endpoints.
 
 ## Configuration
 
@@ -116,17 +125,15 @@ Iceberg tables and send rows over Arrow Flight.
 | `AIRFOIL_HTTP_PORT`             | no       | `8080`                      |
 | `AIRFOIL_STATE_TABLE`           | no       | `_airfoil_connectors_state` |
 
-```env
-AIRFOIL_TABLE_BINDINGS={"posts":{"namespace":["default"],"name":"posts","location":"s3://warehouse/default/posts"}}
-```
+The `AIRFOIL_TABLE_BINDINGS` environment variables controls which resources are
+synced and the target table. At least one resource must be defined.
 
-Only the resources in `AIRFOIL_TABLE_BINDINGS` run. List at least one, and use
-only the connector's resource names.
+```env
+AIRFOIL_TABLE_BINDINGS={"posts":{"namespace":["default"],"name":"posts"}}
+```
 
 Use only lowercase letters, numbers, and underscores in table names. S3 Tables
 catalogs reject other characters, such as `-`.
-
-The HTTP server has `/health`, `/status`, and `/metrics` endpoints.
 
 ## Demo data
 
@@ -176,15 +183,11 @@ const Row = Schema.Struct({
   .pipe(Iceberg.identifier("id"));
 ```
 
-Hosted connectors create missing tables from these bindings. To create one
-manually, use the connector's `create-table <namespace.table> --catalog <id>`
-command. It creates missing namespaces and tables, and accepts existing tables
-only when their schemas match. Use `--resource <name>` if the table name differs
-from the resource.
-
-Both paths preserve field IDs and check the stored schema. Set `location` in the
-binding, or pass `--location <uri>` to the command, if the catalog cannot choose
-a location or you want to choose it yourself.
+Hosted connectors create missing tables from these bindings.
+To create one manually, use the connector's `create-table <namespace.table>
+--catalog <id>` command. It creates missing namespaces and tables, and accepts
+existing tables only when their schemas match. Use `--resource <name>` if the
+table name differs from the resource.
 
 Table preparation also creates missing namespaces. Tables must be unencrypted,
 unpartitioned Iceberg v3 tables. Preparation and startup reject unsupported tables

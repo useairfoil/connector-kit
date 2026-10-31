@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "readme: cleanup package readmes",
+  "packageName": "@useairfoil/testing",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}
