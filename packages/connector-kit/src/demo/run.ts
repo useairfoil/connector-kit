@@ -24,8 +24,8 @@ export type DemoTotals = IngestResult & {
 
 const empty: DemoTotals = { rows: 0, bytes: 0, tables: {} };
 
-// Wings rejects Flight messages over 4 MiB. 500 rows keeps a batch of the
-// widest demo rows well under that.
+// The engine rejects Flight messages over 4 MiB.
+// 500 rows keeps a batch of the widest demo rows well under that.
 const batchRows = 500;
 
 const sum = (results: ReadonlyArray<IngestResult>): IngestResult => ({

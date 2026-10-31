@@ -480,7 +480,7 @@ const runChanges = Effect.fnUntraced(function* (
     }).pipe(recordResourceError(connector, resource, "changes", "ingest"));
 
     const lastSuccessAt = yield* DateTime.now.pipe(Effect.map(DateTime.formatIso));
-    // Advance the durable cursor only after Wings acknowledges the page.
+    // Advance the durable cursor only after the engine acknowledges the page.
     yield* Effect.withSpan(
       store
         .setChangesState(resource.name, {

@@ -7,8 +7,8 @@ export const httpPort = Config.Port(PlatformRuntimeKey.httpPort).pipe(
   Config.withDefault(PlatformRuntimeDefault.httpPort),
 );
 
-/** Wings URL, including the protocol. */
-export const wingsUri = Config.URL(PlatformRuntimeKey.wingsUri);
+/** Engine URL, including the protocol. */
+export const engineUri = Config.URL(PlatformRuntimeKey.engineUri);
 
-/** Wings catalog ID. */
+/** Catalog ID. */
 export const catalog = Config.NonEmptyString(PlatformRuntimeKey.catalog);

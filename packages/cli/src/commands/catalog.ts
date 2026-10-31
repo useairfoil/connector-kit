@@ -1,9 +1,9 @@
-import { CatalogManager } from "@useairfoil/wings";
+import { CatalogManager } from "@useairfoil/api";
 import { Effect } from "effect";
 import { Argument, Command, Flag } from "effect/cli";
 
 import { parseRestCatalogConfig } from "../utils/json";
-import { WingsUri } from "../utils/options";
+import { EngineUri } from "../utils/options";
 
 const idArgument = Argument.String("id").pipe(Argument.withDescription("Catalog ID"));
 
@@ -13,18 +13,18 @@ const restFlag = Flag.String("rest").pipe(
 
 const createCommand = Command.make("create", { id: idArgument, rest: restFlag }, ({ id, rest }) =>
   Effect.gen(function* () {
-    const baseUrl = yield* WingsUri;
+    const baseUrl = yield* EngineUri;
     const manager = yield* CatalogManager.make({ baseUrl });
     const config = yield* parseRestCatalogConfig(rest);
-    const catalog = yield* manager.createCatalog({ id, rest: config });
+    yield* manager.createCatalog({ id, rest: config });
 
-    yield* Effect.log(catalog);
+    yield* Effect.log({ id });
   }),
 ).pipe(Command.withDescription("Create a new catalog"));
 
 const getCommand = Command.make("get", { id: idArgument }, ({ id }) =>
   Effect.gen(function* () {
-    const baseUrl = yield* WingsUri;
+    const baseUrl = yield* EngineUri;
     const manager = yield* CatalogManager.make({ baseUrl });
     const catalog = yield* manager.getCatalog(id);
 
@@ -34,7 +34,7 @@ const getCommand = Command.make("get", { id: idArgument }, ({ id }) =>
 
 const deleteCommand = Command.make("delete", { id: idArgument }, ({ id }) =>
   Effect.gen(function* () {
-    const baseUrl = yield* WingsUri;
+    const baseUrl = yield* EngineUri;
     const manager = yield* CatalogManager.make({ baseUrl });
 
     yield* manager.deleteCatalog(id);

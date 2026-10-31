@@ -92,7 +92,7 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@faker-js/faker": "10.6.0",
-    "@useairfoil/wings": "workspace:*",
+    "@useairfoil/api": "workspace:*",
     "apache-arrow": "catalog:",
     "iceberg-js": "catalog:"
   },
@@ -100,7 +100,7 @@
     "@effect/sql-pg": "catalog:",
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
-    "@useairfoil/wings-testing": "workspace:*",
+    "@useairfoil/testing": "workspace:*",
     "effect": "catalog:",
     "testcontainers": "catalog:",
     "tsdown": "catalog:",

@@ -30,7 +30,7 @@ export const startCommand = Command.make("start", {}, () =>
     const entrypoint = yield* HubSpotConnector.HubSpotConnector;
 
     return yield* ConnectorApp.start(entrypoint, { port }).pipe(
-      Effect.provide(Ingestor.layerWingsConfig(entrypoint)),
+      Effect.provide(Ingestor.layerArrowFlightConfig(entrypoint)),
     );
   }).pipe(
     Effect.annotateLogs({ component: "hubspot" }),
@@ -44,4 +44,4 @@ export const startCommand = Command.make("start", {}, () =>
     ),
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
-).pipe(Command.withDescription("Run the production connector against Wings"));
+).pipe(Command.withDescription("Run the connector"));

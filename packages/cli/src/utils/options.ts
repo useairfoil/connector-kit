@@ -1,10 +1,10 @@
 import { Config } from "effect";
 import { Flag, GlobalFlag } from "effect/cli";
 
-export const WingsUri = GlobalFlag.Setting("uri")({
+export const EngineUri = GlobalFlag.Setting("uri")({
   flag: Flag.String("uri").pipe(
     Flag.withDefault("http://localhost:7777"),
-    Flag.withDescription("Server URI"),
+    Flag.withDescription("Engine URI"),
   ),
 });
 

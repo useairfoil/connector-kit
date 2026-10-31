@@ -1,9 +1,9 @@
 import type { IcebergCatalog } from "@useairfoil/effect-iceberg";
 
-import { CatalogManager } from "@useairfoil/wings";
+import { CatalogManager } from "@useairfoil/api";
 import { Effect, Schema } from "effect";
 
-import { WingsUri } from "./options";
+import { EngineUri } from "./options";
 
 const NamespaceSegments = Schema.NonEmptyArray(Schema.NonEmptyString);
 const TableSegments = Schema.Array(Schema.NonEmptyString).check(Schema.isMinLength(2));
@@ -22,7 +22,7 @@ export const parseTableIdentifier = (qualifiedName: string) =>
   );
 
 export const getIcebergCatalog = Effect.fn("getIcebergCatalog")(function* (catalogId: string) {
-  const baseUrl = yield* WingsUri;
+  const baseUrl = yield* EngineUri;
   const manager = yield* CatalogManager.make({ baseUrl });
 
   return yield* manager.getIcebergCatalog(catalogId);

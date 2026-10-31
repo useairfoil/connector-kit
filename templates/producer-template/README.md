@@ -19,7 +19,7 @@ cd templates/producer-template
 pnpm sandbox
 ```
 
-Use `pnpm start` for the hosted runtime. It needs the Wings and PostgreSQL
+Use `pnpm start` for the hosted runtime. It needs the API and PostgreSQL
 variables from the Connector Kit README.
 
 ## Demo data

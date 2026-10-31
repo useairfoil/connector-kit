@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Rename layerWings, layerWingsConfig, and WingsIngestorConfig to layerArrowFlight, layerArrowFlightConfig, and ArrowFlightIngestorConfig.",
+  "packageName": "@useairfoil/connector-kit",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

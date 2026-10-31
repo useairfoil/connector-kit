@@ -4,8 +4,8 @@ services:
     entrypoint: weed
     command: ["mini", "-s3", "-dir=/data"]
     environment:
-      AWS_ACCESS_KEY_ID: wingsdevaccesskey
-      AWS_SECRET_ACCESS_KEY: wingsdevsecretkey
+      AWS_ACCESS_KEY_ID: devaccesskey
+      AWS_SECRET_ACCESS_KEY: devsecretkey
       S3_BUCKET: default-bucket
       S3_TABLE_BUCKET: default-catalog
     ports:
@@ -19,22 +19,21 @@ services:
       timeout: 3s
       retries: 15
 
-  wings:
-    image: docker.useairfoil.com/airfoil/wings:0.1.0-alpha.16
+  engine:
+    image: docker.useairfoil.com/airfoil/storage-engine:0.2.0-alpha.6
     command:
       - dev
       - --server.address=0.0.0.0:7777
-    container_name: wings-dev
+    container_name: engine-dev
     environment:
-      - RUST_LOG=debug
-      - WINGS_OBJECT_STORE_TYPE=aws
-      - WINGS_OBJECT_STORE_BUCKET_NAME=default-bucket
-      - AWS_ACCESS_KEY_ID=wingsdevaccesskey
-      - AWS_SECRET_ACCESS_KEY=wingsdevsecretkey
-      - AWS_ENDPOINT_URL=http://seaweedfs:8333
+      - RUST_LOG=info
+      - SE_S3_BUCKET=default-bucket
+      - SE_S3_ENDPOINT=http://seaweedfs:8333
+      - OTEL_SDK_DISABLED=true
+      - AWS_ACCESS_KEY_ID=devaccesskey
+      - AWS_SECRET_ACCESS_KEY=devsecretkey
+      - AWS_REGION=us-east-1
       - AWS_ALLOW_HTTP=true
-    extra_hosts:
-      - "seaweedfs:host-gateway"
     ports:
       - "7777:7777"
     depends_on:

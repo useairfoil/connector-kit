@@ -25,15 +25,15 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@toon-format/toon": "^4.1.1",
+    "@useairfoil/api": "workspace:*",
     "@useairfoil/effect-iceberg": "workspace:*",
-    "@useairfoil/wings": "workspace:*",
     "effect": "catalog:",
     "iceberg-js": "catalog:"
   },
   "devDependencies": {
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
-    "@useairfoil/wings-testing": "workspace:*",
+    "@useairfoil/testing": "workspace:*",
     "tsdown": "catalog:",
     "tsx": "^4.21.0",
     "typescript": "catalog:",

@@ -11,7 +11,7 @@ Keep these patterns:
   declares a required, non-null version field.
 - Runtime config uses Effect `Config`.
 - The sandbox uses memory state and console ingestion.
-- `start` uses hosted config, PostgreSQL state, and Wings ingestion.
+- `start` uses hosted config, PostgreSQL state, and Arrow Flight ingestion.
 - API tests use VCR.
 - `src/tables.ts` lists the row schemas by resource name, for `create-table`.
 - `src/demo/` has the demo. Its tables match the resources.

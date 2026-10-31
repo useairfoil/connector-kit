@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "refactor: rename wings-related packages",
+  "packageName": "@useairfoil/producer-linear",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

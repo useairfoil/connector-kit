@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Update the integration fixture for the current storage engine and support table publication checks.",
-  "packageName": "@useairfoil/wings-testing",
-  "email": "jadejajaipal5@gmail.com",
-  "dependentChangeType": "patch"
-}

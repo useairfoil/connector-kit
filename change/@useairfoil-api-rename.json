@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Rename @useairfoil/wings to @useairfoil/api, preserving its exports and runtime behavior.",
+  "packageName": "@useairfoil/api",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

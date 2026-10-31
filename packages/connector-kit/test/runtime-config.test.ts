@@ -5,21 +5,21 @@ import { Config, ConfigProvider, Effect, Exit, FileSystem, Redacted } from "effe
 import * as RuntimeConfig from "../src/runtime-config";
 
 describe("runtime config", () => {
-  it.effect("provides the shared HTTP and Wings runtime configuration", () =>
+  it.effect("provides the shared HTTP and engine runtime configuration", () =>
     Effect.gen(function* () {
       const port = yield* RuntimeConfig.httpPort;
-      const wingsUri = yield* RuntimeConfig.wingsUri;
+      const engineUri = yield* RuntimeConfig.engineUri;
       const catalog = yield* RuntimeConfig.catalog;
 
       expect(port).toBe(9090);
-      expect(wingsUri.href).toBe("http://wings:7777/");
+      expect(engineUri.href).toBe("http://engine:7777/");
       expect(catalog).toBe("default-catalog");
     }).pipe(
       Effect.provide(
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
             [RuntimeConfig.PlatformRuntimeKey.httpPort]: 9090,
-            [RuntimeConfig.PlatformRuntimeKey.wingsUri]: "http://wings:7777",
+            ENGINE_URI: "http://engine:7777",
             [RuntimeConfig.PlatformRuntimeKey.catalog]: "default-catalog",
           }),
         ),

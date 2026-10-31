@@ -2,7 +2,7 @@ import { ByteSize, DateTime, Effect, Option } from "effect";
 import { Command, Flag } from "effect/cli";
 
 import { run, type DemoDefinition } from "../demo";
-import { layerWingsConfig } from "../ingestor/wings";
+import { layerArrowFlightConfig } from "../ingestor/arrow-flight";
 
 /** Reads sizes such as `512KiB`, `128MiB` or `1GiB`. */
 export const parseSize = (input: string): Option.Option<number> => {
@@ -15,8 +15,8 @@ export const parseSize = (input: string): Option.Option<number> => {
 };
 
 /**
- * Creates the command that writes the demo data to Wings, then exits.
- * It reads Wings and table bindings from Config, so provide `RuntimeConfig.layerHosted()`.
+ * Creates the command that writes demo data over Arrow Flight, then exits.
+ * It reads hosted config and table bindings, so provide `RuntimeConfig.layerHosted()`.
  */
 export const makeDemoCommand = (demo: DemoDefinition) =>
   Command.make(
@@ -33,7 +33,7 @@ export const makeDemoCommand = (demo: DemoDefinition) =>
 
         yield* run(demo, { bytes: size, seed, now }).pipe(
           Effect.provide(
-            layerWingsConfig({
+            layerArrowFlightConfig({
               resources: [...demo.setup.tables, ...demo.group.tables],
             }),
           ),
