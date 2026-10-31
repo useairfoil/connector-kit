@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Rename @useairfoil/wings-testing to @useairfoil/testing and export the fixture as TestEngine.",
+  "packageName": "@useairfoil/testing",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Use EngineUri naming for the CLI server setting and describe --uri as the engine URI. The flag and default are unchanged.",
+  "packageName": "airfoil",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

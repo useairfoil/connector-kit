@@ -40,7 +40,7 @@ export interface Identified<Key extends string> {
 }
 
 /**
- * Marks the fields that identify a row. Wings upserts rows by them.
+ * Marks the fields that identify a row. The engine upserts rows by them.
  *
  * Put it last. A later `.annotate()` keeps the runtime annotation, but the type
  * loses the key, so `Resource.entity` stops compiling.

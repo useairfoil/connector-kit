@@ -6,4 +6,8 @@ export {
   type IngestResult,
   type IngestSource,
 } from "./service";
-export { layerWings, layerWingsConfig, type WingsIngestorConfig } from "./wings";
+export {
+  layerArrowFlight,
+  layerArrowFlightConfig,
+  type ArrowFlightIngestorConfig,
+} from "./arrow-flight";

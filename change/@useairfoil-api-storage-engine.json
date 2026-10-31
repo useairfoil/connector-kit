@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Connect to registered Iceberg catalogs directly with their configured HTTP credentials.",
+  "packageName": "@useairfoil/api",
+  "email": "jadejajaipal5@gmail.com",
+  "dependentChangeType": "patch"
+}

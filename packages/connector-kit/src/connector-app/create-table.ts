@@ -1,8 +1,8 @@
 import { Effect, Option, type Schema } from "effect";
 import { Argument, CliError, Command, Flag } from "effect/cli";
 
-import { ensureTableFromWings } from "../catalog/table";
-import { wingsUri } from "../runtime-config/config";
+import { ensureTableFromEngine } from "../catalog/table";
+import { engineUri } from "../runtime-config/config";
 
 /** Creates the table command; existing tables must match the connector's row schemas. */
 export const makeCreateTableCommand = (schemas: Readonly<Record<string, Schema.Top>>) =>
@@ -35,9 +35,9 @@ export const makeCreateTableCommand = (schemas: Readonly<Record<string, Schema.T
           });
         }
 
-        const uri = yield* wingsUri;
-        yield* ensureTableFromWings(schema, {
-          wingsUri: uri.href,
+        const uri = yield* engineUri;
+        yield* ensureTableFromEngine(schema, {
+          engineUri: uri.href,
           catalogId: catalog,
           identifier: { namespace, name },
           location: Option.getOrUndefined(location),

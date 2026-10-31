@@ -97,14 +97,18 @@ Otherwise leave it out.
 
 For local runs, use `StateStore.layerMemory` and `Ingestor.layerConsole`. For a
 hosted run, use `RuntimeConfig.layerHosted()`, PostgreSQL state, and
-`Ingestor.layerWingsConfig(connector)`.
+`Ingestor.layerArrowFlightConfig(connector)`.
+
+Use `Ingestor.layerArrowFlight({ connector, catalog, tables })` with an existing
+`CatalogManager` layer to configure ingestion directly. Both helpers prepare
+Iceberg tables and send rows over Arrow Flight.
 
 ## Configuration
 
 | Variable                        | Required | Default                     |
 | ------------------------------- | -------- | --------------------------- |
 | `AIRFOIL_CONFIG_PATH`           | yes      | none                        |
-| `WINGS_URI`                     | yes      | none                        |
+| `ENGINE_URI`                    | yes      | none                        |
 | `AIRFOIL_CATALOG`               | yes      | none                        |
 | `AIRFOIL_TABLE_BINDINGS`        | yes      | none                        |
 | `AIRFOIL_CONNECTOR_INSTANCE_ID` | yes      | none                        |
@@ -143,7 +147,7 @@ producer-stripe demo --size 128MiB --seed 42
 - Setup tables, written once, such as a product catalog, don't grow. If only
   those are bound, the run writes them once and stops below the size. Demos
   with limited history, such as daily reports, also stop when they run out.
-- It needs `AIRFOIL_CONFIG_PATH`, `WINGS_URI`, `AIRFOIL_CATALOG`, and
+- It needs `AIRFOIL_CONFIG_PATH`, `ENGINE_URI`, `AIRFOIL_CATALOG`, and
   `AIRFOIL_TABLE_BINDINGS`. An empty `{}` config file is enough.
 
 A demo lists its `setup` and `group` tables and builds their rows with

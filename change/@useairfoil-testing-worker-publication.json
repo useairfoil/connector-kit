@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Publish integration data using the current engine worker and wait for a new Iceberg snapshot instead of invoking removed materialize and commit commands.",
+  "packageName": "@useairfoil/testing",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

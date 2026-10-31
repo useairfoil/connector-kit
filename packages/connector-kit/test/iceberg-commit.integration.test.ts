@@ -1,7 +1,7 @@
 import { NodeServices } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
-import { CatalogManager } from "@useairfoil/wings";
-import { TestWings } from "@useairfoil/wings-testing";
+import { CatalogManager } from "@useairfoil/api";
+import { TestEngine } from "@useairfoil/testing";
 import { ConfigProvider, Effect, Schema } from "effect";
 import { Command } from "effect/cli";
 import { FetchHttpClient } from "effect/http";
@@ -15,9 +15,9 @@ describe("Iceberg table creation commits", () => {
     "creates missing namespaces and tables through the CLI, verifies reruns, and preserves IDs",
     () =>
       Effect.gen(function* () {
-        const wings = yield* TestWings.Instance;
-        const uri = yield* wings.uri;
-        const icebergRestUri = yield* wings.icebergRestUri;
+        const engine = yield* TestEngine.Instance;
+        const uri = yield* engine.uri;
+        const icebergRestUri = yield* engine.icebergRestUri;
         const manager = yield* CatalogManager.make({ baseUrl: uri });
         const catalogId = "explicit-field-ids";
         const namespace = ["schema_ids"];
@@ -59,7 +59,7 @@ describe("Iceberg table creation commits", () => {
             location,
           ]).pipe(
             Effect.provide(NodeServices.layer),
-            Effect.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({ WINGS_URI: uri }))),
+            Effect.provide(ConfigProvider.layer(ConfigProvider.fromUnknown({ ENGINE_URI: uri }))),
           );
         yield* prepare(Row);
         const created = yield* catalog.loadTable(identifier);
@@ -102,7 +102,7 @@ describe("Iceberg table creation commits", () => {
         expect(getCurrentSchema(derived)).toMatchObject({ fields, "identifier-field-ids": [1] });
       }).pipe(
         Effect.provide(FetchHttpClient.layer),
-        Effect.provide(TestWings.container),
+        Effect.provide(TestEngine.container),
         Effect.scoped,
       ),
     { timeout: 120_000 },

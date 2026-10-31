@@ -1,6 +1,6 @@
 import type { IcebergType, TableField } from "iceberg-js";
 
-import { CatalogManager } from "@useairfoil/wings";
+import { CatalogManager } from "@useairfoil/api";
 import { Schema } from "effect";
 
 const RestCatalogConfigJson = Schema.fromJsonString(CatalogManager.RestCatalogConfig);

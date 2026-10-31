@@ -8,7 +8,7 @@ export const PlatformRuntimeKey = {
   connectorInstanceId: "AIRFOIL_CONNECTOR_INSTANCE_ID",
   stateTable: "AIRFOIL_STATE_TABLE",
   postgresConnectionString: "POSTGRES_CONNECTION_STRING",
-  wingsUri: "WINGS_URI",
+  engineUri: "ENGINE_URI",
   catalog: "AIRFOIL_CATALOG",
   otelEnabled: "OTEL_ENABLED",
   otelExporterOtlpEndpoint: "OTEL_EXPORTER_OTLP_ENDPOINT",

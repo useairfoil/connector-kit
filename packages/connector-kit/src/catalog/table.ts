@@ -6,7 +6,7 @@ import type {
   TableSchema,
 } from "iceberg-js";
 
-import * as Wings from "@useairfoil/wings";
+import { CatalogManager } from "@useairfoil/api";
 import { Effect, type Schema } from "effect";
 import { HttpClient } from "effect/http";
 import { getCurrentSchema } from "iceberg-js";
@@ -16,7 +16,7 @@ import { IcebergSchemaError } from "../iceberg/error";
 import { compileTable, makeCommitRequest } from "../iceberg/table";
 
 type Catalog = Effect.Success<
-  ReturnType<Wings.CatalogManager.CatalogManagerService["getIcebergCatalog"]>
+  ReturnType<CatalogManager.CatalogManagerService["getIcebergCatalog"]>
 >;
 
 type TableOptions = {
@@ -25,8 +25,8 @@ type TableOptions = {
   readonly location?: string | undefined;
 };
 
-type WingsTableOptions = {
-  readonly wingsUri: string;
+type EngineTableOptions = {
+  readonly engineUri: string;
   readonly catalogId: string;
   readonly identifier: TableIdentifier;
   readonly location?: string | undefined;
@@ -168,14 +168,14 @@ export const createTable = (
     return yield* verifyTable(metadata, table.schema);
   }).pipe(Effect.mapError(tableError));
 
-/** Creates a missing table through a Wings catalog and verifies its schema. */
-export const ensureTableFromWings = (
+/** Creates a missing table through an engine catalog and verifies its schema. */
+export const ensureTableFromEngine = (
   schema: Schema.Top,
-  options: WingsTableOptions,
+  options: EngineTableOptions,
 ): Effect.Effect<TableSchema, ConnectorError, HttpClient.HttpClient> =>
   Effect.scoped(
     Effect.gen(function* () {
-      const manager = yield* Wings.CatalogManager.make({ baseUrl: options.wingsUri });
+      const manager = yield* CatalogManager.make({ baseUrl: options.engineUri });
       const catalog = yield* manager.getIcebergCatalog(options.catalogId);
       return yield* ensureTable(schema, {
         catalog,

@@ -9,14 +9,14 @@ import { catalogCommand } from "./commands/catalog";
 import { namespaceCommand } from "./commands/namespace";
 import { tableCommand } from "./commands/table";
 import { OutputLogger, reportError } from "./utils/logger";
-import { Output, WingsUri } from "./utils/options";
+import { EngineUri, Output } from "./utils/options";
 
 const version = packageJson.version;
 
 const program = Command.make("airfoil", {}, () => Effect.void).pipe(
   Command.withSubcommands([catalogCommand, namespaceCommand, tableCommand]),
   Command.provide(OutputLogger),
-  Command.withGlobalFlags([WingsUri, Output]),
+  Command.withGlobalFlags([EngineUri, Output]),
 );
 
 const cli = Command.run(program, {

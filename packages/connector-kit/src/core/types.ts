@@ -96,7 +96,7 @@ export type ResourceDelete<S extends ResourceSchema, Version extends ResourceFie
   readonly _deleted: true;
 };
 
-/** A full row, or a delete. Wings replaces the whole row. */
+/** A full row, or a delete. The engine replaces the whole row. */
 export type ResourceUpdate<S extends ResourceSchema, Version extends ResourceField<S>> =
   | (ResourceRow<S> & { readonly _deleted?: boolean })
   | ResourceDelete<S, Version>;

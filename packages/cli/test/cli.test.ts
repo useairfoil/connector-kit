@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest";
-import { TestWings } from "@useairfoil/wings-testing";
+import { TestEngine } from "@useairfoil/testing";
 import { Effect } from "effect";
 import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -31,9 +31,9 @@ const execute = (args: ReadonlyArray<string>) =>
 describe("airfoil CLI", () => {
   it.effect("manages catalogs, namespaces, and tables", () =>
     Effect.gen(function* () {
-      const wings = yield* TestWings.Instance;
-      const uri = yield* wings.uri;
-      const icebergRestUri = yield* wings.icebergRestUri;
+      const engine = yield* TestEngine.Instance;
+      const uri = yield* engine.uri;
+      const icebergRestUri = yield* engine.icebergRestUri;
       const catalog = "cli-integration";
       const namespace = "analytics.events";
       const table = `${namespace}.clicks`;
@@ -52,11 +52,11 @@ describe("airfoil CLI", () => {
         JSON.stringify({ uri: icebergRestUri, warehouse: "s3://default-catalog" }),
       ]);
 
-      expect(createdCatalog).toMatchObject({ name: `catalogs/${catalog}` });
+      expect(createdCatalog).toEqual({ id: catalog });
 
       // Get catalog.
       expect(yield* run(["catalog", "get", catalog])).toMatchObject({
-        name: `catalogs/${catalog}`,
+        id: catalog,
       });
 
       // Create namespace.
@@ -112,6 +112,6 @@ describe("airfoil CLI", () => {
 
       // Delete catalog.
       expect(yield* run(["catalog", "delete", catalog])).toEqual({ id: catalog });
-    }).pipe(Effect.provide(TestWings.container), Effect.scoped),
+    }).pipe(Effect.provide(TestEngine.container), Effect.scoped),
   );
 });

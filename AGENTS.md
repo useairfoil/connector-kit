@@ -1,4 +1,4 @@
-# Airfoil TypeScript SDK
+# Airfoil Connector Kit Agents
 
 Keep changes small. Leave unrelated work alone.
 Read a connector's or template's own `AGENTS.md` before you change it.
@@ -10,9 +10,8 @@ Read a connector's or template's own `AGENTS.md` before you change it.
 - Prefer inference and schema types. No `any`, and no casts to hide errors.
 - Keep tests small and meaningful. Use inline snapshots for row shapes.
 - Write short sentences with simple words. Only comment what is easy to miss.
-- Keep READMEs focused on purpose, installation, configuration, and usage.
-  Put contributor rules in `AGENTS.md` and investigation history in `docs/`.
-- Update docs in place. Don't rewrite them for style.
+- Don't edit README.md or AGENTS.md files. If a change is necessary, ask the
+  human to write it. Explain _why_ the file needs updating.
 - Check review claims against the code, docs, or real behavior before acting.
 - Give a recommendation. Say when an idea is overkill, even the user's.
 - Ask before changing scope, stored data, or shared contracts that aren't
@@ -37,18 +36,6 @@ Use Effect for effects and runtime work. Keep simple pure functions plain.
 - Before finishing, check the changed code for missed Effect APIs and extra
   machinery.
 
-## Git
-
-This repo uses GitButler on `gitbutler/workspace`. Use `but` for branches,
-commits, history, merges, and pushes. Run it with escalated permissions,
-because it writes to the GitButler database in `.git`. Never run `but setup`.
-
-Don't run any Git write without the user's explicit permission. That includes
-fetch, pull, staging, commits, branches, stashes, resets, rebases, merges,
-pushes, and config changes, from tools and scripts too. Permission covers only
-the action and scope approved. Editing files doesn't mean you may commit,
-push, or change a PR.
-
 ## Generated code
 
 Don't edit `packages/flight/src/proto/**`. Change the source in
@@ -65,7 +52,7 @@ Provider code stays in its connector. Shared runtime code goes in Connector Kit.
 - Put user config in `src/manifest.ts`.
 - Use Effect `Config`, not `process.env`.
 - Hosted runs use `RuntimeConfig.layerHosted()`, PostgreSQL state, and
-  `Ingestor.layerWingsConfig(...)`.
+  `Ingestor.layerArrowFlightConfig(...)`.
 - Memory state is only for the sandbox and tests.
 - Every row schema ends with `Iceberg.identifier(...)` on a required, non-null
   key. Every resource has a required, non-null version field.
@@ -97,7 +84,7 @@ from the root. `pnpm format` only checks formatting; it doesn't fix it.
 - When shared code or a public API changes, check the code that uses it.
 - Use `@effect/vitest` and the existing test setup. Some integration tests need
   Docker.
-- For `wings-testing` publication tests, register synthetic S3 credentials through
+- For `@useairfoil/testing` publication tests, register synthetic S3 credentials through
   catalog properties and run `materializeAndCommit` before checking snapshots.
 - For docs-only changes, check the edited text, paths, and commands.
 - Test the changed artifact or runtime path, not just that it compiles.
