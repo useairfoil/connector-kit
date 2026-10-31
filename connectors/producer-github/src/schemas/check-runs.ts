@@ -1,37 +1,61 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Timestamp, field, readVersion } from "./shared";
+import { Long, Timestamp, readVersion } from "./shared";
 
 export const CheckRunSchema = Schema.Struct({
-  id: Long.pipe(field(1, "Unique check run ID.")),
-  version: readVersion(2, "check run"),
-  node_id: Schema.String.pipe(field(3, "GraphQL node ID of the check run.")),
-  repository_id: Long.pipe(field(4, "ID of the repository the check run belongs to.")),
-  head_sha: Schema.String.pipe(field(5, "SHA of the commit the check ran on.")),
-  name: Schema.String.pipe(field(6, "Check name.")),
-  status: Schema.String.pipe(field(7, "Status, such as queued, in_progress, or completed.")),
-  conclusion: Schema.NullOr(Schema.String).pipe(
-    field(8, "Result of a completed check, such as success or failure."),
+  id: Long.pipe(Schema.annotateKey({ description: "Unique check run ID." })),
+  version: readVersion("check run"),
+  node_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "GraphQL node ID of the check run." }),
   ),
-  started_at: Schema.NullOr(Timestamp).pipe(field(9, "Time the check started.")),
-  completed_at: Schema.NullOr(Timestamp).pipe(field(10, "Time the check completed.")),
+  repository_id: Long.pipe(
+    Schema.annotateKey({ description: "ID of the repository the check run belongs to." }),
+  ),
+  head_sha: Schema.String.pipe(
+    Schema.annotateKey({ description: "SHA of the commit the check ran on." }),
+  ),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Check name." })),
+  status: Schema.String.pipe(
+    Schema.annotateKey({ description: "Status, such as queued, in_progress, or completed." }),
+  ),
+  conclusion: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Result of a completed check, such as success or failure." }),
+  ),
+  started_at: Schema.NullOr(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time the check started." }),
+  ),
+  completed_at: Schema.NullOr(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time the check completed." }),
+  ),
   app: Schema.NullOr(
     Schema.Struct({
-      id: Long.pipe(field(100, "GitHub App ID.")),
-      name: Schema.String.pipe(field(101, "GitHub App name.")),
+      id: Long.pipe(Schema.annotateKey({ description: "GitHub App ID." })),
+      name: Schema.String.pipe(Schema.annotateKey({ description: "GitHub App name." })),
     }),
-  ).pipe(field(11, "GitHub App that created the check, such as GitHub Actions.")),
-  check_suite: Schema.NullOr(Schema.Struct({ id: Long.pipe(field(102, "Check suite ID.")) })).pipe(
-    field(12, "Check suite the check run belongs to."),
+  ).pipe(
+    Schema.annotateKey({
+      description: "GitHub App that created the check, such as GitHub Actions.",
+    }),
   ),
+  check_suite: Schema.NullOr(
+    Schema.Struct({ id: Long.pipe(Schema.annotateKey({ description: "Check suite ID." })) }),
+  ).pipe(Schema.annotateKey({ description: "Check suite the check run belongs to." })),
   output: Schema.Struct({
-    title: Schema.NullOr(Schema.String).pipe(field(103, "Output title.")),
-    summary: Schema.NullOr(Schema.String).pipe(field(104, "Output summary in Markdown.")),
-  }).pipe(field(13, "Output the check reported.")),
-  external_id: Schema.NullOr(Schema.String).pipe(field(14, "ID the app gave the check.")),
-  details_url: Schema.NullOr(Schema.String).pipe(field(15, "Details page from the app.")),
-  html_url: Schema.NullOr(Schema.String).pipe(field(16, "Check run page on GitHub.")),
+    title: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Output title." })),
+    summary: Schema.NullOr(Schema.String).pipe(
+      Schema.annotateKey({ description: "Output summary in Markdown." }),
+    ),
+  }).pipe(Schema.annotateKey({ description: "Output the check reported." })),
+  external_id: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "ID the app gave the check." }),
+  ),
+  details_url: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Details page from the app." }),
+  ),
+  html_url: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Check run page on GitHub." }),
+  ),
 })
   .annotate({
     description:

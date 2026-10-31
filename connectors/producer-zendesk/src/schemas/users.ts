@@ -1,49 +1,72 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import {
-  Long,
-  Timestamp,
-  deleted,
-  field,
-  keyedCustomFields,
-  list,
-  stringMap,
-  version,
-} from "./shared";
+import { Long, Timestamp, deleted, keyedCustomFields, version } from "./shared";
 
 const IdentitySchema = Schema.Struct({
-  id: Long.pipe(field(105, "Identity ID.")),
-  type: Schema.String.pipe(field(106, "email, phone_number, twitter, and others.")),
-  value: Schema.String.pipe(field(107, "Email address, phone number, or handle.")),
-  verified: Schema.Boolean.pipe(field(108, "Whether the identity is verified.")),
-  primary: Schema.Boolean.pipe(field(109, "Whether it's the primary one of its type.")),
+  id: Long.pipe(Schema.annotateKey({ description: "Identity ID." })),
+  type: Schema.String.pipe(
+    Schema.annotateKey({ description: "email, phone_number, twitter, and others." }),
+  ),
+  value: Schema.String.pipe(
+    Schema.annotateKey({ description: "Email address, phone number, or handle." }),
+  ),
+  verified: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the identity is verified." }),
+  ),
+  primary: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether it's the primary one of its type." }),
+  ),
 });
 
 export const UserSchema = Schema.Struct({
-  id: Long.pipe(field(1, "User ID.")),
-  version: version(2, "user"),
-  _deleted: deleted(3, "user"),
-  created_at: Timestamp.pipe(field(4, "Time the user was created.")),
-  updated_at: Timestamp.pipe(field(5, "Time the user was last updated.")),
-  name: Schema.String.pipe(field(6, "User name.")),
-  email: Schema.NullOr(Schema.String).pipe(field(7, "Primary email. Empty for some end users.")),
-  role: Schema.String.pipe(field(8, "Role: end-user, agent, or admin.")),
-  custom_role_id: Schema.NullOr(Long).pipe(field(9, "Custom agent role ID.")),
-  organization_id: Schema.NullOr(Long).pipe(field(10, "Default organization of the user.")),
-  default_group_id: Schema.NullOr(Long).pipe(field(11, "Default group of an agent.")),
-  suspended: Schema.Boolean.pipe(field(12, "Whether the user is suspended.")),
-  verified: Schema.Boolean.pipe(field(13, "Whether the primary identity is verified.")),
-  locale: Schema.NullOr(Schema.String).pipe(field(14, "Locale, such as en-US.")),
-  time_zone: Schema.NullOr(Schema.String).pipe(field(15, "Time zone name.")),
-  external_id: Schema.NullOr(Schema.String).pipe(field(16, "ID in another system.")),
-  last_login_at: Schema.NullOr(Timestamp).pipe(field(17, "Time of the last sign-in.")),
-  tags: list(101, Schema.String).pipe(field(18, "User tags.")),
-  user_fields: stringMap(102, 103).pipe(
-    field(19, "Custom user field values by field key. Lists are JSON."),
+  id: Long.pipe(Schema.annotateKey({ description: "User ID." })),
+  version: version("user"),
+  _deleted: deleted("user"),
+  created_at: Timestamp.pipe(Schema.annotateKey({ description: "Time the user was created." })),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the user was last updated." }),
   ),
-  identities: list(104, IdentitySchema).pipe(
-    field(20, "Every email, phone number, and other identity of the user."),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "User name." })),
+  email: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Primary email. Empty for some end users." }),
+  ),
+  role: Schema.String.pipe(Schema.annotateKey({ description: "Role: end-user, agent, or admin." })),
+  custom_role_id: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Custom agent role ID." }),
+  ),
+  organization_id: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Default organization of the user." }),
+  ),
+  default_group_id: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Default group of an agent." }),
+  ),
+  suspended: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the user is suspended." }),
+  ),
+  verified: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the primary identity is verified." }),
+  ),
+  locale: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Locale, such as en-US." }),
+  ),
+  time_zone: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Time zone name." }),
+  ),
+  external_id: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "ID in another system." }),
+  ),
+  last_login_at: Schema.NullOr(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time of the last sign-in." }),
+  ),
+  tags: Schema.Array(Schema.String).pipe(Schema.annotateKey({ description: "User tags." })),
+  user_fields: Schema.ReadonlyMap(Schema.String, Schema.String).pipe(
+    Schema.annotateKey({ description: "Custom user field values by field key. Lists are JSON." }),
+  ),
+  identities: Schema.Array(IdentitySchema).pipe(
+    Schema.annotateKey({
+      description: "Every email, phone number, and other identity of the user.",
+    }),
   ),
 })
   .annotate({ description: "Zendesk users: end users, agents, and admins." })

@@ -1,22 +1,34 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { Long, Timestamp, field, version } from "./shared";
+import { Long, Timestamp, version } from "./shared";
 
 export const ListSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "List ID.")),
-  version: version(2),
-  name: Schema.String.pipe(field(3, "List name.")),
-  object_type_id: Schema.String.pipe(field(4, "Type of the records in the list, such as `0-1`.")),
-  processing_type: Schema.String.pipe(
-    field(5, "MANUAL, DYNAMIC (filters), or SNAPSHOT (filters run once)."),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "List ID." })),
+  version,
+  name: Schema.String.pipe(Schema.annotateKey({ description: "List name." })),
+  object_type_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Type of the records in the list, such as `0-1`." }),
   ),
-  processing_status: Schema.String.pipe(field(6, "Whether HubSpot is still filling the list.")),
-  size: Schema.optional(Long).pipe(field(7, "Number of records in the list.")),
-  created_at: Schema.optional(Schema.Date).pipe(field(8, "Time the list was created.")),
-  updated_at: Schema.optional(Schema.Date).pipe(field(9, "Time the list last changed.")),
+  processing_type: Schema.String.pipe(
+    Schema.annotateKey({
+      description: "MANUAL, DYNAMIC (filters), or SNAPSHOT (filters run once).",
+    }),
+  ),
+  processing_status: Schema.String.pipe(
+    Schema.annotateKey({ description: "Whether HubSpot is still filling the list." }),
+  ),
+  size: Schema.optional(Long).pipe(
+    Schema.annotateKey({ description: "Number of records in the list." }),
+  ),
+  created_at: Schema.optional(Schema.Date).pipe(
+    Schema.annotateKey({ description: "Time the list was created." }),
+  ),
+  updated_at: Schema.optional(Schema.Date).pipe(
+    Schema.annotateKey({ description: "Time the list last changed." }),
+  ),
   filters_updated_at: Schema.optional(Schema.Date).pipe(
-    field(10, "Time the list filters last changed."),
+    Schema.annotateKey({ description: "Time the list filters last changed." }),
   ),
 })
   .annotate({ description: "HubSpot lists (segments), without their members." })

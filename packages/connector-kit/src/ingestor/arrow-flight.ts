@@ -122,9 +122,10 @@ export const layerArrowFlight = <const Source extends TableSource>(
 export const layerArrowFlightConfig = (connector: TableSource) =>
   Layer.unwrap(
     Effect.gen(function* () {
-      const { catalog, uri } = yield* Config.all({
+      const { catalog, uri, flightUri } = yield* Config.all({
         catalog: RuntimeConfig.catalog,
         uri: RuntimeConfig.engineUri,
+        flightUri: RuntimeConfig.flightUri,
       }).pipe(
         Effect.mapError((cause) => connectorError("Invalid Arrow Flight configuration", cause)),
       );
@@ -132,11 +133,14 @@ export const layerArrowFlightConfig = (connector: TableSource) =>
       if (uri.protocol !== "http:" && uri.protocol !== "https:") {
         return yield* Effect.fail(connectorError("Invalid Arrow Flight URL"));
       }
+      if (flightUri.protocol !== "http:" && flightUri.protocol !== "https:") {
+        return yield* Effect.fail(connectorError("Invalid Arrow Flight URL"));
+      }
 
       const tables = yield* RuntimeConfig.loadTableBindings(connector).pipe(
         Effect.mapError((cause) => connectorError(cause.message, cause)),
       );
-      const manager = CatalogManager.layer({ baseUrl: uri.href }).pipe(
+      const manager = CatalogManager.layer({ engineUri: uri.href, flightUri: flightUri.href }).pipe(
         Layer.provide(FetchHttpClient.layer),
       );
 

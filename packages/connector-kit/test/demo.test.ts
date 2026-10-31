@@ -20,22 +20,19 @@ const contextOf = (seed: number): Demo.DemoContext => {
 };
 
 const Row = Schema.Struct({
-  id: Schema.String.pipe(Iceberg.field(1)),
-  version: Schema.Date.pipe(Iceberg.field(2)),
-  state: Schema.Literals(["open", "closed"]).pipe(Iceberg.field(3)),
-  count: Schema.Int.pipe(Iceberg.field(4)),
-  score: Schema.Finite.pipe(Iceberg.field(5)),
-  total: Schema.BigInt.pipe(Iceberg.field(6)),
-  note: Schema.NullOr(Schema.String).pipe(Iceberg.field(7)),
-  extra: Schema.optional(Schema.Boolean).pipe(Iceberg.field(8)),
+  id: Schema.String,
+  version: Schema.Date,
+  state: Schema.Literals(["open", "closed"]),
+  count: Schema.Int,
+  score: Schema.Finite,
+  total: Schema.BigInt,
+  note: Schema.NullOr(Schema.String),
+  extra: Schema.optional(Schema.Boolean),
   details: Schema.Struct({
-    tags: Schema.Array(Schema.String.annotate({ fieldId: 101 })).pipe(Iceberg.field(100)),
-    labels: Schema.ReadonlyMap(
-      Schema.String.annotate({ fieldId: 103 }),
-      Schema.Int.annotate({ fieldId: 104 }),
-    ).pipe(Iceberg.field(102)),
-  }).pipe(Iceberg.field(9)),
-  _deleted: Schema.optional(Schema.Boolean).pipe(Iceberg.field(10)),
+    tags: Schema.Array(Schema.String),
+    labels: Schema.ReadonlyMap(Schema.String, Schema.Int),
+  }),
+  _deleted: Schema.optional(Schema.Boolean),
 }).pipe(Iceberg.identifier("id"));
 
 describe("demo rows", () => {
@@ -127,14 +124,14 @@ describe("demo sizes", () => {
 });
 
 const Plan = Schema.Struct({
-  id: Schema.String.pipe(Iceberg.field(1)),
-  version: Schema.Date.pipe(Iceberg.field(2)),
+  id: Schema.String,
+  version: Schema.Date,
 }).pipe(Iceberg.identifier("id"));
 
 const Account = Schema.Struct({
-  id: Schema.String.pipe(Iceberg.field(1)),
-  version: Schema.Date.pipe(Iceberg.field(2)),
-  plan: Schema.NonEmptyString.pipe(Iceberg.field(3)),
+  id: Schema.String,
+  version: Schema.Date,
+  plan: Schema.NonEmptyString,
 }).pipe(Iceberg.identifier("id"));
 
 const plans = Demo.table({ name: "plans", rowSchema: Plan, version: "version" });

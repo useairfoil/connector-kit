@@ -18,7 +18,7 @@ import { FetchHttpClient } from "effect/http";
 
 const catalog = CatalogManager.getCatalog("analytics").pipe(
   Effect.provide(
-    CatalogManager.layer({ baseUrl: "http://localhost:7777" }).pipe(
+    CatalogManager.layer({ engineUrl: "http://localhost:7777" }).pipe(
       Layer.provide(FetchHttpClient.layer),
     ),
   ),

@@ -1,8 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation } from "effect";
-
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
 
 export const Timestamp = Schema.DateFromString;
 
@@ -37,30 +33,36 @@ export const OptionalString = Schema.NullOr(Schema.String);
 const RefConnection = Schema.Struct({ nodes: Schema.Array(Schema.Struct({ id: Schema.String })) });
 
 /** Decodes connection nodes as IDs. The query must fetch any extra pages. */
-export const RefList = (elementId: number) =>
-  RefConnection.pipe(
-    Schema.decodeTo(
-      Schema.Array(Schema.String.annotate({ fieldId: elementId })),
-      SchemaTransformation.transform<ReadonlyArray<string>, typeof RefConnection.Type>({
-        decode: (connection) => connection.nodes.map((node) => node.id),
-        encode: (ids) => ({ nodes: ids.map((id) => ({ id })) }),
-      }),
-    ),
-  );
-
-export const list = <S extends Schema.Top>(elementId: number, item: S) =>
-  Schema.Array(item.annotate({ fieldId: elementId }));
+export const RefList = RefConnection.pipe(
+  Schema.decodeTo(
+    Schema.Array(Schema.String),
+    SchemaTransformation.transform<ReadonlyArray<string>, typeof RefConnection.Type>({
+      decode: (connection) => connection.nodes.map((node) => node.id),
+      encode: (ids) => ({ nodes: ids.map((id) => ({ id })) }),
+    }),
+  ),
+);
 
 /** Rows use updated_at as version; lifecycle webhooks use the webhook time. */
 export const common = (object: string) => ({
-  id: Schema.String.pipe(field(1, `${object} ID.`)),
-  version: Schema.Date.pipe(field(2, `Time Linear last changed the ${object.toLowerCase()}.`)),
-  created_at: Timestamp.pipe(field(3, `Time the ${object.toLowerCase()} was created.`)),
-  updated_at: Timestamp.pipe(field(4, `Time the ${object.toLowerCase()} was last updated.`)),
+  id: Schema.String.pipe(Schema.annotateKey({ description: `${object} ID.` })),
+  version: Schema.Date.pipe(
+    Schema.annotateKey({ description: `Time Linear last changed the ${object.toLowerCase()}.` }),
+  ),
+  created_at: Timestamp.pipe(
+    Schema.annotateKey({ description: `Time the ${object.toLowerCase()} was created.` }),
+  ),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: `Time the ${object.toLowerCase()} was last updated.` }),
+  ),
   archived_at: Schema.NullOr(Timestamp).pipe(
-    field(5, `Time the ${object.toLowerCase()} was archived or trashed.`),
+    Schema.annotateKey({
+      description: `Time the ${object.toLowerCase()} was archived or trashed.`,
+    }),
   ),
 });
 
 export const deleted = (object: string) =>
-  Schema.optional(Schema.Boolean).pipe(field(6, `Whether the ${object} was deleted in Linear.`));
+  Schema.optional(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: `Whether the ${object} was deleted in Linear.` }),
+  );

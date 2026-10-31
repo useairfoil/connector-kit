@@ -10,16 +10,16 @@ import { getCurrentSchema } from "iceberg-js";
 import { Iceberg } from "../src";
 import { makeCreateTableCommand } from "../src/connector-app";
 
-describe("Iceberg table creation commits", () => {
+describe("Iceberg REST table creation", () => {
   it.effect(
-    "creates missing namespaces and tables through the CLI, verifies reruns, and preserves IDs",
+    "creates tables from plain schemas through the CLI and verifies reruns",
     () =>
       Effect.gen(function* () {
         const engine = yield* TestEngine.Instance;
         const uri = yield* engine.uri;
         const icebergRestUri = yield* engine.icebergRestUri;
-        const manager = yield* CatalogManager.make({ baseUrl: uri });
-        const catalogId = "explicit-field-ids";
+        const manager = yield* CatalogManager.make({ engineUri: uri });
+        const catalogId = "catalog-field-ids";
         const namespace = ["schema_ids"];
         const identifier = { namespace, name: "events" };
 
@@ -34,15 +34,12 @@ describe("Iceberg table creation commits", () => {
         const catalog = yield* manager.getIcebergCatalog(catalogId);
 
         const Row = Schema.Struct({
-          id: Schema.String.pipe(Iceberg.field(1)),
+          id: Schema.String,
           nested: Schema.Struct({
-            value: Schema.String.pipe(Iceberg.field(101)),
-          }).pipe(Iceberg.field(2)),
-          items: Schema.Array(Schema.String.annotate({ fieldId: 201 })).pipe(Iceberg.field(3)),
-          labels: Schema.ReadonlyMap(
-            Schema.String.annotate({ fieldId: 301 }),
-            Schema.String.annotate({ fieldId: 302 }),
-          ).pipe(Iceberg.field(4)),
+            value: Schema.String,
+          }),
+          items: Schema.Array(Schema.String),
+          labels: Schema.ReadonlyMap(Schema.String, Schema.String),
         }).pipe(Iceberg.identifier("id"));
         const location = "s3://default-catalog/schema_ids/events";
         const prepare = (row: Schema.Top) =>
@@ -69,37 +66,33 @@ describe("Iceberg table creation commits", () => {
         const schema = getCurrentSchema(reused);
 
         const ChangedRow = Schema.Struct({
-          id: Schema.String.pipe(Iceberg.field(99)),
+          id: Schema.String,
         }).pipe(Iceberg.identifier("id"));
         const mismatch = yield* prepare(ChangedRow).pipe(Effect.flip);
         expect(mismatch.message).toContain("Table schema does not match");
         expect((yield* catalog.loadTable(identifier))["table-uuid"]).toBe(created["table-uuid"]);
 
         const fields = [
-          { id: 1, name: "id" },
+          { name: "id", required: true, type: "string" },
           {
-            id: 2,
             name: "nested",
-            type: { type: "struct", fields: [{ id: 101, name: "value" }] },
+            type: { type: "struct", fields: [{ name: "value", type: "string" }] },
           },
-          { id: 3, name: "items", type: { type: "list", "element-id": 201 } },
-          { id: 4, name: "labels", type: { type: "map", "key-id": 301, "value-id": 302 } },
+          { name: "items", type: { type: "list", element: "string" } },
+          { name: "labels", type: { type: "map", key: "string", value: "string" } },
         ];
-        expect(schema).toMatchObject({ fields, "identifier-field-ids": [1] });
-
-        const request = yield* Iceberg.makeCreateTableCommitRequest(Row, { location });
-        const withoutLocation = {
-          ...request,
-          updates: request.updates.filter((update) => update.action !== "set-location"),
-        };
-        expect(withoutLocation.requirements).toEqual([{ type: "assert-create" }]);
+        expect(schema).toMatchObject({ fields });
+        expect(schema?.["identifier-field-ids"]).toEqual([schema?.fields[0]?.id]);
 
         const derivedIdentifier = { namespace, name: "derived" };
-        yield* catalog.commitTable(derivedIdentifier, withoutLocation);
+        const request = yield* Iceberg.makeCreateTableRequest(Row, {
+          name: derivedIdentifier.name,
+        });
+        yield* catalog.createTable({ namespace }, request);
         const derived = yield* catalog.loadTable(derivedIdentifier);
 
         expect(derived.location).toMatch(/^s3:\/\/default-catalog\//);
-        expect(getCurrentSchema(derived)).toMatchObject({ fields, "identifier-field-ids": [1] });
+        expect(getCurrentSchema(derived)).toMatchObject({ fields });
       }).pipe(
         Effect.provide(FetchHttpClient.layer),
         Effect.provide(TestEngine.container),

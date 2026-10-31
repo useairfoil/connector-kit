@@ -1,7 +1,7 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import * as Schema from "effect/Schema";
 
-import { address, field } from "../shared";
+import { address } from "../shared";
 
 export const CustomerStateSchema = Schema.Literals(["DECLINED", "DISABLED", "ENABLED", "INVITED"]);
 
@@ -40,69 +40,97 @@ export const ProductSubscriberStatusSchema = Schema.Literals([
 ]);
 
 export const CustomerAddressSchema = Schema.Struct({
-  id: Schema.String.pipe(field(121, "Unique address identifier.")),
-  ...address(121).fields,
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique address identifier." })),
+  ...address.fields,
 });
 
 export const CustomerSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Unique customer identifier.")),
-  legacyResourceId: Schema.String.pipe(field(2, "Numeric customer identifier stored as text.")),
-  firstName: Schema.NullOr(Schema.String).pipe(field(3, "First name.")),
-  lastName: Schema.NullOr(Schema.String).pipe(field(4, "Last name.")),
-  displayName: Schema.String.pipe(field(5, "Full name shown in Shopify.")),
-  email: Schema.NullOr(Schema.String).pipe(field(6, "Default email address.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique customer identifier." })),
+  legacyResourceId: Schema.String.pipe(
+    Schema.annotateKey({ description: "Numeric customer identifier stored as text." }),
+  ),
+  firstName: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "First name." })),
+  lastName: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Last name." })),
+  displayName: Schema.String.pipe(
+    Schema.annotateKey({ description: "Full name shown in Shopify." }),
+  ),
+  email: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Default email address." }),
+  ),
   emailMarketingState: Schema.NullOr(EmailMarketingStateSchema).pipe(
-    field(7, "Email marketing consent state."),
+    Schema.annotateKey({ description: "Email marketing consent state." }),
   ),
   emailMarketingOptInLevel: Schema.NullOr(MarketingOptInLevelSchema).pipe(
-    field(8, "Email marketing opt-in level."),
+    Schema.annotateKey({ description: "Email marketing opt-in level." }),
   ),
   emailMarketingUpdatedAt: Schema.NullOr(Schema.Date).pipe(
-    field(9, "Time when email marketing consent last changed."),
+    Schema.annotateKey({ description: "Time when email marketing consent last changed." }),
   ),
-  phone: Schema.NullOr(Schema.String).pipe(field(10, "Default phone number.")),
+  phone: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Default phone number." }),
+  ),
   smsMarketingState: Schema.NullOr(SmsMarketingStateSchema).pipe(
-    field(11, "SMS marketing consent state."),
+    Schema.annotateKey({ description: "SMS marketing consent state." }),
   ),
   smsMarketingOptInLevel: Schema.NullOr(MarketingOptInLevelSchema).pipe(
-    field(12, "SMS marketing opt-in level."),
+    Schema.annotateKey({ description: "SMS marketing opt-in level." }),
   ),
   smsMarketingUpdatedAt: Schema.NullOr(Schema.Date).pipe(
-    field(13, "Time when SMS marketing consent last changed."),
+    Schema.annotateKey({ description: "Time when SMS marketing consent last changed." }),
   ),
   smsMarketingCollectedFrom: Schema.NullOr(ConsentCollectedFromSchema).pipe(
-    field(14, "Where SMS marketing consent was collected."),
+    Schema.annotateKey({ description: "Where SMS marketing consent was collected." }),
   ),
-  note: Schema.NullOr(Schema.String).pipe(field(15, "Merchant note about the customer.")),
-  state: CustomerStateSchema.pipe(field(16, "Customer account state.")),
-  verifiedEmail: Schema.Boolean.pipe(field(17, "Whether the email address is verified.")),
-  taxExempt: Schema.Boolean.pipe(field(18, "Whether the customer is exempt from tax.")),
-  taxExemptions: Schema.Array(Schema.String.annotate({ fieldId: 100 })).pipe(
-    field(19, "Tax exemptions that apply to the customer."),
+  note: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Merchant note about the customer." }),
   ),
-  tags: Schema.Array(Schema.String.annotate({ fieldId: 101 })).pipe(
-    field(20, "Tags added to the customer."),
+  state: CustomerStateSchema.pipe(Schema.annotateKey({ description: "Customer account state." })),
+  verifiedEmail: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the email address is verified." }),
   ),
-  locale: Schema.NullOr(Schema.String).pipe(field(21, "Customer language.")),
-  numberOfOrders: Schema.Int.pipe(field(22, "Number of orders the customer placed.")),
+  taxExempt: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the customer is exempt from tax." }),
+  ),
+  taxExemptions: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Tax exemptions that apply to the customer." }),
+  ),
+  tags: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Tags added to the customer." }),
+  ),
+  locale: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Customer language." }),
+  ),
+  numberOfOrders: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Number of orders the customer placed." }),
+  ),
   amountSpent: Schema.Struct({
-    amount: Schema.String.pipe(field(111, "Amount spent.")),
-    currencyCode: Schema.String.pipe(field(112, "Shop currency code.")),
-  }).pipe(field(23, "Total amount spent in the shop currency.")),
-  lastOrderId: Schema.NullOr(Schema.String).pipe(field(24, "Most recent order identifier.")),
+    amount: Schema.String.pipe(Schema.annotateKey({ description: "Amount spent." })),
+    currencyCode: Schema.String.pipe(Schema.annotateKey({ description: "Shop currency code." })),
+  }).pipe(Schema.annotateKey({ description: "Total amount spent in the shop currency." })),
+  lastOrderId: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Most recent order identifier." }),
+  ),
   productSubscriberStatus: Schema.NullOr(ProductSubscriberStatusSchema).pipe(
-    field(25, "Subscription status for products."),
+    Schema.annotateKey({ description: "Subscription status for products." }),
   ),
   dataSaleOptOut: Schema.NullOr(Schema.Boolean).pipe(
-    field(26, "Whether the customer opted out of data sale."),
+    Schema.annotateKey({ description: "Whether the customer opted out of data sale." }),
   ),
-  defaultAddressId: Schema.NullOr(Schema.String).pipe(field(27, "Default address identifier.")),
-  addresses: Schema.Array(CustomerAddressSchema.annotate({ fieldId: 120 })).pipe(
-    field(28, "Saved addresses."),
+  defaultAddressId: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Default address identifier." }),
   ),
-  createdAt: Schema.Date.pipe(field(29, "Time when the customer was created.")),
-  updatedAt: Schema.Date.pipe(field(30, "Time when the customer was last changed.")),
-  _deleted: Schema.optional(Schema.Boolean).pipe(field(31, "Whether the customer was deleted.")),
+  addresses: Schema.Array(CustomerAddressSchema).pipe(
+    Schema.annotateKey({ description: "Saved addresses." }),
+  ),
+  createdAt: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time when the customer was created." }),
+  ),
+  updatedAt: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time when the customer was last changed." }),
+  ),
+  _deleted: Schema.optional(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the customer was deleted." }),
+  ),
 })
   .annotate({
     description: "Customers in a Shopify store.",

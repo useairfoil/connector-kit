@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Let the catalog assign field IDs instead of storing IDs in row schemas.",
+  "packageName": "@useairfoil/producer-facebook-ads",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

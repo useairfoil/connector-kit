@@ -1,33 +1,39 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { deleted, field, list, stringMap, version } from "./shared";
+import { deleted, version } from "./shared";
 
-// The first six fields and the association lists keep the same IDs in every
-// CRM table.
 const baseFields = (object: string) => ({
-  id: Schema.String.pipe(field(1, `HubSpot record ID of the ${object}.`)),
-  version: version(2),
-  created_at: Schema.Date.pipe(field(3, `Time the ${object} was created.`)),
+  id: Schema.String.pipe(
+    Schema.annotateKey({ description: `HubSpot record ID of the ${object}.` }),
+  ),
+  version,
+  created_at: Schema.Date.pipe(
+    Schema.annotateKey({ description: `Time the ${object} was created.` }),
+  ),
   updated_at: Schema.Date.pipe(
-    field(
-      4,
-      `Time HubSpot last changed the ${object}. Calculated properties and associations can change without it.`,
-    ),
+    Schema.annotateKey({
+      description: `Time HubSpot last changed the ${object}. Calculated properties and associations can change without it.`,
+    }),
   ),
-  properties: stringMap(101, 102).pipe(
-    field(5, "Every non-empty, non-sensitive property, as HubSpot returns it, by internal name."),
+  properties: Schema.ReadonlyMap(Schema.String, Schema.String).pipe(
+    Schema.annotateKey({
+      description:
+        "Every non-empty, non-sensitive property, as HubSpot returns it, by internal name.",
+    }),
   ),
-  _deleted: deleted(6, object),
+  _deleted: deleted(object),
 });
 
-const ids = (fieldId: number, elementId: number, object: string) =>
-  list(elementId, Schema.String).pipe(field(fieldId, `IDs of the associated ${object}.`));
+const ids = (object: string) =>
+  Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: `IDs of the associated ${object}.` }),
+  );
 
-const company_ids = ids(7, 103, "companies");
-const contact_ids = ids(8, 104, "contacts");
-const deal_ids = ids(9, 105, "deals");
-const ticket_ids = ids(10, 106, "tickets");
+const company_ids = ids("companies");
+const contact_ids = ids("contacts");
+const deal_ids = ids("deals");
+const ticket_ids = ids("tickets");
 
 const activityFields = (object: string) => ({
   ...baseFields(object),
@@ -245,10 +251,16 @@ export const CustomObjectRecordSchema = Schema.Struct(activityFields("custom obj
 export type CustomObjectRecord = Schema.Schema.Type<typeof CustomObjectRecordSchema>;
 
 export const CustomObjectSchema = Schema.Struct({
-  key: Schema.String.pipe(field(11, "Object type ID and record ID, such as `2-123:456`.")),
+  key: Schema.String.pipe(
+    Schema.annotateKey({ description: "Object type ID and record ID, such as `2-123:456`." }),
+  ),
   ...activityFields("custom object record"),
-  object_type_id: Schema.String.pipe(field(12, "Custom object type ID, such as `2-123`.")),
-  object_type: Schema.String.pipe(field(13, "Custom object name, such as `vehicle`.")),
+  object_type_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Custom object type ID, such as `2-123`." }),
+  ),
+  object_type: Schema.String.pipe(
+    Schema.annotateKey({ description: "Custom object name, such as `vehicle`." }),
+  ),
 })
   .annotate({ description: "Records of every custom object type in one table." })
   .pipe(Iceberg.identifier("key"));

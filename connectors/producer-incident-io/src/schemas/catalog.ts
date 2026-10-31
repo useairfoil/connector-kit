@@ -1,34 +1,55 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { Long, Optional, Timestamp, common, field, list, stringMap } from "./shared";
+import { Long, Optional, Timestamp, common } from "./shared";
 
 export const CatalogTypeSchema = Schema.Struct({
   ...common("Catalog type"),
-  name: Schema.String.pipe(field(10, "Catalog type name.")),
-  description: Schema.String.pipe(field(11, "Catalog type description.")),
-  type_name: Schema.String.pipe(field(12, 'Name used in expressions, such as Custom["Service"].')),
-  engine_resource_type: Schema.String.pipe(field(13, "Type used by the workflow engine.")),
-  ranked: Schema.Boolean.pipe(field(14, "Whether entries have a rank.")),
-  is_editable: Schema.Boolean.pipe(field(15, "Whether entries can be edited in the app.")),
-  categories: list(101, Schema.String).pipe(field(16, "Categories, such as service or team.")),
-  color: Schema.String.pipe(field(17, "Color in the app.")),
-  icon: Schema.String.pipe(field(18, "Icon in the app.")),
-  annotations: stringMap(102, 103).pipe(field(19, "Annotations by key.")),
-  attributes: list(
-    104,
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Catalog type name." })),
+  description: Schema.String.pipe(Schema.annotateKey({ description: "Catalog type description." })),
+  type_name: Schema.String.pipe(
+    Schema.annotateKey({ description: 'Name used in expressions, such as Custom["Service"].' }),
+  ),
+  engine_resource_type: Schema.String.pipe(
+    Schema.annotateKey({ description: "Type used by the workflow engine." }),
+  ),
+  ranked: Schema.Boolean.pipe(Schema.annotateKey({ description: "Whether entries have a rank." })),
+  is_editable: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether entries can be edited in the app." }),
+  ),
+  categories: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Categories, such as service or team." }),
+  ),
+  color: Schema.String.pipe(Schema.annotateKey({ description: "Color in the app." })),
+  icon: Schema.String.pipe(Schema.annotateKey({ description: "Icon in the app." })),
+  annotations: Schema.ReadonlyMap(Schema.String, Schema.String).pipe(
+    Schema.annotateKey({ description: "Annotations by key." }),
+  ),
+  attributes: Schema.Array(
     Schema.Struct({
-      attribute_id: Schema.String.pipe(field(105, "Attribute.")),
-      name: Schema.String.pipe(field(106, "Attribute name.")),
-      type: Schema.String.pipe(field(107, "Value type, such as String or another catalog type.")),
-      array: Schema.Boolean.pipe(field(108, "Whether it holds a list.")),
-      mode: Schema.String.pipe(field(109, "Where values come from, such as api or dashboard.")),
+      attribute_id: Schema.String.pipe(Schema.annotateKey({ description: "Attribute." })),
+      name: Schema.String.pipe(Schema.annotateKey({ description: "Attribute name." })),
+      type: Schema.String.pipe(
+        Schema.annotateKey({ description: "Value type, such as String or another catalog type." }),
+      ),
+      array: Schema.Boolean.pipe(Schema.annotateKey({ description: "Whether it holds a list." })),
+      mode: Schema.String.pipe(
+        Schema.annotateKey({ description: "Where values come from, such as api or dashboard." }),
+      ),
     }),
-  ).pipe(field(20, "Attributes that entries of this type have.")),
-  schema_version: Long.pipe(field(21, "Version of the attribute schema.")),
-  last_synced_at: Optional(Timestamp).pipe(field(22, "Time entries last synced from a source.")),
-  estimated_count: Optional(Long).pipe(field(23, "Rough number of entries.")),
-  owning_team_ids: list(110, Schema.String).pipe(field(24, "Teams that own it.")),
+  ).pipe(Schema.annotateKey({ description: "Attributes that entries of this type have." })),
+  schema_version: Long.pipe(
+    Schema.annotateKey({ description: "Version of the attribute schema." }),
+  ),
+  last_synced_at: Optional(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time entries last synced from a source." }),
+  ),
+  estimated_count: Optional(Long).pipe(
+    Schema.annotateKey({ description: "Rough number of entries." }),
+  ),
+  owning_team_ids: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Teams that own it." }),
+  ),
 })
   .annotate({ description: "incident.io catalog types, such as services and teams." })
   .pipe(Iceberg.identifier("id"));
@@ -73,27 +94,36 @@ const BindingValueSchema = Schema.Struct({
   literal: Optional(Schema.String),
 });
 
-const bindingValue = (labelId: number, literalId: number) =>
-  Schema.Struct({
-    label: Schema.String.pipe(field(labelId, "Value as shown.")),
-    literal: Optional(Schema.String).pipe(field(literalId, "Value as stored, such as an ID.")),
-  });
+const bindingValue = Schema.Struct({
+  label: Schema.String.pipe(Schema.annotateKey({ description: "Value as shown." })),
+  literal: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Value as stored, such as an ID." }),
+  ),
+});
 
 export const CatalogEntrySchema = Schema.Struct({
   ...common("Catalog entry"),
-  catalog_type_id: Schema.String.pipe(field(10, "Catalog type.")),
-  name: Schema.String.pipe(field(11, "Entry name.")),
-  external_id: Optional(Schema.String).pipe(field(12, "ID in the system it came from.")),
-  rank: Long.pipe(field(13, "Rank, for ranked types.")),
-  aliases: list(101, Schema.String).pipe(field(14, "Other names that match the entry.")),
-  archived_at: Optional(Timestamp).pipe(field(15, "Time the entry was archived.")),
+  catalog_type_id: Schema.String.pipe(Schema.annotateKey({ description: "Catalog type." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Entry name." })),
+  external_id: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "ID in the system it came from." }),
+  ),
+  rank: Long.pipe(Schema.annotateKey({ description: "Rank, for ranked types." })),
+  aliases: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Other names that match the entry." }),
+  ),
+  archived_at: Optional(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time the entry was archived." }),
+  ),
   attribute_values: Schema.ReadonlyMap(
-    Schema.String.annotate({ fieldId: 102 }),
+    Schema.String,
     Schema.Struct({
-      value: Optional(bindingValue(104, 105)).pipe(field(106, "Single value.")),
-      array_value: list(107, bindingValue(108, 109)).pipe(field(110, "List value.")),
-    }).annotate({ fieldId: 103 }),
-  ).pipe(field(16, "Attribute values by attribute ID.")),
+      value: Optional(bindingValue).pipe(Schema.annotateKey({ description: "Single value." })),
+      array_value: Schema.Array(bindingValue).pipe(
+        Schema.annotateKey({ description: "List value." }),
+      ),
+    }),
+  ).pipe(Schema.annotateKey({ description: "Attribute values by attribute ID." })),
 })
   .annotate({ description: "incident.io catalog entries of every type." })
   .pipe(Iceberg.identifier("id"));

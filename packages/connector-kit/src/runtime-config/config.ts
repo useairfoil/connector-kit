@@ -10,5 +10,10 @@ export const httpPort = Config.Port(PlatformRuntimeKey.httpPort).pipe(
 /** Engine URL, including the protocol. */
 export const engineUri = Config.URL(PlatformRuntimeKey.engineUri);
 
+/** Arrow Flight URL. Uses the engine URL when unset. */
+export const flightUri = engineUri.pipe(
+  Config.flatMap((uri) => Config.URL(PlatformRuntimeKey.flightUri).pipe(Config.withDefault(uri))),
+);
+
 /** Catalog ID. */
 export const catalog = Config.NonEmptyString(PlatformRuntimeKey.catalog);

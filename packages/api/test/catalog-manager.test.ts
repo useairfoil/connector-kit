@@ -15,7 +15,7 @@ describe("CatalogManager", () => {
         const uri = yield* engine.uri;
         const icebergRestUri = yield* engine.icebergRestUri;
         const engineIcebergRestUri = yield* engine.engineIcebergRestUri;
-        const manager = yield* CatalogManager.make({ baseUrl: uri });
+        const manager = yield* CatalogManager.make({ engineUri: uri });
         const request = {
           id: "integration-test",
           rest: {

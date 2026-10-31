@@ -16,11 +16,13 @@ const ErrorResponse = Schema.Struct({ error: Schema.String });
 export const make = Effect.fnUntraced(function* (
   config: CatalogManagerOptions,
 ): Effect.fn.Return<CatalogManagerService, never, HttpClient.HttpClient | Scope.Scope> {
-  const baseUrl = config.baseUrl.replace(/\/+$/, "");
-  const flightClient = yield* ArrowFlightClient.make({ host: baseUrl });
+  const engineUri = config.engineUri.replace(/\/+$/, "");
+  const flightClient = yield* ArrowFlightClient.make({
+    host: (config.flightUri ?? engineUri).replace(/\/+$/, ""),
+  });
 
   const client = (yield* HttpClient.HttpClient).pipe(
-    HttpClient.mapRequest(HttpClientRequest.prependUrl(baseUrl)),
+    HttpClient.mapRequest(HttpClientRequest.prependUrl(engineUri)),
     HttpClient.mapRequest(HttpClientRequest.acceptJson),
   );
   const catalogPath = (id: string) => `/catalogs/${encodeURIComponent(id)}`;

@@ -22,8 +22,8 @@ export const parseTableIdentifier = (qualifiedName: string) =>
   );
 
 export const getIcebergCatalog = Effect.fn("getIcebergCatalog")(function* (catalogId: string) {
-  const baseUrl = yield* EngineUri;
-  const manager = yield* CatalogManager.make({ baseUrl });
+  const engineUri = yield* EngineUri;
+  const manager = yield* CatalogManager.make({ engineUri });
 
   return yield* manager.getIcebergCatalog(catalogId);
 });

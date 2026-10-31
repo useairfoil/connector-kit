@@ -1,22 +1,28 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, OptionalRef, OptionalString, Ref, common, deleted, field, list } from "./shared";
+import { Long, OptionalRef, OptionalString, Ref, common, deleted } from "./shared";
 
 export const CustomerSchema = Schema.Struct({
   ...common("Customer"),
   _deleted: deleted("customer"),
-  name: Schema.String.pipe(field(10, "Customer name.")),
-  domains: list(101, Schema.String).pipe(field(11, "Email domains of the customer.")),
-  external_ids: list(102, Schema.String).pipe(field(12, "IDs in other systems.")),
-  logo_url: OptionalString.pipe(field(13, "Logo URL.")),
-  owner_id: OptionalRef.pipe(field(14, "User who owns the customer.")),
-  status_id: Ref.pipe(field(15, "Customer status.")),
-  tier_id: OptionalRef.pipe(field(16, "Customer tier.")),
-  revenue: Schema.NullOr(Long).pipe(field(17, "Annual revenue.")),
-  size: Schema.NullOr(Schema.Finite).pipe(field(18, "Company size.")),
-  approximate_need_count: Schema.Finite.pipe(field(19, "About how many requests it has.")),
-  url: Schema.String.pipe(field(20, "Customer URL.")),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Customer name." })),
+  domains: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Email domains of the customer." }),
+  ),
+  external_ids: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "IDs in other systems." }),
+  ),
+  logo_url: OptionalString.pipe(Schema.annotateKey({ description: "Logo URL." })),
+  owner_id: OptionalRef.pipe(Schema.annotateKey({ description: "User who owns the customer." })),
+  status_id: Ref.pipe(Schema.annotateKey({ description: "Customer status." })),
+  tier_id: OptionalRef.pipe(Schema.annotateKey({ description: "Customer tier." })),
+  revenue: Schema.NullOr(Long).pipe(Schema.annotateKey({ description: "Annual revenue." })),
+  size: Schema.NullOr(Schema.Finite).pipe(Schema.annotateKey({ description: "Company size." })),
+  approximate_need_count: Schema.Finite.pipe(
+    Schema.annotateKey({ description: "About how many requests it has." }),
+  ),
+  url: Schema.String.pipe(Schema.annotateKey({ description: "Customer URL." })),
 })
   .annotate({ description: "Linear customers." })
   .pipe(Iceberg.identifier("id"));
@@ -30,16 +36,26 @@ export const CustomerObjectSchema = CustomerSchema.mapFields((fields) =>
 export const CustomerNeedSchema = Schema.Struct({
   ...common("Request"),
   _deleted: deleted("request"),
-  customer_id: OptionalRef.pipe(field(10, "Customer.")),
-  issue_id: OptionalRef.pipe(field(11, "Issue the request is linked to.")),
-  project_id: OptionalRef.pipe(field(12, "Project the request is linked to.")),
-  original_issue_id: OptionalRef.pipe(field(13, "Issue the request was first linked to.")),
-  comment_id: OptionalRef.pipe(field(14, "Comment the request came from.")),
-  attachment_id: OptionalRef.pipe(field(15, "Attachment the request came from.")),
-  creator_id: OptionalRef.pipe(field(16, "User who added the request.")),
-  body: OptionalString.pipe(field(17, "Request text in markdown.")),
-  priority: Schema.Finite.pipe(field(18, "0 normal, 1 important.")),
-  url: OptionalString.pipe(field(19, "Source URL.")),
+  customer_id: OptionalRef.pipe(Schema.annotateKey({ description: "Customer." })),
+  issue_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Issue the request is linked to." }),
+  ),
+  project_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Project the request is linked to." }),
+  ),
+  original_issue_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Issue the request was first linked to." }),
+  ),
+  comment_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Comment the request came from." }),
+  ),
+  attachment_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Attachment the request came from." }),
+  ),
+  creator_id: OptionalRef.pipe(Schema.annotateKey({ description: "User who added the request." })),
+  body: OptionalString.pipe(Schema.annotateKey({ description: "Request text in markdown." })),
+  priority: Schema.Finite.pipe(Schema.annotateKey({ description: "0 normal, 1 important." })),
+  url: OptionalString.pipe(Schema.annotateKey({ description: "Source URL." })),
 })
   .annotate({ description: "Linear customer requests, linked to issues or projects." })
   .pipe(Iceberg.identifier("id"));
@@ -52,11 +68,11 @@ export const CustomerNeedObjectSchema = CustomerNeedSchema.mapFields((fields) =>
 
 const levelFields = (object: string) => ({
   ...common(object),
-  name: Schema.String.pipe(field(10, "Name.")),
-  display_name: Schema.String.pipe(field(11, "Name shown in Linear.")),
-  description: OptionalString.pipe(field(12, "Description.")),
-  color: Schema.String.pipe(field(13, "Color, as hex.")),
-  position: Schema.Finite.pipe(field(14, "Order in the list.")),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Name." })),
+  display_name: Schema.String.pipe(Schema.annotateKey({ description: "Name shown in Linear." })),
+  description: OptionalString.pipe(Schema.annotateKey({ description: "Description." })),
+  color: Schema.String.pipe(Schema.annotateKey({ description: "Color, as hex." })),
+  position: Schema.Finite.pipe(Schema.annotateKey({ description: "Order in the list." })),
 });
 
 export const CustomerStatusSchema = Schema.Struct(levelFields("Status"))

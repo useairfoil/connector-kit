@@ -10,17 +10,40 @@ import { ProductSchema } from "../src/resources/products";
 import { RefundSchema } from "../src/resources/refunds";
 import { SubscriptionSchema } from "../src/resources/subscriptions";
 
-type CommitRequest = Effect.Success<ReturnType<typeof Iceberg.makeCreateTableCommitRequest>>;
-type AddSchema = Extract<CommitRequest["updates"][number], { readonly action: "add-schema" }>;
-type TableSchema = AddSchema["schema"];
+type CreateRequest = Effect.Success<ReturnType<typeof Iceberg.makeCreateTableRequest>>;
+type TableSchema = CreateRequest["schema"];
 type StructField = TableSchema["fields"][number];
 type IcebergType = StructField["type"];
 
-const tableSchema = (request: CommitRequest): TableSchema => {
-  const update = request.updates.find((update) => update.action === "add-schema");
-  if (update?.action !== "add-schema") throw new Error("Missing add-schema update");
-  return update.schema;
+const tableSchema = (request: CreateRequest): TableSchema => request.schema;
+
+const describeType = (type: IcebergType): unknown => {
+  if (typeof type === "string") return type;
+  switch (type.type) {
+    case "struct":
+      return { type: type.type, fields: type.fields.map(describeField) };
+    case "list":
+      return {
+        type: type.type,
+        "element-required": type["element-required"],
+        element: describeType(type.element),
+      };
+    case "map":
+      return {
+        type: type.type,
+        key: describeType(type.key),
+        "value-required": type["value-required"],
+        value: describeType(type.value),
+      };
+  }
 };
+
+const describeField = ({ name, required, doc, type }: StructField) => ({
+  name,
+  required,
+  doc,
+  type: describeType(type),
+});
 
 const expectDocs = (type: IcebergType): void => {
   if (typeof type === "string") return;
@@ -43,7 +66,7 @@ const expectDocs = (type: IcebergType): void => {
 };
 
 describe("Polar Iceberg schemas", () => {
-  it.effect("compiles every table with explicit IDs and docs", () =>
+  it.effect("compiles every table with field docs", () =>
     Effect.gen(function* () {
       const schemas = [
         CustomerSchema,
@@ -56,59 +79,60 @@ describe("Polar Iceberg schemas", () => {
       ];
 
       for (const [index, schema] of schemas.entries()) {
-        const request = yield* Iceberg.makeCreateTableCommitRequest(schema, {
+        const request = yield* Iceberg.makeCreateTableRequest(schema, {
+          name: "rows",
           location: `s3://warehouse/polar-${index}`,
-          uuid: `00000000-0000-4000-8000-00000000000${index}`,
         });
-        const properties = request.updates.find((update) => update.action === "set-properties");
 
-        expect(properties?.action === "set-properties" && properties.updates.comment).toBeTruthy();
-        expectDocs(tableSchema(request));
+        expect(request.properties?.comment).toBeTruthy();
+        const fields = request.schema;
+        expect(
+          fields.fields
+            .filter((field) => fields["identifier-field-ids"]?.includes(field.id))
+            .map((field) => field.name),
+        ).toEqual(["id"]);
+        expectDocs(fields);
       }
 
       const customer = tableSchema(
-        yield* Iceberg.makeCreateTableCommitRequest(CustomerSchema, {
+        yield* Iceberg.makeCreateTableRequest(CustomerSchema, {
+          name: "rows",
           location: "s3://warehouse/customers",
-          uuid: "00000000-0000-4000-8000-000000000001",
         }),
       );
       const order = tableSchema(
-        yield* Iceberg.makeCreateTableCommitRequest(OrderSchema, {
+        yield* Iceberg.makeCreateTableRequest(OrderSchema, {
+          name: "rows",
           location: "s3://warehouse/orders",
-          uuid: "00000000-0000-4000-8000-000000000002",
         }),
       );
 
       expect(
-        customer.fields.filter((field) =>
-          ["id", "created_at", "metadata", "version"].includes(field.name),
-        ),
+        customer.fields
+          .filter((field) => ["id", "created_at", "metadata", "version"].includes(field.name))
+          .map(describeField),
       ).toMatchInlineSnapshot(`
         [
           {
             "doc": "Unique customer identifier.",
-            "id": 1,
             "name": "id",
             "required": true,
             "type": "string",
           },
           {
             "doc": "Time when the customer was created.",
-            "id": 2,
             "name": "created_at",
             "required": false,
             "type": "timestamptz",
           },
           {
             "doc": "Customer metadata stored as JSON.",
-            "id": 16,
             "name": "metadata",
             "required": false,
             "type": "string",
           },
           {
             "doc": "Time used to order customer changes.",
-            "id": 17,
             "name": "version",
             "required": false,
             "type": "timestamptz",

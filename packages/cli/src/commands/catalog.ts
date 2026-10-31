@@ -13,8 +13,8 @@ const restFlag = Flag.String("rest").pipe(
 
 const createCommand = Command.make("create", { id: idArgument, rest: restFlag }, ({ id, rest }) =>
   Effect.gen(function* () {
-    const baseUrl = yield* EngineUri;
-    const manager = yield* CatalogManager.make({ baseUrl });
+    const engineUri = yield* EngineUri;
+    const manager = yield* CatalogManager.make({ engineUri });
     const config = yield* parseRestCatalogConfig(rest);
     yield* manager.createCatalog({ id, rest: config });
 
@@ -24,8 +24,8 @@ const createCommand = Command.make("create", { id: idArgument, rest: restFlag },
 
 const getCommand = Command.make("get", { id: idArgument }, ({ id }) =>
   Effect.gen(function* () {
-    const baseUrl = yield* EngineUri;
-    const manager = yield* CatalogManager.make({ baseUrl });
+    const engineUri = yield* EngineUri;
+    const manager = yield* CatalogManager.make({ engineUri });
     const catalog = yield* manager.getCatalog(id);
 
     yield* Effect.log(catalog);
@@ -34,8 +34,8 @@ const getCommand = Command.make("get", { id: idArgument }, ({ id }) =>
 
 const deleteCommand = Command.make("delete", { id: idArgument }, ({ id }) =>
   Effect.gen(function* () {
-    const baseUrl = yield* EngineUri;
-    const manager = yield* CatalogManager.make({ baseUrl });
+    const engineUri = yield* EngineUri;
+    const manager = yield* CatalogManager.make({ engineUri });
 
     yield* manager.deleteCatalog(id);
     yield* Effect.log({ id });

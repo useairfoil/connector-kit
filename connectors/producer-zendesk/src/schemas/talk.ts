@@ -1,24 +1,40 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Timestamp, field, list } from "./shared";
+import { Long, Timestamp } from "./shared";
 
 export const TalkLineSchema = Schema.Struct({
-  id: Long.pipe(field(1, "Line ID.")),
-  version: Schema.Date.pipe(field(2, "Time the line was read. Lines have no update time.")),
-  created_at: Timestamp.pipe(field(3, "Time the line was added.")),
-  line_type: Schema.String.pipe(field(4, "phone or digital.")),
-  nickname: Schema.NullOr(Schema.String).pipe(field(5, "Line name.")),
-  number: Schema.NullOr(Schema.String).pipe(field(6, "Phone number. Empty for digital lines.")),
-  display_number: Schema.NullOr(Schema.String).pipe(field(7, "Phone number as shown.")),
-  country_code: Schema.NullOr(Schema.String).pipe(field(8, "Country of the number.")),
-  toll_free: Schema.NullOr(Schema.Boolean).pipe(field(9, "Whether the number is toll free.")),
-  brand_id: Schema.NullOr(Long).pipe(field(10, "Brand of the line.")),
-  default_group_id: Schema.NullOr(Long).pipe(field(11, "Group calls go to first.")),
-  group_ids: list(101, Long).pipe(field(12, "Groups that take calls.")),
-  priority: Long.pipe(field(13, "Priority of calls on the line.")),
-  recorded: Schema.Boolean.pipe(field(14, "Whether calls are recorded.")),
-  transcription: Schema.Boolean.pipe(field(15, "Whether voicemails are transcribed.")),
+  id: Long.pipe(Schema.annotateKey({ description: "Line ID." })),
+  version: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time the line was read. Lines have no update time." }),
+  ),
+  created_at: Timestamp.pipe(Schema.annotateKey({ description: "Time the line was added." })),
+  line_type: Schema.String.pipe(Schema.annotateKey({ description: "phone or digital." })),
+  nickname: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Line name." })),
+  number: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Phone number. Empty for digital lines." }),
+  ),
+  display_number: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Phone number as shown." }),
+  ),
+  country_code: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Country of the number." }),
+  ),
+  toll_free: Schema.NullOr(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the number is toll free." }),
+  ),
+  brand_id: Schema.NullOr(Long).pipe(Schema.annotateKey({ description: "Brand of the line." })),
+  default_group_id: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Group calls go to first." }),
+  ),
+  group_ids: Schema.Array(Long).pipe(
+    Schema.annotateKey({ description: "Groups that take calls." }),
+  ),
+  priority: Long.pipe(Schema.annotateKey({ description: "Priority of calls on the line." })),
+  recorded: Schema.Boolean.pipe(Schema.annotateKey({ description: "Whether calls are recorded." })),
+  transcription: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether voicemails are transcribed." }),
+  ),
 })
   .annotate({ description: "Zendesk Talk lines: phone numbers and digital lines." })
   .pipe(Iceberg.identifier("id"));

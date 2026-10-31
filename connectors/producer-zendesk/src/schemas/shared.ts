@@ -1,8 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation } from "effect";
-
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
 
 export const Long = Schema.Int.pipe(
   Schema.decodeTo(
@@ -28,21 +24,12 @@ export const UnixSeconds = Schema.Number.pipe(
   ),
 );
 
-export const version = (fieldId: number, object: string) =>
-  Schema.Date.pipe(field(fieldId, `Time Zendesk last updated the ${object}.`));
+export const version = (object: string) =>
+  Schema.Date.pipe(Schema.annotateKey({ description: `Time Zendesk last updated the ${object}.` }));
 
-export const deleted = (fieldId: number, object: string) =>
+export const deleted = (object: string) =>
   Schema.optional(Schema.Boolean).pipe(
-    field(fieldId, `Whether the ${object} was deleted in Zendesk.`),
-  );
-
-export const list = <S extends Schema.Top>(elementId: number, item: S) =>
-  Schema.Array(item.annotate({ fieldId: elementId }));
-
-export const stringMap = (keyId: number, valueId: number) =>
-  Schema.ReadonlyMap(
-    Schema.String.annotate({ fieldId: keyId }),
-    Schema.String.annotate({ fieldId: valueId }),
+    Schema.annotateKey({ description: `Whether the ${object} was deleted in Zendesk.` }),
   );
 
 // Keep list values as JSON. Null values are left out of the map.

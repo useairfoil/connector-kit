@@ -1,8 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation } from "effect";
-
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
 
 export const Long = Schema.Int.pipe(
   Schema.decodeTo(
@@ -19,15 +15,6 @@ export const Timestamp = Schema.DateFromString;
 /** The API leaves out or nulls fields it has no value for. */
 export const Optional = <S extends Schema.Top>(schema: S) => Schema.optional(Schema.NullOr(schema));
 
-export const list = <S extends Schema.Top>(elementId: number, item: S) =>
-  Schema.Array(item.annotate({ fieldId: elementId }));
-
-export const stringMap = (keyId: number, valueId: number) =>
-  Schema.ReadonlyMap(
-    Schema.String.annotate({ fieldId: keyId }),
-    Schema.String.annotate({ fieldId: valueId }),
-  );
-
 /** Deep config, such as workflow steps, kept as JSON text. Null stays null. */
 export const Json = Schema.Unknown.pipe(
   Schema.decodeTo(
@@ -41,17 +28,27 @@ export const Json = Schema.Unknown.pipe(
 
 /** Rows with `updated_at` use it as the version. */
 export const common = (object: string) => ({
-  id: Schema.String.pipe(field(1, `${object} ID.`)),
-  version: Schema.Date.pipe(field(2, `Time incident.io last updated the ${object.toLowerCase()}.`)),
-  created_at: Timestamp.pipe(field(3, `Time the ${object.toLowerCase()} was created.`)),
-  updated_at: Timestamp.pipe(field(4, `Time the ${object.toLowerCase()} was last updated.`)),
+  id: Schema.String.pipe(Schema.annotateKey({ description: `${object} ID.` })),
+  version: Schema.Date.pipe(
+    Schema.annotateKey({
+      description: `Time incident.io last updated the ${object.toLowerCase()}.`,
+    }),
+  ),
+  created_at: Timestamp.pipe(
+    Schema.annotateKey({ description: `Time the ${object.toLowerCase()} was created.` }),
+  ),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: `Time the ${object.toLowerCase()} was last updated.` }),
+  ),
 });
 
 /** Rows without `updated_at` use the time we read them. */
-export const fetchedVersion = Schema.Date.pipe(field(2, "Time the connector read the row."));
+export const fetchedVersion = Schema.Date.pipe(
+  Schema.annotateKey({ description: "Time the connector read the row." }),
+);
 
 export const fetched = (object: string) => ({
-  id: Schema.String.pipe(field(1, `${object} ID.`)),
+  id: Schema.String.pipe(Schema.annotateKey({ description: `${object} ID.` })),
   version: fetchedVersion,
 });
 

@@ -1,28 +1,40 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Timestamp, field, list, version } from "./shared";
+import { Long, Timestamp, version } from "./shared";
 
 const TeamSchema = Schema.Struct({
-  id: Schema.String.pipe(field(102, "Team ID.")),
-  name: Schema.String.pipe(field(103, "Team name.")),
-  primary: Schema.Boolean.pipe(field(104, "Whether this is the owner's main team.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Team ID." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Team name." })),
+  primary: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether this is the owner's main team." }),
+  ),
 });
 
 export const OwnerSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Owner ID, as used in `hubspot_owner_id`.")),
-  version: version(2),
-  type: Schema.String.pipe(field(3, "PERSON for a user, or QUEUE.")),
-  email: Schema.optional(Schema.String).pipe(field(4, "Owner email.")),
-  first_name: Schema.optional(Schema.String).pipe(field(5, "Owner first name.")),
-  last_name: Schema.optional(Schema.String).pipe(field(6, "Owner last name.")),
-  user_id: Schema.optional(Long).pipe(field(7, "HubSpot user ID. Empty for a removed user.")),
-  user_id_including_inactive: Schema.optional(Long).pipe(
-    field(8, "HubSpot user ID, also for a removed user."),
+  id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Owner ID, as used in `hubspot_owner_id`." }),
   ),
-  teams: list(101, TeamSchema).pipe(field(9, "Teams of the owner.")),
-  archived: Schema.Boolean.pipe(field(10, "Whether the user was removed from HubSpot.")),
-  created_at: Schema.Date.pipe(field(11, "Time the owner was created.")),
+  version,
+  type: Schema.String.pipe(Schema.annotateKey({ description: "PERSON for a user, or QUEUE." })),
+  email: Schema.optional(Schema.String).pipe(Schema.annotateKey({ description: "Owner email." })),
+  first_name: Schema.optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Owner first name." }),
+  ),
+  last_name: Schema.optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Owner last name." }),
+  ),
+  user_id: Schema.optional(Long).pipe(
+    Schema.annotateKey({ description: "HubSpot user ID. Empty for a removed user." }),
+  ),
+  user_id_including_inactive: Schema.optional(Long).pipe(
+    Schema.annotateKey({ description: "HubSpot user ID, also for a removed user." }),
+  ),
+  teams: Schema.Array(TeamSchema).pipe(Schema.annotateKey({ description: "Teams of the owner." })),
+  archived: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the user was removed from HubSpot." }),
+  ),
+  created_at: Schema.Date.pipe(Schema.annotateKey({ description: "Time the owner was created." })),
 })
   .annotate({ description: "HubSpot users and queues that can own records." })
   .pipe(Iceberg.identifier("id"));

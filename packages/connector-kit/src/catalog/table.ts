@@ -13,14 +13,14 @@ import { getCurrentSchema } from "iceberg-js";
 
 import { ConnectorError } from "../errors";
 import { IcebergSchemaError } from "../iceberg/error";
-import { compileTable, makeCommitRequest } from "../iceberg/table";
+import { compileTable, makeCreateRequest } from "../iceberg/table";
 
 type Catalog = Effect.Success<
   ReturnType<CatalogManager.CatalogManagerService["getIcebergCatalog"]>
 >;
 
 type TableOptions = {
-  readonly catalog: Catalog;
+  readonly catalog: Pick<Catalog, "loadTable" | "createTable" | "createNamespaceIfNotExists">;
   readonly identifier: TableIdentifier;
   readonly location?: string | undefined;
 };
@@ -58,21 +58,12 @@ const compareTypes = (
       if (actual.type !== "struct") return path;
       return compareFields(expected.fields, actual.fields, path);
     case "list":
-      if (
-        actual.type !== "list" ||
-        expected["element-id"] !== actual["element-id"] ||
-        expected["element-required"] !== actual["element-required"]
-      ) {
+      if (actual.type !== "list" || expected["element-required"] !== actual["element-required"]) {
         return path;
       }
       return compareTypes(expected.element, actual.element, `${path}.element`);
     case "map":
-      if (
-        actual.type !== "map" ||
-        expected["key-id"] !== actual["key-id"] ||
-        expected["value-id"] !== actual["value-id"] ||
-        expected["value-required"] !== actual["value-required"]
-      ) {
+      if (actual.type !== "map" || expected["value-required"] !== actual["value-required"]) {
         return path;
       }
       return (
@@ -93,7 +84,7 @@ const compareFields = (
     const fieldPath = `${path}.${field.name}`;
     const other = actual.find((candidate) => candidate.name === field.name);
 
-    if (!other || field.id !== other.id || field.required !== other.required) return fieldPath;
+    if (!other || field.required !== other.required) return fieldPath;
 
     const mismatch = compareTypes(field.type, other.type, fieldPath);
     if (mismatch) return mismatch;
@@ -132,11 +123,17 @@ const verifyTable = (
         );
       }
 
-      const expectedIds = new Set(expected["identifier-field-ids"]);
-      const actualIds = new Set(actual["identifier-field-ids"]);
+      const identifierNames = (schema: TableSchema) =>
+        new Set(
+          schema.fields
+            .filter((field) => schema["identifier-field-ids"]?.includes(field.id))
+            .map((field) => field.name),
+        );
+      const expectedNames = identifierNames(expected);
+      const actualNames = identifierNames(actual);
       if (
-        expectedIds.size !== actualIds.size ||
-        [...expectedIds].some((id) => !actualIds.has(id))
+        expectedNames.size !== actualNames.size ||
+        [...expectedNames].some((name) => !actualNames.has(name))
       ) {
         throw new Error(
           "Table identifier fields do not match. Recreate the table or revert the schema change.",
@@ -152,16 +149,16 @@ const verifyTable = (
       }),
   });
 
-/** Creates a table with the IDs from its Effect schema, then checks the loaded schema. */
+/** Creates a table through the REST catalog, then checks the loaded schema. */
 export const createTable = (
   schema: Schema.Top,
   options: TableOptions,
 ): Effect.Effect<TableSchema, ConnectorError> =>
   Effect.gen(function* () {
     const table = yield* compileTable(schema);
-    yield* options.catalog.commitTable(
-      options.identifier,
-      makeCommitRequest(table, { location: options.location }),
+    yield* options.catalog.createTable(
+      { namespace: options.identifier.namespace },
+      makeCreateRequest(table, { name: options.identifier.name, location: options.location }),
     );
 
     const metadata = yield* options.catalog.loadTable(options.identifier);
@@ -175,7 +172,7 @@ export const ensureTableFromEngine = (
 ): Effect.Effect<TableSchema, ConnectorError, HttpClient.HttpClient> =>
   Effect.scoped(
     Effect.gen(function* () {
-      const manager = yield* CatalogManager.make({ baseUrl: options.engineUri });
+      const manager = yield* CatalogManager.make({ engineUri: options.engineUri });
       const catalog = yield* manager.getIcebergCatalog(options.catalogId);
       return yield* ensureTable(schema, {
         catalog,
@@ -200,9 +197,12 @@ export const ensureTable = (
             .createNamespaceIfNotExists({ namespace: options.identifier.namespace })
             .pipe(
               Effect.andThen(
-                options.catalog.commitTable(
-                  options.identifier,
-                  makeCommitRequest(table, { location: options.location }),
+                options.catalog.createTable(
+                  { namespace: options.identifier.namespace },
+                  makeCreateRequest(table, {
+                    name: options.identifier.name,
+                    location: options.location,
+                  }),
                 ),
               ),
             )
