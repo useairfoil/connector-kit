@@ -1,6 +1,6 @@
 # Airfoil CLI
 
-This is the CLI for Wings catalogs, namespaces, and tables.
+This is the Airfoil CLI to manage catalogs, namespaces, and tables.
 
 ## Install
 
