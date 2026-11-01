@@ -174,7 +174,11 @@ const recordingIngestor = (resourceNames?: ReadonlyArray<string>) =>
   });
 
 const runWith = (
-  options: { readonly bytes: number; readonly resourceNames?: ReadonlyArray<string> },
+  options: {
+    readonly bytes: number;
+    readonly resourceNames?: ReadonlyArray<string>;
+    readonly batchSize?: number;
+  },
   selected: Demo.DemoDefinition = demo,
 ) =>
   Effect.gen(function* () {
@@ -184,6 +188,7 @@ const runWith = (
       bytes: options.bytes,
       seed: 1,
       now,
+      batchSize: options.batchSize,
       groupsPerChunk: 2,
     }).pipe(Effect.provide(layer));
 
@@ -296,7 +301,7 @@ describe("demo run", () => {
     }),
   );
 
-  it.effect("splits big tables into batches of 500 rows", () =>
+  it.effect("splits setup and group rows at the batch size, defaulting to 500", () =>
     Effect.gen(function* () {
       const big = Demo.define({
         ...demo,
@@ -308,6 +313,23 @@ describe("demo run", () => {
 
       const { batches } = yield* runWith({ bytes: 1, resourceNames: ["plans"] }, big);
       expect(batches).toEqual(["demo plans 500", "demo plans 500", "demo plans 200"]);
+
+      const larger = yield* runWith({ bytes: 1, batchSize: 700 }, big);
+      expect(larger.batches).toEqual(["demo plans 700", "demo plans 500"]);
+      expect(larger.totals.rows).toBe(1200);
+
+      const smaller = yield* runWith({ bytes: 300, batchSize: 1 });
+      expect(smaller.batches).toEqual(["demo plans 1", "demo accounts 1", "demo accounts 1"]);
+      expect(smaller.totals.rows).toBe(3);
+    }),
+  );
+
+  it.effect("rejects non-positive and fractional batch sizes", () =>
+    Effect.gen(function* () {
+      for (const batchSize of [0, -1, 1.5]) {
+        const error = yield* runWith({ bytes: 1, batchSize }).pipe(Effect.flip);
+        expect(error.message).toBe("Invalid demo batch size");
+      }
     }),
   );
 

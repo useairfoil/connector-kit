@@ -16,6 +16,8 @@ export type RunOptions = {
   readonly seed?: number;
   /** The time data is made around. Same seed, time and tables give the same rows. */
   readonly now: Date;
+  /** Maximum rows per ingestion batch. Defaults to 500. Must be a positive integer. */
+  readonly batchSize?: number;
   /** Groups per chunk. Overrides the demo's. */
   readonly groupsPerChunk?: number;
 };
@@ -25,10 +27,6 @@ export type DemoTotals = IngestResult & {
 };
 
 const empty: DemoTotals = { rows: 0, bytes: 0, tables: {} };
-
-// The engine rejects Flight messages over 4 MiB.
-// 500 rows keeps a batch of the widest demo rows well under that.
-const batchRows = 500;
 
 const sum = (results: ReadonlyArray<IngestResult>): IngestResult => ({
   rows: results.reduce((total, result) => total + result.rows, 0),
@@ -58,6 +56,12 @@ const add = (totals: DemoTotals, written: ReadonlyArray<readonly [string, Ingest
  */
 export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: RunOptions) {
   const ingestor = yield* Ingestor;
+  // The default keeps the widest demo rows below the engine's 4 MiB message limit.
+  const batchSize = yield* Schema.decodeUnknownEffect(Schema.Int.check(Schema.isGreaterThan(0)))(
+    options.batchSize ?? 500,
+  ).pipe(
+    Effect.mapError((cause) => new ConnectorError({ message: "Invalid demo batch size", cause })),
+  );
 
   const bound = (table: DemoTable) =>
     ingestor.resourceNames === undefined || ingestor.resourceNames.includes(table.name);
@@ -91,7 +95,7 @@ export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: R
         ),
       ).pipe(
         Effect.flatMap((rows) =>
-          Effect.forEach(Arr.chunksOf(rows, batchRows), (batch) =>
+          Effect.forEach(Arr.chunksOf(rows, batchSize), (batch) =>
             ingestBatch({
               connector: demo.name,
               resource: table.name,

@@ -113,16 +113,24 @@ describe("Arrow Flight storage-engine connector ingestion", () => {
           name: "checkpoint-test",
           setup: {
             tables: [Demo.table({ name: "events", rowSchema: Row, version: "version" })],
-            rows: () => ({ events: [{ id: "demo-1", version: 1n, name: "Demo" }] }),
+            rows: () => ({
+              events: Array.from({ length: 5 }, (_, index) => ({
+                id: `demo-${index}`,
+                version: 1n,
+                name: "Demo",
+              })),
+            }),
           },
           group: { tables: [], rows: () => ({}) },
         });
         for (const seconds of [undefined, 0, 17, 900]) {
           const table = { namespace: ["startup"], name: `demo_${seconds ?? "default"}` };
-          const run = (interval?: number) =>
+          const run = (interval?: number, batchSize = 2) =>
             Command.runWith(makeDemoCommand(demo), { version: "1.0.0", renderErrors: false })([
               "--size",
               "1B",
+              "--batch-size",
+              String(batchSize),
               ...(interval === undefined ? [] : ["--checkpoint-interval-sec", String(interval)]),
             ]).pipe(
               Effect.provide(NodeServices.layer),
@@ -139,6 +147,13 @@ describe("Arrow Flight storage-engine connector ingestion", () => {
             );
 
           if (seconds === undefined) {
+            for (const invalid of [0, -1, 1.5]) {
+              const error = yield* run(undefined, invalid).pipe(Effect.flip);
+              expect(error).toMatchObject({
+                _tag: "ShowHelp",
+                errors: [{ _tag: "InvalidValue", option: "batch-size" }],
+              });
+            }
             for (const invalid of [-1, 901, 1.5]) {
               const error = yield* run(invalid).pipe(Effect.flip);
               expect(error).toMatchObject({
@@ -156,7 +171,7 @@ describe("Arrow Flight storage-engine connector ingestion", () => {
             seconds === undefined ? undefined : String(seconds),
           );
           if (seconds === 0) {
-            expect(stored.snapshots?.at(-1)?.summary?.["total-records"]).toBe("1");
+            expect(stored.snapshots?.at(-1)?.summary?.["total-records"]).toBe("5");
           }
         }
       }).pipe(
