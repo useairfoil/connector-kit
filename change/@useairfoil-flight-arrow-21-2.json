@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Update apache-arrow to 21.2.0.",
+  "packageName": "@useairfoil/flight",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

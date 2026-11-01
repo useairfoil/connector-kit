@@ -9,7 +9,7 @@ catalog:
   "@effect/vitest": "^4.1.0"
   "@effect/platform-node": "^4.1.0"
   "@effect/sql-pg": "^4.1.0"
-  apache-arrow: "^21.1.0"
+  apache-arrow: "^21.2.0"
   flatbuffers: "^25.9.23"
   iceberg-js: "^1.0.0"
   nice-grpc: "^2.1.13"

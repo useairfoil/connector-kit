@@ -5,7 +5,7 @@ import { Duration, Effect, Schema, type SchemaRepresentation } from "effect";
 import { ConnectorError } from "../errors";
 import { checkHasRepresentation } from "../iceberg/table";
 
-/** What one run shares: the seeded Faker and the time the run started. */
+/** What one run shares: the Faker and the time the run started. */
 export type DemoContext = {
   readonly faker: Faker;
   readonly now: Date;

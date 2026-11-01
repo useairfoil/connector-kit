@@ -1,18 +1,15 @@
-import { ByteSize, DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option } from "effect";
 import { Command, Flag } from "effect/cli";
+import humanFormat from "human-format";
 
 import { run, type DemoDefinition } from "../demo";
 import { layerArrowFlightConfig } from "../ingestor/arrow-flight";
 
-/** Reads sizes such as `512KiB`, `128MiB` or `1GiB`. */
-export const parseSize = (input: string): Option.Option<number> => {
-  if (!/^\d+(KiB|MiB|GiB)$/.test(input)) return Option.none();
-
-  return ByteSize.fromString(input).pipe(
-    Option.flatMap(ByteSize.toNumber),
-    Option.filter((bytes) => bytes > 0),
+/** Reads byte sizes such as `512kB`, `128MB` or `1.5GB`. */
+export const parseSize = (input: string): Option.Option<number> =>
+  Option.liftThrowable(() => humanFormat.parse.bytes(input))().pipe(
+    Option.filter((bytes) => Number.isSafeInteger(bytes) && bytes > 0),
   );
-};
 
 /**
  * Creates the command that writes demo data over Arrow Flight, then exits.
@@ -23,15 +20,15 @@ export const makeDemoCommand = (demo: DemoDefinition) =>
     "demo",
     {
       size: Flag.String("size").pipe(
-        Flag.filterMap(parseSize, () => "a size like 512KiB, 128MiB or 1GiB"),
+        Flag.filterMap(parseSize, () => "a size like 512kB, 128MB or 1.5GB"),
       ),
-      seed: Flag.Int("seed").pipe(Flag.withDefault(1)),
+      seed: Flag.Int("seed").pipe(Flag.optional),
     },
     ({ size, seed }) =>
       Effect.gen(function* () {
         const now = yield* DateTime.nowAsDate;
 
-        yield* run(demo, { bytes: size, seed, now }).pipe(
+        yield* run(demo, { bytes: size, seed: Option.getOrUndefined(seed), now }).pipe(
           Effect.provide(
             layerArrowFlightConfig({
               resources: [...demo.setup.tables, ...demo.group.tables],
