@@ -23,6 +23,7 @@ type TableOptions = {
   readonly catalog: Pick<Catalog, "loadTable" | "createTable" | "createNamespaceIfNotExists">;
   readonly identifier: TableIdentifier;
   readonly location?: string | undefined;
+  readonly properties?: Readonly<Record<string, string>> | undefined;
 };
 
 type EngineTableOptions = {
@@ -30,6 +31,7 @@ type EngineTableOptions = {
   readonly catalogId: string;
   readonly identifier: TableIdentifier;
   readonly location?: string | undefined;
+  readonly properties?: Readonly<Record<string, string>> | undefined;
 };
 
 const tableError = (cause: unknown): ConnectorError => {
@@ -158,7 +160,11 @@ export const createTable = (
     const table = yield* compileTable(schema);
     yield* options.catalog.createTable(
       { namespace: options.identifier.namespace },
-      makeCreateRequest(table, { name: options.identifier.name, location: options.location }),
+      makeCreateRequest(table, {
+        name: options.identifier.name,
+        location: options.location,
+        properties: options.properties,
+      }),
     );
 
     const metadata = yield* options.catalog.loadTable(options.identifier);
@@ -178,6 +184,7 @@ export const ensureTableFromEngine = (
         catalog,
         identifier: options.identifier,
         location: options.location,
+        properties: options.properties,
       });
     }),
   ).pipe(Effect.mapError(tableError));
@@ -202,6 +209,7 @@ export const ensureTable = (
                   makeCreateRequest(table, {
                     name: options.identifier.name,
                     location: options.location,
+                    properties: options.properties,
                   }),
                 ),
               ),
