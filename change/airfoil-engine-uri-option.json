@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Use the renamed engineUri catalog manager option.",
-  "packageName": "airfoil",
-  "email": "francesco@ceccon.me",
-  "dependentChangeType": "patch"
-}

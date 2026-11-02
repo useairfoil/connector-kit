@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set Node version
         uses: actions/setup-node@v4
         with:
@@ -40,4 +42,10 @@ jobs:
       - name: Run test
         run: pnpm run test:ci
       - name: Check changes
-        run: pnpm beachball check
+        if: github.head_ref != 'changeset-release/main'
+        run: |
+          pnpm changeset status --output "$RUNNER_TEMP/changeset-status.json"
+          jq -e 'all(.releases[]; .type != "major")' "$RUNNER_TEMP/changeset-status.json"
+      - name: Require a changeset for package changes
+        if: github.event_name == 'pull_request' && github.head_ref != 'changeset-release/main'
+        run: pnpm changeset status --since "${{ github.event.pull_request.base.sha }}"
