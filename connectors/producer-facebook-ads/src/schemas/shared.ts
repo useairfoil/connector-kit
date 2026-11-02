@@ -1,26 +1,22 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation } from "effect";
 
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
-
 /** Meta sends counts and minor-unit money as numeric strings. */
-export const count = (fieldId: number, description: string) =>
-  Schema.optional(Schema.BigIntFromString).pipe(field(fieldId, description));
+export const count = (description: string) =>
+  Schema.optional(Schema.BigIntFromString).pipe(Schema.annotateKey({ description }));
 
 /** Spend and other decimal values, as an Iceberg double. */
-export const amount = (fieldId: number, description: string) =>
-  Schema.optional(Schema.FiniteFromString).pipe(field(fieldId, description));
+export const amount = (description: string) =>
+  Schema.optional(Schema.FiniteFromString).pipe(Schema.annotateKey({ description }));
 
-export const text = (fieldId: number, description: string) =>
-  Schema.optional(Schema.String).pipe(field(fieldId, description));
+export const text = (description: string) =>
+  Schema.optional(Schema.String).pipe(Schema.annotateKey({ description }));
 
 /** Times such as `2026-10-19T10:00:00+0000`. */
-export const time = (fieldId: number, description: string) =>
-  Schema.optional(Schema.DateFromString).pipe(field(fieldId, description));
+export const time = (description: string) =>
+  Schema.optional(Schema.DateFromString).pipe(Schema.annotateKey({ description }));
 
 /** Whole numbers sent as JSON numbers, as an Iceberg long. */
-export const long = (fieldId: number, description: string) =>
+export const long = (description: string) =>
   Schema.optional(
     Schema.Int.pipe(
       Schema.decodeTo(
@@ -31,12 +27,12 @@ export const long = (fieldId: number, description: string) =>
         }),
       ),
     ),
-  ).pipe(field(fieldId, description));
+  ).pipe(Schema.annotateKey({ description }));
 
-export const textList = (fieldId: number, elementId: number, description: string) =>
-  Schema.optional(Schema.Array(Schema.String.annotate({ fieldId: elementId }))).pipe(
-    field(fieldId, description),
-  );
+export const textList = (description: string) =>
+  Schema.optional(Schema.Array(Schema.String)).pipe(Schema.annotateKey({ description }));
 
 /** `version` is the fetch time. See AGENTS.md. */
-export const version = Schema.Date.pipe(field(2, "Time the row was read from Meta."));
+export const version = Schema.Date.pipe(
+  Schema.annotateKey({ description: "Time the row was read from Meta." }),
+);

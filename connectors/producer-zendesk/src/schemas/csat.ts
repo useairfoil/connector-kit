@@ -1,38 +1,62 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { Long, LongFromString, Timestamp, field, list } from "./shared";
+import { Long, LongFromString, Timestamp } from "./shared";
 
 const AnswerSchema = Schema.Struct({
-  question_id: Schema.String.pipe(field(102, "Question ID in the survey.")),
+  question_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Question ID in the survey." }),
+  ),
   question_type: Schema.String.pipe(
-    field(103, "Question type, such as rating_scale_numeric or open_ended."),
+    Schema.annotateKey({
+      description: "Question type, such as rating_scale_numeric or open_ended.",
+    }),
   ),
   type: Schema.String.pipe(
-    field(104, "Answer type: rating_scale, closed_ended, open_ended, or skipped."),
+    Schema.annotateKey({
+      description: "Answer type: rating_scale, closed_ended, open_ended, or skipped.",
+    }),
   ),
-  rating: Schema.NullOr(Long).pipe(field(105, "Rating picked, for a rating question.")),
+  rating: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Rating picked, for a rating question." }),
+  ),
   rating_category: Schema.NullOr(Schema.String).pipe(
-    field(106, "bad, neutral, or good, for a rating question."),
+    Schema.annotateKey({ description: "bad, neutral, or good, for a rating question." }),
   ),
-  value: Schema.NullOr(Schema.String).pipe(field(107, "Text written, for an open question.")),
-  option_ids: list(108, Schema.String).pipe(field(109, "Options picked, for a choice question.")),
-  updated_at: Timestamp.pipe(field(110, "Time the answer was last changed.")),
+  value: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Text written, for an open question." }),
+  ),
+  option_ids: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Options picked, for a choice question." }),
+  ),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the answer was last changed." }),
+  ),
 });
 
 export const SurveyResponseSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Survey response ID.")),
-  version: Schema.Date.pipe(field(2, "Time the latest answer was changed.")),
-  ticket_id: Schema.NullOr(Long).pipe(field(3, "Ticket the survey was about.")),
-  responder_id: Long.pipe(field(4, "User who answered.")),
-  survey_id: Schema.String.pipe(field(5, "Survey ID.")),
-  survey_version: Long.pipe(field(6, "Survey version answered.")),
-  rating: Schema.NullOr(Long).pipe(field(7, "Customer satisfaction rating, such as 1 to 5.")),
-  rating_category: Schema.NullOr(Schema.String).pipe(
-    field(8, "Customer satisfaction category: bad, neutral, or good."),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Survey response ID." })),
+  version: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time the latest answer was changed." }),
   ),
-  answers: list(101, AnswerSchema).pipe(field(9, "Every answer in the response.")),
-  expires_at: Timestamp.pipe(field(10, "Time after which the answers can't change.")),
+  ticket_id: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Ticket the survey was about." }),
+  ),
+  responder_id: Long.pipe(Schema.annotateKey({ description: "User who answered." })),
+  survey_id: Schema.String.pipe(Schema.annotateKey({ description: "Survey ID." })),
+  survey_version: Long.pipe(Schema.annotateKey({ description: "Survey version answered." })),
+  rating: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Customer satisfaction rating, such as 1 to 5." }),
+  ),
+  rating_category: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Customer satisfaction category: bad, neutral, or good." }),
+  ),
+  answers: Schema.Array(AnswerSchema).pipe(
+    Schema.annotateKey({ description: "Every answer in the response." }),
+  ),
+  expires_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time after which the answers can't change." }),
+  ),
 })
   .annotate({ description: "Answers to Zendesk CSAT surveys. Unanswered surveys are left out." })
   .pipe(Iceberg.identifier("id"));
@@ -67,31 +91,41 @@ export type SurveyResponseObject = Schema.Schema.Type<typeof SurveyResponseObjec
 const Text = Schema.Struct({ value: Schema.String });
 
 export const CsatSurveySchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Survey ID.")),
-  version: Schema.Date.pipe(field(2, "Time Zendesk last updated the survey.")),
-  survey_version: Long.pipe(field(3, "Current survey version.")),
-  state: Schema.String.pipe(field(4, "enabled or disabled.")),
-  created_at: Timestamp.pipe(field(5, "Time the survey was created.")),
-  updated_at: Timestamp.pipe(field(6, "Time the survey was last updated.")),
-  questions: list(
-    101,
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Survey ID." })),
+  version: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time Zendesk last updated the survey." }),
+  ),
+  survey_version: Long.pipe(Schema.annotateKey({ description: "Current survey version." })),
+  state: Schema.String.pipe(Schema.annotateKey({ description: "enabled or disabled." })),
+  created_at: Timestamp.pipe(Schema.annotateKey({ description: "Time the survey was created." })),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the survey was last updated." }),
+  ),
+  questions: Schema.Array(
     Schema.Struct({
-      id: Schema.String.pipe(field(102, "Question ID, as in `survey_responses.answers`.")),
-      type: Schema.String.pipe(field(103, "Question type.")),
-      sub_type: Schema.NullOr(Schema.String).pipe(
-        field(104, "customer_satisfaction for the main rating question."),
+      id: Schema.String.pipe(
+        Schema.annotateKey({ description: "Question ID, as in `survey_responses.answers`." }),
       ),
-      headline: Schema.String.pipe(field(105, "Question text.")),
-      options: list(
-        106,
+      type: Schema.String.pipe(Schema.annotateKey({ description: "Question type." })),
+      sub_type: Schema.NullOr(Schema.String).pipe(
+        Schema.annotateKey({ description: "customer_satisfaction for the main rating question." }),
+      ),
+      headline: Schema.String.pipe(Schema.annotateKey({ description: "Question text." })),
+      options: Schema.Array(
         Schema.Struct({
-          id: Schema.NullOr(Schema.String).pipe(field(107, "Option ID, for a choice question.")),
-          rating: Schema.NullOr(Long).pipe(field(108, "Rating, for a rating question.")),
-          label: Schema.String.pipe(field(109, "Option text. Can be empty.")),
+          id: Schema.NullOr(Schema.String).pipe(
+            Schema.annotateKey({ description: "Option ID, for a choice question." }),
+          ),
+          rating: Schema.NullOr(Long).pipe(
+            Schema.annotateKey({ description: "Rating, for a rating question." }),
+          ),
+          label: Schema.String.pipe(
+            Schema.annotateKey({ description: "Option text. Can be empty." }),
+          ),
         }),
-      ).pipe(field(110, "Options of the question.")),
+      ).pipe(Schema.annotateKey({ description: "Options of the question." })),
     }),
-  ).pipe(field(7, "Questions in the current version.")),
+  ).pipe(Schema.annotateKey({ description: "Questions in the current version." })),
 })
   .annotate({ description: "Zendesk CSAT surveys. Names the IDs in `survey_responses`." })
   .pipe(Iceberg.identifier("id"));

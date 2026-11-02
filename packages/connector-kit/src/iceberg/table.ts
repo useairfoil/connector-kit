@@ -1,5 +1,5 @@
 import type {
-  CommitTableRequest,
+  CreateTableRequest,
   IcebergType,
   MapType,
   StructField,
@@ -12,11 +12,10 @@ import { Effect, Schema, type SchemaRepresentation } from "effect";
 import { IcebergSchemaError } from "./error";
 
 /** Options for creating a table. */
-export type CreateTableCommitOptions = {
+export type CreateTableOptions = {
+  readonly name: string;
   /** Where the table's files go. The catalog may choose this when omitted. */
   readonly location?: string | undefined;
-  /** UUID for the table. Random by default. */
-  readonly uuid?: string | undefined;
   /** Extra table properties. These win over the ones from the schema. */
   readonly properties?: Readonly<Record<string, string>> | undefined;
 };
@@ -34,9 +33,6 @@ export type CompiledTable = {
   readonly schema: TableSchema;
   readonly description: string | undefined;
 };
-
-// Iceberg reserves its highest 200 field IDs.
-const maxFieldId = 2_147_483_447;
 
 const anonymousDeclaration =
   "Schemas without a name, such as Schema.Class, do not work here; use Schema.Struct";
@@ -121,7 +117,8 @@ class Compiler {
   readonly #activeObjects = new Set<SchemaRepresentation.Objects>();
   readonly #activeReferences = new Set<string>();
   readonly #activeSuspends = new Set<SchemaRepresentation.Suspend>();
-  readonly #fieldIds = new Map<number, string>();
+  // The REST request needs IDs. Only the catalog's returned IDs are authoritative.
+  #nextId = 0;
 
   constructor(private readonly references: SchemaRepresentation.References) {}
 
@@ -154,35 +151,6 @@ class Compiler {
         description: description(annotations),
       };
     });
-  }
-
-  #readId(annotations: Annotations | undefined, path: string, source: string): number {
-    const id = annotations?.fieldId;
-
-    if (typeof id !== "number") {
-      return fail(path, `Missing fieldId; add it with ${source}`);
-    }
-    if (!Number.isInteger(id)) return fail(path, "fieldId must be a whole number");
-    if (id < 1 || id > maxFieldId) {
-      return fail(path, `fieldId must be between 1 and ${maxFieldId}`);
-    }
-    const previousPath = this.#fieldIds.get(id);
-    if (previousPath !== undefined) {
-      return fail(path, `fieldId ${id} is already used at ${previousPath}`);
-    }
-
-    this.#fieldIds.set(id, path);
-    return id;
-  }
-
-  #readNodeId(representation: Representation, path: string): number {
-    return this.#withReference(representation, path, (resolved) =>
-      this.#readId(
-        resolveAnnotations(resolved),
-        path,
-        ".annotate({ fieldId }) on the schema itself",
-      ),
-    );
   }
 
   #withReference<A>(
@@ -231,7 +199,7 @@ class Compiler {
 
       const fieldPath = propertyPath(path, property.name);
       this.#checkRecursion(property.type, fieldPath);
-      const id = this.#readId(property.annotations, fieldPath, "Iceberg.field(id)");
+      const id = ++this.#nextId;
       const compiled = this.#compileType(property.type, fieldPath);
       const fieldDescription = description(property.annotations);
 
@@ -332,7 +300,7 @@ class Compiler {
 
     const elementPath = `${path}.element`;
     const elementRepresentation = representation.rest[0]!;
-    const elementId = this.#readNodeId(elementRepresentation, elementPath);
+    const elementId = ++this.#nextId;
     const compiled = this.#compileType(elementRepresentation, elementPath);
 
     return {
@@ -375,12 +343,12 @@ class Compiler {
     const valuePath = `${path}.value`;
     const keyRepresentation = representation.typeParameters[0]!;
     const valueRepresentation = representation.typeParameters[1]!;
-    const keyId = this.#readNodeId(keyRepresentation, keyPath);
+    const keyId = ++this.#nextId;
     const compiledKey = this.#compileType(keyRepresentation, keyPath);
 
     if (compiledKey.nullable) return fail(keyPath, "Map keys cannot be null");
 
-    const valueId = this.#readNodeId(valueRepresentation, valuePath);
+    const valueId = ++this.#nextId;
     const compiledValue = this.#compileType(valueRepresentation, valuePath);
 
     return {
@@ -448,42 +416,23 @@ export const compileTable = (
           }),
   });
 
-export const makeCommitRequest = (
+export const makeCreateRequest = (
   table: CompiledTable,
-  options: CreateTableCommitOptions,
-): CommitTableRequest => {
-  const properties = {
+  options: CreateTableOptions,
+): CreateTableRequest => ({
+  name: options.name,
+  schema: table.schema,
+  ...(options.location === undefined ? {} : { location: options.location }),
+  properties: {
     ...(table.description === undefined ? {} : { comment: table.description }),
     ...options.properties,
-  };
-
-  return {
-    requirements: [{ type: "assert-create" }],
-    updates: [
-      { action: "assign-uuid", uuid: options.uuid ?? crypto.randomUUID() },
-      { action: "upgrade-format-version", "format-version": 3 },
-      { action: "add-schema", schema: table.schema },
-      { action: "set-current-schema", "schema-id": -1 },
-      { action: "add-spec", spec: { "spec-id": 0, fields: [] } },
-      { action: "set-default-spec", "spec-id": -1 },
-      { action: "add-sort-order", "sort-order": { "order-id": 0, fields: [] } },
-      { action: "set-default-sort-order", "sort-order-id": -1 },
-      ...(options.location === undefined
-        ? []
-        : [{ action: "set-location" as const, location: options.location }]),
-      ...(Object.keys(properties).length === 0
-        ? []
-        : [{ action: "set-properties" as const, updates: properties }]),
-    ],
-  };
-};
+    "format-version": "3",
+  },
+});
 
 /**
- * Builds the commit that creates an Iceberg table from an Effect schema.
- *
- * The field IDs come from the schema, so the table has to keep them. Send the
- * commit with `commitTable`. Then load the table and check the IDs before you
- * write any rows. Don't use `createTable` here, because it can change the IDs.
+ * Builds a REST create-table request from an Effect schema.
+ * The catalog assigns the stored field IDs. Load its schema before encoding rows.
  *
  * A root `description` becomes the table `comment`, and a field `description`
  * becomes its `doc`. `title` and `examples` are dropped.
@@ -494,18 +443,19 @@ export const makeCommitRequest = (
  * @example
  * ```ts
  * const Row = Schema.Struct({
- *   id: Schema.String.pipe(Iceberg.field(1, { description: "Stable row identifier" })),
+ *   id: Schema.String.pipe(Schema.annotateKey({ description: "Row identifier" })),
  * })
  *   .annotate({ description: "Connector rows" })
  *   .pipe(Iceberg.identifier("id"))
  *
- * const request = yield* Iceberg.makeCreateTableCommitRequest(Row, {
+ * const request = yield* Iceberg.makeCreateTableRequest(Row, {
+ *   name: "rows",
  *   location: "s3://warehouse/rows"
  * })
  * ```
  */
-export const makeCreateTableCommitRequest = (
+export const makeCreateTableRequest = (
   schema: Schema.Top,
-  options: CreateTableCommitOptions,
-): Effect.Effect<CommitTableRequest, IcebergSchemaError> =>
-  Effect.map(compileTable(schema), (table) => makeCommitRequest(table, options));
+  options: CreateTableOptions,
+): Effect.Effect<CreateTableRequest, IcebergSchemaError> =>
+  Effect.map(compileTable(schema), (table) => makeCreateRequest(table, options));

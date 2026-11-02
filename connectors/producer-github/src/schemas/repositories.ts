@@ -1,29 +1,49 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Effect, Schema, Struct } from "effect";
 
-import { Long, Text, Timestamp, deleted, field, list, optionalList, user, version } from "./shared";
+import { Long, Text, Timestamp, deleted, optionalList, user, version } from "./shared";
 
 export const RepositorySchema = Schema.Struct({
-  id: Long.pipe(field(1, "Unique repository ID.")),
-  version: version(2, "repository"),
-  node_id: Schema.String.pipe(field(3, "GraphQL node ID of the repository.")),
-  name: Schema.String.pipe(field(4, "Repository name.")),
-  full_name: Schema.String.pipe(field(5, "Owner and name, such as octo-org/octo-repo.")),
-  owner: user(100).pipe(field(6, "Account that owns the repository.")),
-  private: Schema.Boolean.pipe(field(7, "Whether the repository is private.")),
-  visibility: Schema.optionalKey(Schema.String).pipe(
-    field(8, "Visibility: public, private, or internal."),
+  id: Long.pipe(Schema.annotateKey({ description: "Unique repository ID." })),
+  version: version("repository"),
+  node_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "GraphQL node ID of the repository." }),
   ),
-  description: Text.pipe(field(9, "Repository description. Empty when not set.")),
-  fork: Schema.Boolean.pipe(field(10, "Whether the repository is a fork.")),
-  archived: Schema.Boolean.pipe(field(11, "Whether the repository is archived.")),
-  disabled: Schema.Boolean.pipe(field(12, "Whether the repository is disabled.")),
-  default_branch: Schema.String.pipe(field(13, "Default branch name.")),
-  language: Schema.NullOr(Schema.String).pipe(field(14, "Main language GitHub detected.")),
-  topics: list(103, Schema.String).pipe(field(15, "Repository topics.")),
-  html_url: Schema.String.pipe(field(16, "Repository page on GitHub.")),
-  created_at: Timestamp.pipe(field(17, "Time the repository was created.")),
-  _deleted: deleted(18, "repository"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Repository name." })),
+  full_name: Schema.String.pipe(
+    Schema.annotateKey({ description: "Owner and name, such as octo-org/octo-repo." }),
+  ),
+  owner: user.pipe(Schema.annotateKey({ description: "Account that owns the repository." })),
+  private: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the repository is private." }),
+  ),
+  visibility: Schema.optionalKey(Schema.String).pipe(
+    Schema.annotateKey({ description: "Visibility: public, private, or internal." }),
+  ),
+  description: Text.pipe(
+    Schema.annotateKey({ description: "Repository description. Empty when not set." }),
+  ),
+  fork: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the repository is a fork." }),
+  ),
+  archived: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the repository is archived." }),
+  ),
+  disabled: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the repository is disabled." }),
+  ),
+  default_branch: Schema.String.pipe(Schema.annotateKey({ description: "Default branch name." })),
+  language: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Main language GitHub detected." }),
+  ),
+  topics: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Repository topics." }),
+  ),
+  html_url: Schema.String.pipe(Schema.annotateKey({ description: "Repository page on GitHub." })),
+  created_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the repository was created." }),
+  ),
+  _deleted: deleted("repository"),
 })
   .annotate({
     description: "Repositories the GitHub App installation can read.",

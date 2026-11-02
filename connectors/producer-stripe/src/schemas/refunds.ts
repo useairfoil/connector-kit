@@ -1,36 +1,50 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Metadata, UnixTime, field, version } from "./shared";
+import { Long, Metadata, UnixTime, version } from "./shared";
 
 export const RefundSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Unique refund identifier.")),
-  version: version(2),
-  created: UnixTime.pipe(field(3, "Time when the refund was created.")),
-  amount: Long.pipe(field(4, "Refunded amount, in the smallest currency unit.")),
-  currency: Schema.String.pipe(field(5, "Three-letter currency code, in lowercase.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique refund identifier." })),
+  version,
+  created: UnixTime.pipe(Schema.annotateKey({ description: "Time when the refund was created." })),
+  amount: Long.pipe(
+    Schema.annotateKey({ description: "Refunded amount, in the smallest currency unit." }),
+  ),
+  currency: Schema.String.pipe(
+    Schema.annotateKey({ description: "Three-letter currency code, in lowercase." }),
+  ),
   status: Schema.NullOr(Schema.String).pipe(
-    field(6, "Status: pending, requires_action, succeeded, failed, or canceled."),
+    Schema.annotateKey({
+      description: "Status: pending, requires_action, succeeded, failed, or canceled.",
+    }),
   ),
   pending_reason: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-    field(7, "Why the refund is pending."),
+    Schema.annotateKey({ description: "Why the refund is pending." }),
   ),
-  reason: Schema.NullOr(Schema.String).pipe(field(8, "Why the refund was made.")),
+  reason: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Why the refund was made." }),
+  ),
   failure_reason: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-    field(9, "Why the refund failed."),
+    Schema.annotateKey({ description: "Why the refund failed." }),
   ),
-  charge: Schema.NullOr(Schema.String).pipe(field(10, "Charge that was refunded.")),
-  payment_intent: Schema.NullOr(Schema.String).pipe(field(11, "Payment intent that was refunded.")),
+  charge: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Charge that was refunded." }),
+  ),
+  payment_intent: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Payment intent that was refunded." }),
+  ),
   customer: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-    field(12, "Customer of the refund."),
+    Schema.annotateKey({ description: "Customer of the refund." }),
   ),
   customer_account: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-    field(13, "Account that represents the customer, for Accounts v2."),
+    Schema.annotateKey({ description: "Account that represents the customer, for Accounts v2." }),
   ),
   balance_transaction: Schema.NullOr(Schema.String).pipe(
-    field(14, "Balance transaction for the refund."),
+    Schema.annotateKey({ description: "Balance transaction for the refund." }),
   ),
-  metadata: Metadata.pipe(field(15, "Key-value pairs set on the refund.")),
+  metadata: Metadata.pipe(
+    Schema.annotateKey({ description: "Key-value pairs set on the refund." }),
+  ),
 })
   .annotate({
     description: "Refunds in a Stripe account.",

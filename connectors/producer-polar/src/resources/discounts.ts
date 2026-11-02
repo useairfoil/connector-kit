@@ -1,58 +1,72 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Option, Schema } from "effect";
 
-import { DiscountAmountsJsonSchema, MetadataJsonSchema, date, field, nullableDate } from "./shared";
+import { DiscountAmountsJsonSchema, MetadataJsonSchema, date, nullableDate } from "./shared";
 
 const DiscountProductSchema = Schema.Struct({
-  id: Schema.String.pipe(field(302, "Product the discount applies to.")),
-  name: Schema.String.pipe(field(303, "Product name.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Product the discount applies to." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Product name." })),
 });
 
 const DiscountInputSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Unique discount identifier.")),
-  created_at: date(2, "Time when the discount was created."),
-  modified_at: nullableDate(3, "Time when the discount was last changed."),
-  name: Schema.String.pipe(field(4, "Discount name.")),
-  code: Schema.NullOr(Schema.String).pipe(field(5, "Code customers enter at checkout.")),
-  type: Schema.Literals(["fixed", "percentage"]).pipe(field(6, "Discount type.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique discount identifier." })),
+  created_at: date("Time when the discount was created."),
+  modified_at: nullableDate("Time when the discount was last changed."),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Discount name." })),
+  code: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Code customers enter at checkout." }),
+  ),
+  type: Schema.Literals(["fixed", "percentage"]).pipe(
+    Schema.annotateKey({ description: "Discount type." }),
+  ),
   duration: Schema.Literals(["once", "forever", "repeating"]).pipe(
-    field(7, "How long the discount applies."),
+    Schema.annotateKey({ description: "How long the discount applies." }),
   ),
   duration_in_months: Schema.optional(Schema.NullOr(Schema.Int)).pipe(
-    field(8, "Months a repeating discount applies."),
+    Schema.annotateKey({ description: "Months a repeating discount applies." }),
   ),
   amount: Schema.optional(Schema.NullOr(Schema.Int)).pipe(
-    field(9, "Fixed discount in the smallest currency unit."),
+    Schema.annotateKey({ description: "Fixed discount in the smallest currency unit." }),
   ),
   currency: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-    field(10, "Currency of a fixed discount."),
+    Schema.annotateKey({ description: "Currency of a fixed discount." }),
   ),
   amounts: Schema.optional(DiscountAmountsJsonSchema).pipe(
-    field(11, "Fixed discount amounts by currency stored as JSON."),
+    Schema.annotateKey({ description: "Fixed discount amounts by currency stored as JSON." }),
   ),
   basis_points: Schema.optional(Schema.NullOr(Schema.Int)).pipe(
-    field(12, "Percentage discount in basis points."),
+    Schema.annotateKey({ description: "Percentage discount in basis points." }),
   ),
-  starts_at: nullableDate(13, "Time when the discount starts."),
-  ends_at: nullableDate(14, "Time when the discount ends."),
-  max_redemptions: Schema.NullOr(Schema.Int).pipe(field(15, "Maximum number of redemptions.")),
+  starts_at: nullableDate("Time when the discount starts."),
+  ends_at: nullableDate("Time when the discount ends."),
+  max_redemptions: Schema.NullOr(Schema.Int).pipe(
+    Schema.annotateKey({ description: "Maximum number of redemptions." }),
+  ),
   max_redemptions_per_customer: Schema.optional(Schema.NullOr(Schema.Int)).pipe(
-    field(16, "Maximum redemptions for each customer."),
+    Schema.annotateKey({ description: "Maximum redemptions for each customer." }),
   ),
-  redemptions_count: Schema.Int.pipe(field(17, "Number of times the discount was redeemed.")),
-  organization_id: Schema.String.pipe(field(18, "Organization that owns the discount.")),
-  metadata: MetadataJsonSchema.pipe(field(19, "Discount metadata stored as JSON.")),
-  products: Schema.Array(DiscountProductSchema.annotate({ fieldId: 301 })).pipe(
-    field(20, "Products the discount is limited to."),
+  redemptions_count: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Number of times the discount was redeemed." }),
+  ),
+  organization_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Organization that owns the discount." }),
+  ),
+  metadata: MetadataJsonSchema.pipe(
+    Schema.annotateKey({ description: "Discount metadata stored as JSON." }),
+  ),
+  products: Schema.Array(DiscountProductSchema).pipe(
+    Schema.annotateKey({ description: "Products the discount is limited to." }),
   ),
 });
 
 export const DiscountSchema = DiscountInputSchema.pipe(
   Schema.extendTo(
     {
-      version: Schema.Date.pipe(field(21, "Time used to order discount changes.")),
+      version: Schema.Date.pipe(
+        Schema.annotateKey({ description: "Time used to order discount changes." }),
+      ),
       _deleted: Schema.optional(Schema.Boolean).pipe(
-        field(22, "Whether the discount was deleted."),
+        Schema.annotateKey({ description: "Whether the discount was deleted." }),
       ),
     },
     {

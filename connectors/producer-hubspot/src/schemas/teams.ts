@@ -1,19 +1,29 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { field, list, version } from "./shared";
+import { version } from "./shared";
 
 const MemberSchema = Schema.Struct({
-  user_id: Schema.String.pipe(field(102, "HubSpot user ID, as used in `owners.user_id`.")),
-  type: Schema.String.pipe(field(103, "DEFAULT for the user's main team, or EXTRA.")),
+  user_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "HubSpot user ID, as used in `owners.user_id`." }),
+  ),
+  type: Schema.String.pipe(
+    Schema.annotateKey({ description: "DEFAULT for the user's main team, or EXTRA." }),
+  ),
 });
 
 export const TeamSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Team ID, as used in `hubspot_team_id`.")),
-  version: version(2),
-  name: Schema.String.pipe(field(3, "Team name.")),
-  parent_team_id: Schema.optional(Schema.String).pipe(field(4, "ID of the parent team.")),
-  members: list(101, MemberSchema).pipe(field(5, "Users in the team.")),
+  id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Team ID, as used in `hubspot_team_id`." }),
+  ),
+  version,
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Team name." })),
+  parent_team_id: Schema.optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "ID of the parent team." }),
+  ),
+  members: Schema.Array(MemberSchema).pipe(
+    Schema.annotateKey({ description: "Users in the team." }),
+  ),
 })
   .annotate({ description: "HubSpot teams and their users." })
   .pipe(Iceberg.identifier("id"));

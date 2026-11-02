@@ -7,16 +7,16 @@ import { ConfigProvider, Effect, Layer, Ref, Schema } from "effect";
 
 import { Connector, Resource } from "../src/core";
 import { ConnectorError } from "../src/errors";
-import { field, identifier as icebergIdentifier } from "../src/iceberg/annotations";
+import { identifier as icebergIdentifier } from "../src/iceberg/annotations";
 import { layerArrowFlight, layerArrowFlightConfig } from "../src/ingestor/arrow-flight";
 import { Ingestor, type IngestorService } from "../src/ingestor/service";
 import * as RuntimeConfig from "../src/runtime-config";
 
 const rowSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1)),
-  version: Schema.BigInt.pipe(field(2)),
-  count: Schema.optional(Schema.Finite).pipe(field(3)),
-  _deleted: Schema.optional(Schema.Boolean).pipe(field(4)),
+  id: Schema.String,
+  version: Schema.BigInt,
+  count: Schema.optional(Schema.Finite),
+  _deleted: Schema.optional(Schema.Boolean),
 }).pipe(icebergIdentifier("id"));
 const Products = Resource.entity({
   name: "products",
@@ -46,12 +46,12 @@ const tableMetadata = (schema?: TableSchema): TableMetadata => ({
 const icebergSchema: TableSchema = {
   type: "struct",
   fields: [
-    { id: 1, name: "id", type: "string", required: true },
-    { id: 2, name: "version", type: "long", required: false },
-    { id: 3, name: "count", type: "double", required: false },
-    { id: 4, name: "_deleted", type: "boolean", required: false },
+    { id: 17, name: "id", type: "string", required: true },
+    { id: 8, name: "version", type: "long", required: false },
+    { id: 29, name: "count", type: "double", required: false },
+    { id: 5, name: "_deleted", type: "boolean", required: false },
   ],
-  "identifier-field-ids": [1],
+  "identifier-field-ids": [17],
 };
 
 const makeManagerLayer = (options: {
@@ -153,6 +153,12 @@ describe("Arrow Flight ingestor adapter", () => {
           "count",
           "_deleted",
         ]);
+        expect(batch.schema.fields.map((field) => field.metadata.get("PARQUET:field_id"))).toEqual([
+          "17",
+          "8",
+          "29",
+          "5",
+        ]);
       }
 
       // Bytes are the encoded batch, counted once the server acknowledges it.
@@ -218,9 +224,9 @@ describe("Arrow Flight ingestor adapter", () => {
       const Other = Resource.entity({
         name: "other",
         rowSchema: Schema.Struct({
-          id: Schema.String.pipe(field(1)),
-          version: Schema.BigInt.pipe(field(2)),
-          extra: Schema.String.pipe(field(3)),
+          id: Schema.String,
+          version: Schema.BigInt,
+          extra: Schema.String,
         }).pipe(icebergIdentifier("id")),
         version: "version",
         check: Effect.void,

@@ -1,39 +1,67 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { Long, Timestamp, field, list, version } from "./shared";
+import { Long, Timestamp, version } from "./shared";
 
 const OptionSchema = Schema.Struct({
-  label: Schema.String.pipe(field(102, "Option name.")),
-  value: Schema.String.pipe(field(103, "Value stored in `properties`.")),
-  display_order: Long.pipe(field(104, "Position of the option.")),
-  hidden: Schema.Boolean.pipe(field(105, "Whether the option is hidden in forms.")),
+  label: Schema.String.pipe(Schema.annotateKey({ description: "Option name." })),
+  value: Schema.String.pipe(Schema.annotateKey({ description: "Value stored in `properties`." })),
+  display_order: Long.pipe(Schema.annotateKey({ description: "Position of the option." })),
+  hidden: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the option is hidden in forms." }),
+  ),
 });
 
 export const PropertySchema = Schema.Struct({
-  key: Schema.String.pipe(field(1, "Object type and property name, such as `deals:dealstage`.")),
-  version: version(2),
+  key: Schema.String.pipe(
+    Schema.annotateKey({
+      description: "Object type and property name, such as `deals:dealstage`.",
+    }),
+  ),
+  version,
   object_type: Schema.String.pipe(
-    field(3, "Table the property belongs to, or a custom object type ID such as `2-123`."),
+    Schema.annotateKey({
+      description: "Table the property belongs to, or a custom object type ID such as `2-123`.",
+    }),
   ),
-  name: Schema.String.pipe(field(4, "Internal name, the key in `properties`.")),
-  label: Schema.String.pipe(field(5, "Property name in HubSpot.")),
-  type: Schema.String.pipe(field(6, "Value type, such as string, number, date, or enumeration.")),
-  field_type: Schema.String.pipe(field(7, "Input type, such as text, select, or checkbox.")),
-  description: Schema.String.pipe(field(8, "Property description.")),
-  group_name: Schema.String.pipe(field(9, "Property group.")),
-  options: list(101, OptionSchema).pipe(
-    field(
-      10,
-      "Options of an enumeration. Empty when they come from elsewhere, such as pipeline stages.",
-    ),
+  name: Schema.String.pipe(
+    Schema.annotateKey({ description: "Internal name, the key in `properties`." }),
   ),
-  calculated: Schema.Boolean.pipe(field(11, "Whether HubSpot calculates the value.")),
-  hidden: Schema.Boolean.pipe(field(12, "Whether the property is hidden in HubSpot.")),
-  hubspot_defined: Schema.Boolean.pipe(field(13, "Whether HubSpot created the property.")),
-  archived: Schema.Boolean.pipe(field(14, "Whether the property was removed.")),
-  created_at: Schema.optional(Schema.Date).pipe(field(15, "Time the property was created.")),
-  updated_at: Schema.optional(Schema.Date).pipe(field(16, "Time the property last changed.")),
+  label: Schema.String.pipe(Schema.annotateKey({ description: "Property name in HubSpot." })),
+  type: Schema.String.pipe(
+    Schema.annotateKey({
+      description: "Value type, such as string, number, date, or enumeration.",
+    }),
+  ),
+  field_type: Schema.String.pipe(
+    Schema.annotateKey({ description: "Input type, such as text, select, or checkbox." }),
+  ),
+  description: Schema.String.pipe(Schema.annotateKey({ description: "Property description." })),
+  group_name: Schema.String.pipe(Schema.annotateKey({ description: "Property group." })),
+  options: Schema.Array(OptionSchema).pipe(
+    Schema.annotateKey({
+      description:
+        "Options of an enumeration. Empty when they come from elsewhere, such as pipeline stages.",
+    }),
+  ),
+  calculated: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether HubSpot calculates the value." }),
+  ),
+  hidden: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the property is hidden in HubSpot." }),
+  ),
+  hubspot_defined: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether HubSpot created the property." }),
+  ),
+  archived: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the property was removed." }),
+  ),
+  created_at: Schema.optional(Schema.Date).pipe(
+    Schema.annotateKey({ description: "Time the property was created." }),
+  ),
+  updated_at: Schema.optional(Schema.Date).pipe(
+    Schema.annotateKey({ description: "Time the property last changed." }),
+  ),
 })
   .annotate({ description: "Property definitions that name the keys and values in `properties`." })
   .pipe(Iceberg.identifier("key"));

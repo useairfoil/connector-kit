@@ -1,3 +1,3 @@
-export { field, identifier, ids } from "./annotations";
+export { identifier } from "./annotations";
 export { IcebergSchemaError } from "./error";
-export { makeCreateTableCommitRequest, type CreateTableCommitOptions } from "./table";
+export { makeCreateTableRequest, type CreateTableOptions } from "./table";

@@ -9,10 +9,12 @@ describe("runtime config", () => {
     Effect.gen(function* () {
       const port = yield* RuntimeConfig.httpPort;
       const engineUri = yield* RuntimeConfig.engineUri;
+      const flightUri = yield* RuntimeConfig.flightUri;
       const catalog = yield* RuntimeConfig.catalog;
 
       expect(port).toBe(9090);
       expect(engineUri.href).toBe("http://engine:7777/");
+      expect(flightUri.href).toBe(engineUri.href);
       expect(catalog).toBe("default-catalog");
     }).pipe(
       Effect.provide(
@@ -25,6 +27,35 @@ describe("runtime config", () => {
         ),
       ),
     ),
+  );
+
+  it.effect("allows a separate Flight URL and rejects malformed overrides", () =>
+    Effect.gen(function* () {
+      const uri = yield* RuntimeConfig.flightUri.pipe(
+        Effect.provide(
+          ConfigProvider.layer(
+            ConfigProvider.fromUnknown({
+              ENGINE_URI: "http://engine:7777",
+              FLIGHT_URI: "https://flight:8443",
+            }),
+          ),
+        ),
+      );
+      expect(uri.href).toBe("https://flight:8443/");
+
+      const result = yield* RuntimeConfig.flightUri.pipe(
+        Effect.provide(
+          ConfigProvider.layer(
+            ConfigProvider.fromUnknown({
+              ENGINE_URI: "http://engine:7777",
+              FLIGHT_URI: "not a URL",
+            }),
+          ),
+        ),
+        Effect.exit,
+      );
+      expect(Exit.isFailure(result)).toBe(true);
+    }),
   );
 
   it.effect("defaults the shared HTTP port to 8080", () =>

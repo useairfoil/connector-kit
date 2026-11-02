@@ -55,7 +55,7 @@ describe("registered upstream catalog", () => {
           }),
         );
       });
-      const manager = yield* CatalogManager.make({ baseUrl: engine.url });
+      const manager = yield* CatalogManager.make({ engineUri: engine.url });
       expect(
         yield* manager.createCatalog({ id: "analytics", rest: { uri: upstream.url } }),
       ).toBeUndefined();

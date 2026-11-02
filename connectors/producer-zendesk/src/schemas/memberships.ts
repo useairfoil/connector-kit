@@ -1,17 +1,23 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Timestamp, deleted, field, version } from "./shared";
+import { Long, Timestamp, deleted, version } from "./shared";
 
 export const GroupMembershipSchema = Schema.Struct({
-  id: Long.pipe(field(1, "Membership ID.")),
-  version: version(2, "membership"),
-  _deleted: deleted(3, "membership"),
-  created_at: Timestamp.pipe(field(4, "Time the agent was added to the group.")),
-  updated_at: Timestamp.pipe(field(5, "Time the membership was last updated.")),
-  user_id: Long.pipe(field(6, "Agent in the group.")),
-  group_id: Long.pipe(field(7, "Group.")),
-  default: Schema.Boolean.pipe(field(8, "Whether this is the agent's default group.")),
+  id: Long.pipe(Schema.annotateKey({ description: "Membership ID." })),
+  version: version("membership"),
+  _deleted: deleted("membership"),
+  created_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the agent was added to the group." }),
+  ),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the membership was last updated." }),
+  ),
+  user_id: Long.pipe(Schema.annotateKey({ description: "Agent in the group." })),
+  group_id: Long.pipe(Schema.annotateKey({ description: "Group." })),
+  default: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether this is the agent's default group." }),
+  ),
 })
   .annotate({ description: "Which agents are in which Zendesk groups." })
   .pipe(Iceberg.identifier("id"));
@@ -19,18 +25,22 @@ export const GroupMembershipSchema = Schema.Struct({
 export type GroupMembership = Schema.Schema.Type<typeof GroupMembershipSchema>;
 
 export const OrganizationMembershipSchema = Schema.Struct({
-  id: Long.pipe(field(1, "Membership ID.")),
-  version: version(2, "membership"),
-  _deleted: deleted(3, "membership"),
-  created_at: Timestamp.pipe(field(4, "Time the user was added to the organization.")),
-  updated_at: Timestamp.pipe(field(5, "Time the membership was last updated.")),
-  user_id: Long.pipe(field(6, "User in the organization.")),
-  organization_id: Long.pipe(field(7, "Organization.")),
+  id: Long.pipe(Schema.annotateKey({ description: "Membership ID." })),
+  version: version("membership"),
+  _deleted: deleted("membership"),
+  created_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the user was added to the organization." }),
+  ),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the membership was last updated." }),
+  ),
+  user_id: Long.pipe(Schema.annotateKey({ description: "User in the organization." })),
+  organization_id: Long.pipe(Schema.annotateKey({ description: "Organization." })),
   default: Schema.NullOr(Schema.Boolean).pipe(
-    field(8, "Whether this is the user's default organization."),
+    Schema.annotateKey({ description: "Whether this is the user's default organization." }),
   ),
   view_tickets: Schema.Boolean.pipe(
-    field(9, "Whether the user can see the organization's tickets."),
+    Schema.annotateKey({ description: "Whether the user can see the organization's tickets." }),
   ),
 })
   .annotate({

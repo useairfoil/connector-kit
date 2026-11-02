@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Allow a separate Arrow Flight endpoint and rename the catalog manager baseUrl option to engineUri.",
+  "packageName": "@useairfoil/api",
+  "email": "francesco@ceccon.me",
+  "dependentChangeType": "patch"
+}

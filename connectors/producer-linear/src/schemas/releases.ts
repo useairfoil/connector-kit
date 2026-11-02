@@ -1,34 +1,39 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation, Struct } from "effect";
 
-import {
-  Long,
-  OptionalRef,
-  OptionalString,
-  OptionalTimestamp,
-  Ref,
-  common,
-  field,
-  list,
-} from "./shared";
+import { Long, OptionalRef, OptionalString, OptionalTimestamp, Ref, common } from "./shared";
 
 export const ReleaseSchema = Schema.Struct({
   ...common("Release"),
-  name: Schema.String.pipe(field(10, "Release name.")),
-  description: OptionalString.pipe(field(11, "Description.")),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Release name." })),
+  description: OptionalString.pipe(Schema.annotateKey({ description: "Description." })),
   // `version` is the row version, so the release's own version is renamed.
-  release_version: OptionalString.pipe(field(12, "Version, such as 1.2.0.")),
-  url: Schema.String.pipe(field(13, "Release URL.")),
-  commit_sha: OptionalString.pipe(field(14, "Commit SHA.")),
-  pipeline_id: Ref.pipe(field(15, "Release pipeline.")),
-  stage_id: Ref.pipe(field(16, "Release stage.")),
-  creator_id: OptionalRef.pipe(field(17, "User who made the release.")),
-  start_date: OptionalString.pipe(field(18, "Start date, as YYYY-MM-DD.")),
-  target_date: OptionalString.pipe(field(19, "Target date, as YYYY-MM-DD.")),
-  started_at: OptionalTimestamp.pipe(field(20, "Time the release started.")),
-  completed_at: OptionalTimestamp.pipe(field(21, "Time the release was completed.")),
-  canceled_at: OptionalTimestamp.pipe(field(22, "Time the release was canceled.")),
-  trashed: Schema.NullOr(Schema.Boolean).pipe(field(23, "Whether the release is in the trash.")),
+  release_version: OptionalString.pipe(
+    Schema.annotateKey({ description: "Version, such as 1.2.0." }),
+  ),
+  url: Schema.String.pipe(Schema.annotateKey({ description: "Release URL." })),
+  commit_sha: OptionalString.pipe(Schema.annotateKey({ description: "Commit SHA." })),
+  pipeline_id: Ref.pipe(Schema.annotateKey({ description: "Release pipeline." })),
+  stage_id: Ref.pipe(Schema.annotateKey({ description: "Release stage." })),
+  creator_id: OptionalRef.pipe(Schema.annotateKey({ description: "User who made the release." })),
+  start_date: OptionalString.pipe(
+    Schema.annotateKey({ description: "Start date, as YYYY-MM-DD." }),
+  ),
+  target_date: OptionalString.pipe(
+    Schema.annotateKey({ description: "Target date, as YYYY-MM-DD." }),
+  ),
+  started_at: OptionalTimestamp.pipe(
+    Schema.annotateKey({ description: "Time the release started." }),
+  ),
+  completed_at: OptionalTimestamp.pipe(
+    Schema.annotateKey({ description: "Time the release was completed." }),
+  ),
+  canceled_at: OptionalTimestamp.pipe(
+    Schema.annotateKey({ description: "Time the release was canceled." }),
+  ),
+  trashed: Schema.NullOr(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the release is in the trash." }),
+  ),
 })
   .annotate({ description: "Linear releases. Needs the Business plan." })
   .pipe(Iceberg.identifier("id"));
@@ -41,7 +46,7 @@ export const ReleaseObjectSchema = ReleaseSchema.mapFields((fields) =>
 
 export const ReleaseNoteSchema = Schema.Struct({
   ...common("Release note"),
-  title: OptionalString.pipe(field(10, "Release note title.")),
+  title: OptionalString.pipe(Schema.annotateKey({ description: "Release note title." })),
   content: Schema.NullOr(Schema.Struct({ content: OptionalString })).pipe(
     Schema.decodeTo(
       OptionalString,
@@ -50,11 +55,13 @@ export const ReleaseNoteSchema = Schema.Struct({
         encode: (content) => (content === null ? null : { content }),
       }),
     ),
-    field(11, "Release note body in markdown."),
+    Schema.annotateKey({ description: "Release note body in markdown." }),
   ),
-  url: Schema.String.pipe(field(12, "Release note URL.")),
-  pipeline_id: Ref.pipe(field(13, "Release pipeline.")),
-  release_ids: list(101, Ref).pipe(field(14, "Releases covered by the note.")),
+  url: Schema.String.pipe(Schema.annotateKey({ description: "Release note URL." })),
+  pipeline_id: Ref.pipe(Schema.annotateKey({ description: "Release pipeline." })),
+  release_ids: Schema.Array(Ref).pipe(
+    Schema.annotateKey({ description: "Releases covered by the note." }),
+  ),
 })
   .annotate({ description: "Linear release notes. Needs the Business plan." })
   .pipe(Iceberg.identifier("id"));
@@ -67,15 +74,21 @@ export const ReleaseNoteObjectSchema = ReleaseNoteSchema.mapFields((fields) =>
 
 export const ReleasePipelineSchema = Schema.Struct({
   ...common("Pipeline"),
-  name: Schema.String.pipe(field(10, "Pipeline name.")),
-  type: Schema.String.pipe(field(11, "Pipeline type.")),
-  is_production: Schema.Boolean.pipe(field(12, "Whether it releases to production.")),
-  url: Schema.String.pipe(field(13, "Pipeline URL.")),
-  include_path_patterns: list(101, Schema.String).pipe(
-    field(14, "File paths that count toward the pipeline."),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Pipeline name." })),
+  type: Schema.String.pipe(Schema.annotateKey({ description: "Pipeline type." })),
+  is_production: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether it releases to production." }),
   ),
-  approximate_release_count: Long.pipe(field(15, "About how many releases it has.")),
-  trashed: Schema.NullOr(Schema.Boolean).pipe(field(16, "Whether the pipeline is in the trash.")),
+  url: Schema.String.pipe(Schema.annotateKey({ description: "Pipeline URL." })),
+  include_path_patterns: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "File paths that count toward the pipeline." }),
+  ),
+  approximate_release_count: Long.pipe(
+    Schema.annotateKey({ description: "About how many releases it has." }),
+  ),
+  trashed: Schema.NullOr(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the pipeline is in the trash." }),
+  ),
 })
   .annotate({ description: "Linear release pipelines. Needs the Business plan." })
   .pipe(Iceberg.identifier("id"));
@@ -88,12 +101,12 @@ export const ReleasePipelineObjectSchema = ReleasePipelineSchema.mapFields((fiel
 
 export const ReleaseStageSchema = Schema.Struct({
   ...common("Stage"),
-  name: Schema.String.pipe(field(10, "Stage name.")),
-  type: Schema.String.pipe(field(11, "Stage type.")),
-  color: Schema.String.pipe(field(12, "Color, as hex.")),
-  position: Schema.Finite.pipe(field(13, "Order in the pipeline.")),
-  frozen: Schema.Boolean.pipe(field(14, "Whether the stage is frozen.")),
-  pipeline_id: Ref.pipe(field(15, "Release pipeline.")),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Stage name." })),
+  type: Schema.String.pipe(Schema.annotateKey({ description: "Stage type." })),
+  color: Schema.String.pipe(Schema.annotateKey({ description: "Color, as hex." })),
+  position: Schema.Finite.pipe(Schema.annotateKey({ description: "Order in the pipeline." })),
+  frozen: Schema.Boolean.pipe(Schema.annotateKey({ description: "Whether the stage is frozen." })),
+  pipeline_id: Ref.pipe(Schema.annotateKey({ description: "Release pipeline." })),
 })
   .annotate({ description: "Linear release stages. Needs the Business plan." })
   .pipe(Iceberg.identifier("id"));
@@ -106,8 +119,8 @@ export const ReleaseStageObjectSchema = ReleaseStageSchema.mapFields((fields) =>
 
 export const IssueToReleaseSchema = Schema.Struct({
   ...common("Link"),
-  issue_id: Ref.pipe(field(10, "Issue.")),
-  release_id: Ref.pipe(field(11, "Release.")),
+  issue_id: Ref.pipe(Schema.annotateKey({ description: "Issue." })),
+  release_id: Ref.pipe(Schema.annotateKey({ description: "Release." })),
 })
   .annotate({ description: "Links between Linear issues and releases. Needs the Business plan." })
   .pipe(Iceberg.identifier("id"));

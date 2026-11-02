@@ -1,9 +1,5 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { SchemaTransformation } from "effect";
 import * as Schema from "effect/Schema";
-
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
 
 export const PageInfoSchema = Schema.Struct({
   hasNextPage: Schema.Boolean,
@@ -23,75 +19,86 @@ export const splitTags = (value: string): ReadonlyArray<string> =>
     .map((tag) => tag.trim())
     .filter((tag) => tag.length > 0);
 
-// Each row helper takes the first field ID of its block.
+export const moneyBag = Schema.Struct({
+  shopMoney: Schema.Struct({
+    amount: Schema.String.pipe(Schema.annotateKey({ description: "Amount in the shop currency." })),
+    currencyCode: Schema.String.pipe(Schema.annotateKey({ description: "Shop currency code." })),
+  }).pipe(Schema.annotateKey({ description: "Amount in the shop currency." })),
+  presentmentMoney: Schema.Struct({
+    amount: Schema.String.pipe(
+      Schema.annotateKey({ description: "Amount in the customer currency." }),
+    ),
+    currencyCode: Schema.String.pipe(
+      Schema.annotateKey({ description: "Customer currency code." }),
+    ),
+  }).pipe(Schema.annotateKey({ description: "Amount in the customer currency." })),
+});
 
-export const moneyBag = (baseId: number) =>
+export const address = Schema.Struct({
+  firstName: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "First name." })),
+  lastName: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Last name." })),
+  name: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Full name." })),
+  company: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Company name." })),
+  address1: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "First address line." }),
+  ),
+  address2: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Second address line." }),
+  ),
+  city: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "City." })),
+  province: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Province or state." }),
+  ),
+  provinceCode: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Province or state code." }),
+  ),
+  country: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Country." })),
+  countryCode: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Two-letter country code." }),
+  ),
+  zip: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Postal code." })),
+  phone: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Phone number." })),
+  latitude: Schema.NullOr(Schema.Finite).pipe(Schema.annotateKey({ description: "Latitude." })),
+  longitude: Schema.NullOr(Schema.Finite).pipe(Schema.annotateKey({ description: "Longitude." })),
+});
+
+export const attributes = Schema.Array(
   Schema.Struct({
-    shopMoney: Schema.Struct({
-      amount: Schema.String.pipe(field(baseId + 3, "Amount in the shop currency.")),
-      currencyCode: Schema.String.pipe(field(baseId + 4, "Shop currency code.")),
-    }).pipe(field(baseId + 1, "Amount in the shop currency.")),
-    presentmentMoney: Schema.Struct({
-      amount: Schema.String.pipe(field(baseId + 5, "Amount in the customer currency.")),
-      currencyCode: Schema.String.pipe(field(baseId + 6, "Customer currency code.")),
-    }).pipe(field(baseId + 2, "Amount in the customer currency.")),
-  });
+    key: Schema.String.pipe(Schema.annotateKey({ description: "Attribute name." })),
+    value: Schema.NullOr(Schema.String).pipe(
+      Schema.annotateKey({ description: "Attribute value." }),
+    ),
+  }),
+);
 
-export const address = (baseId: number) =>
+export const taxLines = Schema.Array(
   Schema.Struct({
-    firstName: Schema.NullOr(Schema.String).pipe(field(baseId + 1, "First name.")),
-    lastName: Schema.NullOr(Schema.String).pipe(field(baseId + 2, "Last name.")),
-    name: Schema.NullOr(Schema.String).pipe(field(baseId + 3, "Full name.")),
-    company: Schema.NullOr(Schema.String).pipe(field(baseId + 4, "Company name.")),
-    address1: Schema.NullOr(Schema.String).pipe(field(baseId + 5, "First address line.")),
-    address2: Schema.NullOr(Schema.String).pipe(field(baseId + 6, "Second address line.")),
-    city: Schema.NullOr(Schema.String).pipe(field(baseId + 7, "City.")),
-    province: Schema.NullOr(Schema.String).pipe(field(baseId + 8, "Province or state.")),
-    provinceCode: Schema.NullOr(Schema.String).pipe(field(baseId + 9, "Province or state code.")),
-    country: Schema.NullOr(Schema.String).pipe(field(baseId + 10, "Country.")),
-    countryCode: Schema.NullOr(Schema.String).pipe(field(baseId + 11, "Two-letter country code.")),
-    zip: Schema.NullOr(Schema.String).pipe(field(baseId + 12, "Postal code.")),
-    phone: Schema.NullOr(Schema.String).pipe(field(baseId + 13, "Phone number.")),
-    latitude: Schema.NullOr(Schema.Finite).pipe(field(baseId + 14, "Latitude.")),
-    longitude: Schema.NullOr(Schema.Finite).pipe(field(baseId + 15, "Longitude.")),
-  });
+    title: Schema.String.pipe(Schema.annotateKey({ description: "Tax name." })),
+    rate: Schema.NullOr(Schema.Finite).pipe(
+      Schema.annotateKey({ description: "Tax rate as a fraction." }),
+    ),
+    priceSet: moneyBag.pipe(Schema.annotateKey({ description: "Tax amount." })),
+  }),
+);
 
-export const attributes = (baseId: number) =>
-  Schema.Array(
-    Schema.Struct({
-      key: Schema.String.pipe(field(baseId + 2, "Attribute name.")),
-      value: Schema.NullOr(Schema.String).pipe(field(baseId + 3, "Attribute value.")),
-    }).annotate({ fieldId: baseId + 1 }),
-  );
+export const discountAllocations = Schema.Array(
+  Schema.Struct({
+    discountApplicationIndex: Schema.Int.pipe(
+      Schema.annotateKey({ description: "Index of the order discount application." }),
+    ),
+    amountSet: moneyBag.pipe(Schema.annotateKey({ description: "Allocated discount amount." })),
+  }),
+);
 
-export const taxLines = (baseId: number) =>
-  Schema.Array(
-    Schema.Struct({
-      title: Schema.String.pipe(field(baseId + 2, "Tax name.")),
-      rate: Schema.NullOr(Schema.Finite).pipe(field(baseId + 3, "Tax rate as a fraction.")),
-      priceSet: moneyBag(baseId + 10).pipe(field(baseId + 4, "Tax amount.")),
-    }).annotate({ fieldId: baseId + 1 }),
-  );
+export type MoneyBag = Schema.Schema.Type<typeof moneyBag>;
 
-export const discountAllocations = (baseId: number) =>
-  Schema.Array(
-    Schema.Struct({
-      discountApplicationIndex: Schema.Int.pipe(
-        field(baseId + 2, "Index of the order discount application."),
-      ),
-      amountSet: moneyBag(baseId + 10).pipe(field(baseId + 3, "Allocated discount amount.")),
-    }).annotate({ fieldId: baseId + 1 }),
-  );
+export type Address = Schema.Schema.Type<typeof address>;
 
-export type MoneyBag = Schema.Schema.Type<ReturnType<typeof moneyBag>>;
+export type Attribute = Schema.Schema.Type<typeof attributes>[number];
 
-export type Address = Schema.Schema.Type<ReturnType<typeof address>>;
+export type TaxLine = Schema.Schema.Type<typeof taxLines>[number];
 
-export type Attribute = Schema.Schema.Type<ReturnType<typeof attributes>>[number];
-
-export type TaxLine = Schema.Schema.Type<ReturnType<typeof taxLines>>[number];
-
-export type DiscountAllocation = Schema.Schema.Type<ReturnType<typeof discountAllocations>>[number];
+export type DiscountAllocation = Schema.Schema.Type<typeof discountAllocations>[number];
 
 export const RestMoneyBagSchema = Schema.Struct({
   shop_money: Schema.Struct({ amount: Schema.String, currency_code: Schema.String }),

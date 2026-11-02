@@ -1,7 +1,7 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import * as Schema from "effect/Schema";
 
-import { address, attributes, discountAllocations, field, moneyBag, taxLines } from "../shared";
+import { address, attributes, discountAllocations, moneyBag, taxLines } from "../shared";
 
 export const OrderCancelReasonSchema = Schema.Literals([
   "CUSTOMER",
@@ -40,133 +40,259 @@ export const DiscountTargetTypeSchema = Schema.Literals(["LINE_ITEM", "SHIPPING_
 export const DiscountValueTypeSchema = Schema.Literals(["PERCENTAGE", "FIXED_AMOUNT"]);
 
 export const DiscountApplicationSchema = Schema.Struct({
-  index: Schema.Int.pipe(field(161, "Position used by discount allocations.")),
-  type: DiscountApplicationTypeSchema.pipe(field(162, "How the discount was applied.")),
-  code: Schema.NullOr(Schema.String).pipe(field(163, "Discount code.")),
-  title: Schema.NullOr(Schema.String).pipe(field(164, "Discount title.")),
-  description: Schema.NullOr(Schema.String).pipe(field(165, "Manual discount description.")),
-  allocationMethod: DiscountAllocationMethodSchema.pipe(field(166, "How the value is split.")),
-  targetSelection: DiscountTargetSelectionSchema.pipe(field(167, "Which lines are targeted.")),
-  targetType: DiscountTargetTypeSchema.pipe(field(168, "Kind of lines targeted.")),
-  valueType: DiscountValueTypeSchema.pipe(field(169, "Whether the value is a percent.")),
-  value: Schema.String.pipe(field(170, "Percent or amount in the customer currency.")),
+  index: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Position used by discount allocations." }),
+  ),
+  type: DiscountApplicationTypeSchema.pipe(
+    Schema.annotateKey({ description: "How the discount was applied." }),
+  ),
+  code: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Discount code." })),
+  title: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Discount title." })),
+  description: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Manual discount description." }),
+  ),
+  allocationMethod: DiscountAllocationMethodSchema.pipe(
+    Schema.annotateKey({ description: "How the value is split." }),
+  ),
+  targetSelection: DiscountTargetSelectionSchema.pipe(
+    Schema.annotateKey({ description: "Which lines are targeted." }),
+  ),
+  targetType: DiscountTargetTypeSchema.pipe(
+    Schema.annotateKey({ description: "Kind of lines targeted." }),
+  ),
+  valueType: DiscountValueTypeSchema.pipe(
+    Schema.annotateKey({ description: "Whether the value is a percent." }),
+  ),
+  value: Schema.String.pipe(
+    Schema.annotateKey({ description: "Percent or amount in the customer currency." }),
+  ),
 });
 
 export const ShippingLineSchema = Schema.Struct({
-  id: Schema.NullOr(Schema.String).pipe(field(501, "Unique shipping line identifier.")),
-  title: Schema.String.pipe(field(502, "Shipping method title.")),
-  code: Schema.NullOr(Schema.String).pipe(field(503, "Shipping rate code.")),
-  source: Schema.NullOr(Schema.String).pipe(field(504, "Source of the shipping rate.")),
-  carrierIdentifier: Schema.NullOr(Schema.String).pipe(field(505, "Carrier service identifier.")),
-  phone: Schema.NullOr(Schema.String).pipe(field(506, "Phone number for the shipping line.")),
-  isRemoved: Schema.Boolean.pipe(field(507, "Whether the line was removed by an edit.")),
-  originalPriceSet: moneyBag(520).pipe(field(508, "Price before discounts.")),
-  discountedPriceSet: moneyBag(530).pipe(field(509, "Price after discounts.")),
-  currentDiscountedPriceSet: moneyBag(540).pipe(
-    field(510, "Price after discounts, edits, and refunds."),
+  id: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Unique shipping line identifier." }),
   ),
-  taxLines: taxLines(550).pipe(field(511, "Taxes on the shipping line.")),
-  discountAllocations: discountAllocations(570).pipe(field(512, "Discounts on the line.")),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Shipping method title." })),
+  code: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Shipping rate code." }),
+  ),
+  source: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Source of the shipping rate." }),
+  ),
+  carrierIdentifier: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Carrier service identifier." }),
+  ),
+  phone: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Phone number for the shipping line." }),
+  ),
+  isRemoved: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the line was removed by an edit." }),
+  ),
+  originalPriceSet: moneyBag.pipe(Schema.annotateKey({ description: "Price before discounts." })),
+  discountedPriceSet: moneyBag.pipe(Schema.annotateKey({ description: "Price after discounts." })),
+  currentDiscountedPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Price after discounts, edits, and refunds." }),
+  ),
+  taxLines: taxLines.pipe(Schema.annotateKey({ description: "Taxes on the shipping line." })),
+  discountAllocations: discountAllocations.pipe(
+    Schema.annotateKey({ description: "Discounts on the line." }),
+  ),
 });
 
 export const OrderLineItemSchema = Schema.Struct({
-  id: Schema.String.pipe(field(601, "Unique line item identifier.")),
-  name: Schema.String.pipe(field(602, "Product and variant name.")),
-  title: Schema.String.pipe(field(603, "Product title.")),
-  variantTitle: Schema.NullOr(Schema.String).pipe(field(604, "Variant title.")),
-  sku: Schema.NullOr(Schema.String).pipe(field(605, "Stock keeping unit.")),
-  vendor: Schema.NullOr(Schema.String).pipe(field(606, "Product vendor.")),
-  productId: Schema.NullOr(Schema.String).pipe(field(607, "Product identifier.")),
-  variantId: Schema.NullOr(Schema.String).pipe(field(608, "Product variant identifier.")),
-  quantity: Schema.Int.pipe(field(609, "Quantity when the order was placed.")),
-  currentQuantity: Schema.Int.pipe(field(610, "Quantity after removals and refunds.")),
-  taxable: Schema.Boolean.pipe(field(611, "Whether the line item is taxable.")),
-  requiresShipping: Schema.Boolean.pipe(field(612, "Whether the line item needs shipping.")),
-  isGiftCard: Schema.Boolean.pipe(field(613, "Whether the line item is a gift card.")),
-  originalUnitPriceSet: moneyBag(630).pipe(field(614, "Unit price before discounts.")),
-  totalDiscountSet: moneyBag(640).pipe(field(615, "Total discount on the line.")),
-  taxLines: taxLines(650).pipe(field(616, "Taxes on the line.")),
-  discountAllocations: discountAllocations(670).pipe(field(617, "Discounts on the line.")),
-  customAttributes: attributes(690).pipe(field(618, "Custom line properties.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique line item identifier." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Product and variant name." })),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Product title." })),
+  variantTitle: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Variant title." }),
+  ),
+  sku: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Stock keeping unit." }),
+  ),
+  vendor: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Product vendor." })),
+  productId: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Product identifier." }),
+  ),
+  variantId: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Product variant identifier." }),
+  ),
+  quantity: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Quantity when the order was placed." }),
+  ),
+  currentQuantity: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Quantity after removals and refunds." }),
+  ),
+  taxable: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the line item is taxable." }),
+  ),
+  requiresShipping: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the line item needs shipping." }),
+  ),
+  isGiftCard: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the line item is a gift card." }),
+  ),
+  originalUnitPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Unit price before discounts." }),
+  ),
+  totalDiscountSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Total discount on the line." }),
+  ),
+  taxLines: taxLines.pipe(Schema.annotateKey({ description: "Taxes on the line." })),
+  discountAllocations: discountAllocations.pipe(
+    Schema.annotateKey({ description: "Discounts on the line." }),
+  ),
+  customAttributes: attributes.pipe(Schema.annotateKey({ description: "Custom line properties." })),
 });
 
 export const OrderSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Unique order identifier.")),
-  legacyResourceId: Schema.String.pipe(field(2, "Numeric order identifier stored as text.")),
-  name: Schema.String.pipe(field(3, "Order name shown to the merchant.")),
-  email: Schema.NullOr(Schema.String).pipe(field(4, "Email used for the order.")),
-  phone: Schema.NullOr(Schema.String).pipe(field(5, "Phone used for the order.")),
-  customerId: Schema.NullOr(Schema.String).pipe(field(6, "Customer identifier.")),
-  customerLocale: Schema.NullOr(Schema.String).pipe(field(7, "Customer language.")),
-  customerAcceptsMarketing: Schema.Boolean.pipe(field(8, "Whether the buyer accepts marketing.")),
-  billingAddress: Schema.NullOr(address(100)).pipe(field(9, "Billing address.")),
-  shippingAddress: Schema.NullOr(address(120)).pipe(field(10, "Shipping address.")),
-  note: Schema.NullOr(Schema.String).pipe(field(11, "Order note.")),
-  customAttributes: attributes(140).pipe(field(12, "Custom order attributes.")),
-  tags: Schema.Array(Schema.String.annotate({ fieldId: 150 })).pipe(
-    field(13, "Tags added to the order."),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique order identifier." })),
+  legacyResourceId: Schema.String.pipe(
+    Schema.annotateKey({ description: "Numeric order identifier stored as text." }),
   ),
-  confirmationNumber: Schema.NullOr(Schema.String).pipe(field(14, "Confirmation number.")),
-  poNumber: Schema.NullOr(Schema.String).pipe(field(15, "Purchase order number.")),
-  sourceName: Schema.NullOr(Schema.String).pipe(field(16, "Channel that created the order.")),
-  sourceIdentifier: Schema.NullOr(Schema.String).pipe(field(17, "Identifier from the source.")),
-  appId: Schema.NullOr(Schema.String).pipe(field(18, "App that created the order.")),
-  paymentGatewayNames: Schema.Array(Schema.String.annotate({ fieldId: 152 })).pipe(
-    field(19, "Payment gateways used."),
+  name: Schema.String.pipe(
+    Schema.annotateKey({ description: "Order name shown to the merchant." }),
   ),
-  test: Schema.Boolean.pipe(field(20, "Whether the order is a test order.")),
-  taxesIncluded: Schema.Boolean.pipe(field(21, "Whether prices include taxes.")),
-  taxExempt: Schema.Boolean.pipe(field(22, "Whether the order is exempt from tax.")),
-  dutiesIncluded: Schema.Boolean.pipe(field(23, "Whether prices include duties.")),
-  estimatedTaxes: Schema.Boolean.pipe(field(24, "Whether taxes are estimates.")),
-  totalWeight: Schema.NullOr(Schema.Int).pipe(field(25, "Total weight in grams.")),
+  email: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Email used for the order." }),
+  ),
+  phone: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Phone used for the order." }),
+  ),
+  customerId: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Customer identifier." }),
+  ),
+  customerLocale: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Customer language." }),
+  ),
+  customerAcceptsMarketing: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the buyer accepts marketing." }),
+  ),
+  billingAddress: Schema.NullOr(address).pipe(
+    Schema.annotateKey({ description: "Billing address." }),
+  ),
+  shippingAddress: Schema.NullOr(address).pipe(
+    Schema.annotateKey({ description: "Shipping address." }),
+  ),
+  note: Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description: "Order note." })),
+  customAttributes: attributes.pipe(
+    Schema.annotateKey({ description: "Custom order attributes." }),
+  ),
+  tags: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Tags added to the order." }),
+  ),
+  confirmationNumber: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Confirmation number." }),
+  ),
+  poNumber: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Purchase order number." }),
+  ),
+  sourceName: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Channel that created the order." }),
+  ),
+  sourceIdentifier: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Identifier from the source." }),
+  ),
+  appId: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "App that created the order." }),
+  ),
+  paymentGatewayNames: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Payment gateways used." }),
+  ),
+  test: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the order is a test order." }),
+  ),
+  taxesIncluded: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether prices include taxes." }),
+  ),
+  taxExempt: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the order is exempt from tax." }),
+  ),
+  dutiesIncluded: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether prices include duties." }),
+  ),
+  estimatedTaxes: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether taxes are estimates." }),
+  ),
+  totalWeight: Schema.NullOr(Schema.Int).pipe(
+    Schema.annotateKey({ description: "Total weight in grams." }),
+  ),
   displayFinancialStatus: Schema.NullOr(OrderFinancialStatusSchema).pipe(
-    field(26, "Payment status of the order."),
+    Schema.annotateKey({ description: "Payment status of the order." }),
   ),
   cancelReason: Schema.NullOr(OrderCancelReasonSchema).pipe(
-    field(27, "Reason the order was cancelled."),
+    Schema.annotateKey({ description: "Reason the order was cancelled." }),
   ),
-  cancelledAt: Schema.NullOr(Schema.Date).pipe(field(28, "Time when the order was cancelled.")),
-  closedAt: Schema.NullOr(Schema.Date).pipe(field(29, "Time when the order was closed.")),
-  processedAt: Schema.Date.pipe(field(30, "Time when the order was processed.")),
-  createdAt: Schema.Date.pipe(field(31, "Time when the order was created.")),
-  updatedAt: Schema.Date.pipe(field(32, "Time when the order was last changed.")),
-  currencyCode: Schema.String.pipe(field(33, "Shop currency code.")),
-  presentmentCurrencyCode: Schema.String.pipe(field(34, "Customer currency code.")),
-  discountCodes: Schema.Array(Schema.String.annotate({ fieldId: 151 })).pipe(
-    field(35, "Discount codes used."),
+  cancelledAt: Schema.NullOr(Schema.Date).pipe(
+    Schema.annotateKey({ description: "Time when the order was cancelled." }),
   ),
-  discountApplications: Schema.Array(DiscountApplicationSchema.annotate({ fieldId: 160 })).pipe(
-    field(36, "Discounts applied to the order."),
+  closedAt: Schema.NullOr(Schema.Date).pipe(
+    Schema.annotateKey({ description: "Time when the order was closed." }),
   ),
-  subtotalPriceSet: Schema.NullOr(moneyBag(200)).pipe(
-    field(37, "Subtotal when the order was placed."),
+  processedAt: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time when the order was processed." }),
   ),
-  currentSubtotalPriceSet: moneyBag(210).pipe(field(38, "Subtotal after edits and refunds.")),
-  totalDiscountsSet: Schema.NullOr(moneyBag(220)).pipe(
-    field(39, "Discounts when the order was placed."),
+  createdAt: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time when the order was created." }),
   ),
-  currentTotalDiscountsSet: moneyBag(230).pipe(field(40, "Discounts after edits and refunds.")),
-  totalShippingPriceSet: moneyBag(240).pipe(field(41, "Shipping when the order was placed.")),
-  currentShippingPriceSet: moneyBag(250).pipe(field(42, "Shipping after edits and refunds.")),
-  totalTaxSet: Schema.NullOr(moneyBag(260)).pipe(field(43, "Tax when the order was placed.")),
-  currentTotalTaxSet: moneyBag(270).pipe(field(44, "Tax after edits and refunds.")),
-  originalTotalDutiesSet: Schema.NullOr(moneyBag(280)).pipe(
-    field(45, "Duties when the order was placed."),
+  updatedAt: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time when the order was last changed." }),
   ),
-  currentTotalDutiesSet: Schema.NullOr(moneyBag(290)).pipe(
-    field(46, "Duties after edits and refunds."),
+  currencyCode: Schema.String.pipe(Schema.annotateKey({ description: "Shop currency code." })),
+  presentmentCurrencyCode: Schema.String.pipe(
+    Schema.annotateKey({ description: "Customer currency code." }),
   ),
-  totalPriceSet: moneyBag(300).pipe(field(47, "Total when the order was placed.")),
-  currentTotalPriceSet: moneyBag(310).pipe(field(48, "Total after edits and refunds.")),
-  taxLines: taxLines(400).pipe(field(49, "Taxes when the order was placed.")),
-  shippingLines: Schema.Array(ShippingLineSchema.annotate({ fieldId: 500 })).pipe(
-    field(50, "Shipping lines, including removed ones."),
+  discountCodes: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Discount codes used." }),
   ),
-  lineItems: Schema.Array(OrderLineItemSchema.annotate({ fieldId: 600 })).pipe(
-    field(51, "Line items in the order."),
+  discountApplications: Schema.Array(DiscountApplicationSchema).pipe(
+    Schema.annotateKey({ description: "Discounts applied to the order." }),
   ),
-  _deleted: Schema.optional(Schema.Boolean).pipe(field(52, "Whether the order was deleted.")),
+  subtotalPriceSet: Schema.NullOr(moneyBag).pipe(
+    Schema.annotateKey({ description: "Subtotal when the order was placed." }),
+  ),
+  currentSubtotalPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Subtotal after edits and refunds." }),
+  ),
+  totalDiscountsSet: Schema.NullOr(moneyBag).pipe(
+    Schema.annotateKey({ description: "Discounts when the order was placed." }),
+  ),
+  currentTotalDiscountsSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Discounts after edits and refunds." }),
+  ),
+  totalShippingPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Shipping when the order was placed." }),
+  ),
+  currentShippingPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Shipping after edits and refunds." }),
+  ),
+  totalTaxSet: Schema.NullOr(moneyBag).pipe(
+    Schema.annotateKey({ description: "Tax when the order was placed." }),
+  ),
+  currentTotalTaxSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Tax after edits and refunds." }),
+  ),
+  originalTotalDutiesSet: Schema.NullOr(moneyBag).pipe(
+    Schema.annotateKey({ description: "Duties when the order was placed." }),
+  ),
+  currentTotalDutiesSet: Schema.NullOr(moneyBag).pipe(
+    Schema.annotateKey({ description: "Duties after edits and refunds." }),
+  ),
+  totalPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Total when the order was placed." }),
+  ),
+  currentTotalPriceSet: moneyBag.pipe(
+    Schema.annotateKey({ description: "Total after edits and refunds." }),
+  ),
+  taxLines: taxLines.pipe(Schema.annotateKey({ description: "Taxes when the order was placed." })),
+  shippingLines: Schema.Array(ShippingLineSchema).pipe(
+    Schema.annotateKey({ description: "Shipping lines, including removed ones." }),
+  ),
+  lineItems: Schema.Array(OrderLineItemSchema).pipe(
+    Schema.annotateKey({ description: "Line items in the order." }),
+  ),
+  _deleted: Schema.optional(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the order was deleted." }),
+  ),
 })
   .annotate({
     description: "Orders in a Shopify store.",

@@ -16,18 +16,18 @@ const Long = Schema.Int.pipe(
 );
 
 export const PostSchema = Schema.Struct({
-  id: Long.pipe(Iceberg.field(1, { description: "Post ID." })),
-  userId: Long.pipe(Iceberg.field(2, { description: "Author ID." })),
-  title: Schema.String.pipe(Iceberg.field(3, { description: "Post title." })),
-  body: Schema.String.pipe(Iceberg.field(4, { description: "Post text." })),
+  id: Long.pipe(Schema.annotateKey({ description: "Post ID." })),
+  userId: Long.pipe(Schema.annotateKey({ description: "Author ID." })),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Post title." })),
+  body: Schema.String.pipe(Schema.annotateKey({ description: "Post text." })),
   version: Schema.String.pipe(
     Schema.withDecodingDefaultKey(Effect.succeed(initialVersion)),
-    Iceberg.field(5, { description: "Time used to order post changes." }),
+    Schema.annotateKey({ description: "Time used to order post changes." }),
   ),
   // Rows say `false`, so a restored post comes back. Deletes send `true`.
   _deleted: Schema.Boolean.pipe(
     Schema.withDecodingDefaultKey(Effect.succeed(false)),
-    Iceberg.field(6, { description: "Whether the post was deleted." }),
+    Schema.annotateKey({ description: "Whether the post was deleted." }),
   ),
 })
   .annotate({ description: "Posts." })

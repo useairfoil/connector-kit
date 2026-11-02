@@ -1,82 +1,136 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Metadata, UnixTime, field, version } from "./shared";
+import { Long, Metadata, UnixTime, version } from "./shared";
 
 export const SubscriptionItemSchema = Schema.Struct({
-  id: Schema.String.pipe(field(301, "Unique subscription item identifier.")),
-  created: UnixTime.pipe(field(302, "Time when the item was created.")),
+  id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Unique subscription item identifier." }),
+  ),
+  created: UnixTime.pipe(Schema.annotateKey({ description: "Time when the item was created." })),
   price: Schema.Struct({
-    id: Schema.String.pipe(field(304, "Price identifier.")),
-    product: Schema.String.pipe(field(305, "Product the price belongs to.")),
-  }).pipe(field(303, "Price of the item.")),
+    id: Schema.String.pipe(Schema.annotateKey({ description: "Price identifier." })),
+    product: Schema.String.pipe(
+      Schema.annotateKey({ description: "Product the price belongs to." }),
+    ),
+  }).pipe(Schema.annotateKey({ description: "Price of the item." })),
   // Metered items have no quantity.
-  quantity: Schema.optional(Long).pipe(field(306, "Quantity billed for the item.")),
-  current_period_start: UnixTime.pipe(field(307, "Start of the item's current billing period.")),
-  current_period_end: UnixTime.pipe(field(308, "End of the item's current billing period.")),
+  quantity: Schema.optional(Long).pipe(
+    Schema.annotateKey({ description: "Quantity billed for the item." }),
+  ),
+  current_period_start: UnixTime.pipe(
+    Schema.annotateKey({ description: "Start of the item's current billing period." }),
+  ),
+  current_period_end: UnixTime.pipe(
+    Schema.annotateKey({ description: "End of the item's current billing period." }),
+  ),
 });
 
 export type SubscriptionItem = Schema.Schema.Type<typeof SubscriptionItemSchema>;
 
 export const SubscriptionSchema = Schema.Struct({
-  id: Schema.String.pipe(field(1, "Unique subscription identifier.")),
-  version: version(2),
-  created: UnixTime.pipe(field(3, "Time when the subscription was created.")),
-  livemode: Schema.Boolean.pipe(field(4, "Whether the subscription exists in live mode.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique subscription identifier." })),
+  version,
+  created: UnixTime.pipe(
+    Schema.annotateKey({ description: "Time when the subscription was created." }),
+  ),
+  livemode: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the subscription exists in live mode." }),
+  ),
   // Stripe documents this as required, but accounts can use customer_account instead.
-  customer: Schema.NullOr(Schema.String).pipe(field(5, "Customer who owns the subscription.")),
+  customer: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Customer who owns the subscription." }),
+  ),
   customer_account: Schema.NullOr(Schema.String).pipe(
-    field(6, "Account that represents the customer, for Accounts v2."),
+    Schema.annotateKey({ description: "Account that represents the customer, for Accounts v2." }),
   ),
   status: Schema.String.pipe(
-    field(7, "Status, such as trialing, active, past_due, canceled, unpaid, or paused."),
+    Schema.annotateKey({
+      description: "Status, such as trialing, active, past_due, canceled, unpaid, or paused.",
+    }),
   ),
-  currency: Schema.String.pipe(field(8, "Three-letter currency code, in lowercase.")),
+  currency: Schema.String.pipe(
+    Schema.annotateKey({ description: "Three-letter currency code, in lowercase." }),
+  ),
   collection_method: Schema.String.pipe(
-    field(9, "How invoices are paid: charge_automatically or send_invoice."),
+    Schema.annotateKey({
+      description: "How invoices are paid: charge_automatically or send_invoice.",
+    }),
   ),
-  start_date: UnixTime.pipe(field(10, "Time when the subscription started. Can be backdated.")),
-  billing_cycle_anchor: UnixTime.pipe(field(11, "Reference point for billing dates.")),
-  cancel_at: Schema.NullOr(UnixTime).pipe(field(12, "Time when the subscription will cancel.")),
+  start_date: UnixTime.pipe(
+    Schema.annotateKey({ description: "Time when the subscription started. Can be backdated." }),
+  ),
+  billing_cycle_anchor: UnixTime.pipe(
+    Schema.annotateKey({ description: "Reference point for billing dates." }),
+  ),
+  cancel_at: Schema.NullOr(UnixTime).pipe(
+    Schema.annotateKey({ description: "Time when the subscription will cancel." }),
+  ),
   cancel_at_period_end: Schema.Boolean.pipe(
-    field(13, "Whether the subscription cancels at the end of the period."),
+    Schema.annotateKey({
+      description: "Whether the subscription cancels at the end of the period.",
+    }),
   ),
-  canceled_at: Schema.NullOr(UnixTime).pipe(field(14, "Time when cancellation was requested.")),
-  ended_at: Schema.NullOr(UnixTime).pipe(field(15, "Time when the subscription ended.")),
-  trial_start: Schema.NullOr(UnixTime).pipe(field(16, "Start of the trial.")),
-  trial_end: Schema.NullOr(UnixTime).pipe(field(17, "End of the trial.")),
+  canceled_at: Schema.NullOr(UnixTime).pipe(
+    Schema.annotateKey({ description: "Time when cancellation was requested." }),
+  ),
+  ended_at: Schema.NullOr(UnixTime).pipe(
+    Schema.annotateKey({ description: "Time when the subscription ended." }),
+  ),
+  trial_start: Schema.NullOr(UnixTime).pipe(
+    Schema.annotateKey({ description: "Start of the trial." }),
+  ),
+  trial_end: Schema.NullOr(UnixTime).pipe(Schema.annotateKey({ description: "End of the trial." })),
   days_until_due: Schema.NullOr(Long).pipe(
-    field(18, "Days to pay invoices. Only set for send_invoice."),
+    Schema.annotateKey({ description: "Days to pay invoices. Only set for send_invoice." }),
   ),
   default_payment_method: Schema.NullOr(Schema.String).pipe(
-    field(19, "Default payment method of the subscription."),
+    Schema.annotateKey({ description: "Default payment method of the subscription." }),
   ),
-  latest_invoice: Schema.NullOr(Schema.String).pipe(field(20, "Most recent invoice.")),
-  schedule: Schema.NullOr(Schema.String).pipe(field(21, "Subscription schedule, if any.")),
-  description: Schema.NullOr(Schema.String).pipe(field(22, "Description shown to the customer.")),
+  latest_invoice: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Most recent invoice." }),
+  ),
+  schedule: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Subscription schedule, if any." }),
+  ),
+  description: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Description shown to the customer." }),
+  ),
   cancellation_details: Schema.NullOr(
     Schema.Struct({
-      reason: Schema.NullOr(Schema.String).pipe(field(100, "Why the subscription was canceled.")),
+      reason: Schema.NullOr(Schema.String).pipe(
+        Schema.annotateKey({ description: "Why the subscription was canceled." }),
+      ),
       feedback: Schema.NullOr(Schema.String).pipe(
-        field(101, "Reason the customer picked when canceling."),
+        Schema.annotateKey({ description: "Reason the customer picked when canceling." }),
       ),
       comment: Schema.NullOr(Schema.String).pipe(
-        field(102, "Free-text comment from the customer."),
+        Schema.annotateKey({ description: "Free-text comment from the customer." }),
       ),
     }),
-  ).pipe(field(23, "Why the subscription was canceled.")),
+  ).pipe(Schema.annotateKey({ description: "Why the subscription was canceled." })),
   pause_collection: Schema.NullOr(
     Schema.Struct({
-      behavior: Schema.String.pipe(field(110, "What happens to invoices while paused.")),
-      resumes_at: Schema.NullOr(UnixTime).pipe(field(111, "Time when collection resumes.")),
+      behavior: Schema.String.pipe(
+        Schema.annotateKey({ description: "What happens to invoices while paused." }),
+      ),
+      resumes_at: Schema.NullOr(UnixTime).pipe(
+        Schema.annotateKey({ description: "Time when collection resumes." }),
+      ),
     }),
-  ).pipe(field(24, "Paused payment collection. Not the same as status paused.")),
-  items: Schema.Array(SubscriptionItemSchema.annotate({ fieldId: 300 })).pipe(
-    field(25, "All items of the subscription."),
+  ).pipe(
+    Schema.annotateKey({
+      description: "Paused payment collection. Not the same as status paused.",
+    }),
   ),
-  metadata: Metadata.pipe(field(26, "Key-value pairs set on the subscription.")),
+  items: Schema.Array(SubscriptionItemSchema).pipe(
+    Schema.annotateKey({ description: "All items of the subscription." }),
+  ),
+  metadata: Metadata.pipe(
+    Schema.annotateKey({ description: "Key-value pairs set on the subscription." }),
+  ),
   test_clock: Schema.NullOr(Schema.String).pipe(
-    field(27, "Test clock the subscription belongs to. Sandbox only."),
+    Schema.annotateKey({ description: "Test clock the subscription belongs to. Sandbox only." }),
   ),
 })
   .annotate({

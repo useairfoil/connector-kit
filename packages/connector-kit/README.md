@@ -162,33 +162,3 @@ A demo lists its `setup` and `group` tables and builds their rows with
 rows can point to them. Required fields a row leaves out get placeholder values
 from the row schema. Every row is checked against its row schema before it's
 written.
-
-## Iceberg field IDs
-
-Give each field a unique ID. Keep its ID if you rename it, and never reuse an ID
-after removing a field. Use `Iceberg.field` for struct fields. Put list element
-and map key/value IDs on their schemas with `.annotate({ fieldId })`.
-
-```ts
-import { Iceberg } from "@useairfoil/connector-kit";
-import { Schema } from "effect";
-
-const Row = Schema.Struct({
-  id: Schema.String.pipe(Iceberg.field(1, { description: "Row ID." })),
-  tags: Schema.Array(Schema.String.annotate({ fieldId: 101 })).pipe(
-    Iceberg.field(2, { description: "Tags for the row." }),
-  ),
-})
-  .annotate({ description: "Example rows." })
-  .pipe(Iceberg.identifier("id"));
-```
-
-Hosted connectors create missing tables from these bindings.
-To create one manually, use the connector's `create-table <namespace.table>
---catalog <id>` command. It creates missing namespaces and tables, and accepts
-existing tables only when their schemas match. Use `--resource <name>` if the
-table name differs from the resource.
-
-Table preparation also creates missing namespaces. Tables must be unencrypted,
-unpartitioned Iceberg v3 tables. Preparation and startup reject unsupported tables
-without migrating them.

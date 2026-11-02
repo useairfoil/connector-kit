@@ -1,8 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation } from "effect";
-
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
 
 /** IDs and counts. Connector Kit maps whole numbers to Iceberg longs. */
 export const Long = Schema.Int.pipe(
@@ -42,45 +38,39 @@ export const optionalList = <S extends Schema.Top>(item: S) =>
     ),
   );
 
-// Each helper takes the first field ID of its block.
-export const user = (baseId: number) =>
-  Schema.Struct({
-    id: Long.pipe(field(baseId, "GitHub user ID.")),
-    login: Schema.String.pipe(field(baseId + 1, "GitHub username.")),
-    type: Schema.String.pipe(
-      field(baseId + 2, "Account type, such as User, Bot, or Organization."),
-    ),
-  });
+export const user = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "GitHub user ID." })),
+  login: Schema.String.pipe(Schema.annotateKey({ description: "GitHub username." })),
+  type: Schema.String.pipe(
+    Schema.annotateKey({ description: "Account type, such as User, Bot, or Organization." }),
+  ),
+});
 
-export const label = (baseId: number) =>
-  Schema.Struct({
-    id: Long.pipe(field(baseId, "Label ID.")),
-    name: Schema.String.pipe(field(baseId + 1, "Label name.")),
-  });
+export const label = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "Label ID." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Label name." })),
+});
 
-export const milestone = (baseId: number) =>
-  Schema.Struct({
-    id: Long.pipe(field(baseId, "Milestone ID.")),
-    number: Long.pipe(field(baseId + 1, "Milestone number in the repository.")),
-    title: Schema.String.pipe(field(baseId + 2, "Milestone title.")),
-  });
+export const milestone = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "Milestone ID." })),
+  number: Long.pipe(Schema.annotateKey({ description: "Milestone number in the repository." })),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Milestone title." })),
+});
 
-/** A list column. The element ID is separate from the column's field ID. */
-export const list = <S extends Schema.Top>(elementId: number, item: S) =>
-  Schema.Array(item.annotate({ fieldId: elementId }));
-
-export const version = (fieldId: number, object: string) =>
-  Schema.Date.pipe(field(fieldId, `Time GitHub last updated the ${object}.`));
+export const version = (object: string) =>
+  Schema.Date.pipe(Schema.annotateKey({ description: `Time GitHub last updated the ${object}.` }));
 
 /** For objects without an update time. A newer read wins. */
-export const readVersion = (fieldId: number, object: string) =>
+export const readVersion = (object: string) =>
   Schema.Date.pipe(
-    field(fieldId, `Time the connector read the ${object}. GitHub has no update time for it.`),
+    Schema.annotateKey({
+      description: `Time the connector read the ${object}. GitHub has no update time for it.`,
+    }),
   );
 
-export const deleted = (fieldId: number, object: string) =>
+export const deleted = (object: string) =>
   Schema.optional(Schema.Boolean).pipe(
-    field(fieldId, `Whether the ${object} was deleted in GitHub.`),
+    Schema.annotateKey({ description: `Whether the ${object} was deleted in GitHub.` }),
   );
 
 export const ObjectRefSchema = Schema.Struct({ id: Long });

@@ -1,8 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
-
-export const field = (fieldId: number, description: string) =>
-  Iceberg.field(fieldId, { description });
 
 const MetadataSchema = Schema.Record(
   Schema.String,
@@ -22,45 +18,49 @@ export const DiscountAmountsJsonSchema = Schema.flip(
   Schema.fromJsonString(Schema.Record(Schema.String, Schema.Int)),
 );
 
-export const date = (fieldId: number, description: string) =>
-  Schema.DateFromString.pipe(field(fieldId, description));
+export const date = (description: string) =>
+  Schema.DateFromString.pipe(Schema.annotateKey({ description }));
 
-export const nullableDate = (fieldId: number, description: string) =>
-  Schema.NullOr(Schema.DateFromString).pipe(field(fieldId, description));
+export const nullableDate = (description: string) =>
+  Schema.NullOr(Schema.DateFromString).pipe(Schema.annotateKey({ description }));
 
-export const makeAddressSchema = (baseId: number) => {
-  const id = Iceberg.ids(baseId);
-
-  return Schema.Struct({
-    country: Schema.String.pipe(field(id(1), "Country code for the address.")),
-    line1: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-      field(id(2), "First line of the address."),
-    ),
-    line2: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-      field(id(3), "Second line of the address."),
-    ),
-    postal_code: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-      field(id(4), "Postal code for the address."),
-    ),
-    city: Schema.optional(Schema.NullOr(Schema.String)).pipe(field(id(5), "City for the address.")),
-    state: Schema.optional(Schema.NullOr(Schema.String)).pipe(
-      field(id(6), "State or region for the address."),
-    ),
-  });
-};
-
-export const AddressSchema = makeAddressSchema(100);
+export const AddressSchema = Schema.Struct({
+  country: Schema.String.pipe(Schema.annotateKey({ description: "Country code for the address." })),
+  line1: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+    Schema.annotateKey({ description: "First line of the address." }),
+  ),
+  line2: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+    Schema.annotateKey({ description: "Second line of the address." }),
+  ),
+  postal_code: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+    Schema.annotateKey({ description: "Postal code for the address." }),
+  ),
+  city: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+    Schema.annotateKey({ description: "City for the address." }),
+  ),
+  state: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+    Schema.annotateKey({ description: "State or region for the address." }),
+  ),
+});
 
 export const OrderItemSchema = Schema.Struct({
-  id: Schema.String.pipe(field(202, "Unique order item identifier.")),
-  created_at: date(203, "Time when the order item was created."),
-  modified_at: nullableDate(204, "Time when the order item was last changed."),
-  label: Schema.String.pipe(field(205, "Display label for the order item.")),
-  amount: Schema.Int.pipe(field(206, "Order item amount in the smallest currency unit.")),
-  tax_amount: Schema.Int.pipe(field(207, "Tax amount in the smallest currency unit.")),
-  proration: Schema.Boolean.pipe(field(208, "Whether the item is a proration.")),
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Unique order item identifier." })),
+  created_at: date("Time when the order item was created."),
+  modified_at: nullableDate("Time when the order item was last changed."),
+  label: Schema.String.pipe(
+    Schema.annotateKey({ description: "Display label for the order item." }),
+  ),
+  amount: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Order item amount in the smallest currency unit." }),
+  ),
+  tax_amount: Schema.Int.pipe(
+    Schema.annotateKey({ description: "Tax amount in the smallest currency unit." }),
+  ),
+  proration: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the item is a proration." }),
+  ),
   product_price_id: Schema.NullOr(Schema.String).pipe(
-    field(209, "Product price linked to the item."),
+    Schema.annotateKey({ description: "Product price linked to the item." }),
   ),
 });
 

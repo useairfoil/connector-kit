@@ -1,26 +1,23 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import {
-  ActorSchema,
-  ExternalIssueSchema,
-  Optional,
-  Ref,
-  Timestamp,
-  common,
-  field,
-  list,
-} from "./shared";
+import { ActorSchema, ExternalIssueSchema, Optional, Ref, Timestamp, common } from "./shared";
 
 export const PostmortemDocumentSchema = Schema.Struct({
   ...common("Post-mortem document"),
-  incident_id: Schema.String.pipe(field(10, "Incident.")),
-  title: Schema.String.pipe(field(11, "Document title.")),
-  status: Schema.String.pipe(field(12, "in_progress, in_review, or completed.")),
-  type: Schema.String.pipe(field(13, "in_app or external.")),
-  document_url: Schema.String.pipe(field(14, "Document URL.")),
-  exported_urls: list(101, Schema.String).pipe(field(15, "URLs of exported copies.")),
-  editor_ids: list(102, Schema.String).pipe(field(16, "Users who edited it.")),
+  incident_id: Schema.String.pipe(Schema.annotateKey({ description: "Incident." })),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Document title." })),
+  status: Schema.String.pipe(
+    Schema.annotateKey({ description: "in_progress, in_review, or completed." }),
+  ),
+  type: Schema.String.pipe(Schema.annotateKey({ description: "in_app or external." })),
+  document_url: Schema.String.pipe(Schema.annotateKey({ description: "Document URL." })),
+  exported_urls: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "URLs of exported copies." }),
+  ),
+  editor_ids: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Users who edited it." }),
+  ),
 })
   .annotate({ description: "incident.io post-mortem documents, without their text." })
   .pipe(Iceberg.identifier("id"));
@@ -44,22 +41,42 @@ export type PostmortemDocumentObject = Schema.Schema.Type<typeof PostmortemDocum
 
 export const FollowUpSchema = Schema.Struct({
   ...common("Follow-up"),
-  incident_id: Schema.String.pipe(field(10, "Incident.")),
-  title: Schema.String.pipe(field(11, "Follow-up title.")),
-  description: Optional(Schema.String).pipe(field(12, "Description in markdown.")),
-  status: Schema.String.pipe(field(13, "outstanding, completed, deleted, or not_doing.")),
-  assignee_id: Optional(Schema.String).pipe(field(14, "Assigned user.")),
-  assignee_team_id: Optional(Schema.String).pipe(field(15, "Assigned team.")),
-  category_id: Optional(Schema.String).pipe(field(16, "Category.")),
-  category_name: Optional(Schema.String).pipe(field(17, "Category name.")),
-  priority_id: Optional(Schema.String).pipe(field(18, "Priority.")),
-  priority_name: Optional(Schema.String).pipe(field(19, "Priority name.")),
-  labels: list(101, Schema.String).pipe(field(20, "Labels.")),
-  completed_at: Optional(Timestamp).pipe(field(21, "Time it was completed.")),
-  creator_user_id: Optional(Schema.String).pipe(field(22, "User who created it.")),
-  external_issue_provider: Optional(Schema.String).pipe(field(23, "Linked issue tracker.")),
-  external_issue_name: Optional(Schema.String).pipe(field(24, "Linked issue name.")),
-  external_issue_permalink: Optional(Schema.String).pipe(field(25, "Linked issue URL.")),
+  incident_id: Schema.String.pipe(Schema.annotateKey({ description: "Incident." })),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Follow-up title." })),
+  description: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Description in markdown." }),
+  ),
+  status: Schema.String.pipe(
+    Schema.annotateKey({ description: "outstanding, completed, deleted, or not_doing." }),
+  ),
+  assignee_id: Optional(Schema.String).pipe(Schema.annotateKey({ description: "Assigned user." })),
+  assignee_team_id: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Assigned team." }),
+  ),
+  category_id: Optional(Schema.String).pipe(Schema.annotateKey({ description: "Category." })),
+  category_name: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Category name." }),
+  ),
+  priority_id: Optional(Schema.String).pipe(Schema.annotateKey({ description: "Priority." })),
+  priority_name: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Priority name." }),
+  ),
+  labels: Schema.Array(Schema.String).pipe(Schema.annotateKey({ description: "Labels." })),
+  completed_at: Optional(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time it was completed." }),
+  ),
+  creator_user_id: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "User who created it." }),
+  ),
+  external_issue_provider: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Linked issue tracker." }),
+  ),
+  external_issue_name: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Linked issue name." }),
+  ),
+  external_issue_permalink: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Linked issue URL." }),
+  ),
 })
   .annotate({ description: "incident.io follow-ups: work to do after an incident." })
   .pipe(Iceberg.identifier("id"));
@@ -90,12 +107,18 @@ export type FollowUpObject = Schema.Schema.Type<typeof FollowUpObjectSchema>;
 
 export const ActionSchema = Schema.Struct({
   ...common("Action"),
-  incident_id: Schema.String.pipe(field(10, "Incident.")),
-  description: Schema.String.pipe(field(11, "What needs doing.")),
-  status: Schema.String.pipe(field(12, "outstanding, completed, deleted, or not_doing.")),
-  assignee_id: Optional(Schema.String).pipe(field(13, "Assigned user.")),
-  completed_at: Optional(Timestamp).pipe(field(14, "Time it was completed.")),
-  creator_user_id: Optional(Schema.String).pipe(field(15, "User who created it.")),
+  incident_id: Schema.String.pipe(Schema.annotateKey({ description: "Incident." })),
+  description: Schema.String.pipe(Schema.annotateKey({ description: "What needs doing." })),
+  status: Schema.String.pipe(
+    Schema.annotateKey({ description: "outstanding, completed, deleted, or not_doing." }),
+  ),
+  assignee_id: Optional(Schema.String).pipe(Schema.annotateKey({ description: "Assigned user." })),
+  completed_at: Optional(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time it was completed." }),
+  ),
+  creator_user_id: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "User who created it." }),
+  ),
 })
   .annotate({ description: "incident.io actions: work done during an incident." })
   .pipe(Iceberg.identifier("id"));

@@ -5,49 +5,63 @@ import { Effect } from "effect";
 import { PostSchema } from "../src/schemas";
 
 describe("producer-template Iceberg schemas", () => {
-  it.effect("compiles posts with explicit IDs and docs", () =>
+  it.effect("compiles posts with field docs", () =>
     Effect.gen(function* () {
-      const request = yield* Iceberg.makeCreateTableCommitRequest(PostSchema, {
+      const request = yield* Iceberg.makeCreateTableRequest(PostSchema, {
+        name: "rows",
         location: "s3://warehouse/posts",
-        uuid: "00000000-0000-4000-8000-000000000001",
       });
 
-      const update = request.updates.find((update) => update.action === "add-schema");
+      expect(
+        request.schema.fields
+          .filter((field) => request.schema["identifier-field-ids"]?.includes(field.id))
+          .map((field) => field.name),
+      ).toEqual(["id"]);
 
       expect(
-        update?.action === "add-schema" &&
-          update.schema.fields.map(({ id, name, doc }) => ({ id, name, doc })),
+        request.schema.fields.map(({ name, doc, required, type }) => ({
+          name,
+          doc,
+          required,
+          type,
+        })),
       ).toMatchInlineSnapshot(`
         [
           {
             "doc": "Post ID.",
-            "id": 1,
             "name": "id",
+            "required": true,
+            "type": "long",
           },
           {
             "doc": "Author ID.",
-            "id": 2,
             "name": "userId",
+            "required": false,
+            "type": "long",
           },
           {
             "doc": "Post title.",
-            "id": 3,
             "name": "title",
+            "required": false,
+            "type": "string",
           },
           {
             "doc": "Post text.",
-            "id": 4,
             "name": "body",
+            "required": false,
+            "type": "string",
           },
           {
             "doc": "Time used to order post changes.",
-            "id": 5,
             "name": "version",
+            "required": false,
+            "type": "string",
           },
           {
             "doc": "Whether the post was deleted.",
-            "id": 6,
             "name": "_deleted",
+            "required": false,
+            "type": "boolean",
           },
         ]
       `);
