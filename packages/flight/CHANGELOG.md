@@ -4,6 +4,13 @@
 
 <!-- Start content -->
 
+## 0.4.9
+
+### Patch Changes
+
+- d5fb3b5: Update apache-arrow to 21.2.0.
+- 225e545: Close the Flight source when a record batch reader stops early.
+
 ## 0.4.8
 
 Thu, 29 Oct 2026 08:35:20 GMT

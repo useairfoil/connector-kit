@@ -4,6 +4,22 @@
 
 <!-- Start content -->
 
+## 0.4.7
+
+### Patch Changes
+
+- d5fb3b5: readme: cleanup package readmes
+- d5fb3b5: Use the renamed @useairfoil/api client package.
+- d5fb3b5: Report the created catalog ID after the API's empty creation response.
+- d5fb3b5: Use the renamed engineUri catalog manager option.
+- d5fb3b5: Use EngineUri naming for the CLI server setting and describe --uri as the engine URI. The flag and default are unchanged.
+- Updated dependencies [d5fb3b5]
+- Updated dependencies [d5fb3b5]
+- Updated dependencies [d5fb3b5]
+- Updated dependencies [d5fb3b5]
+- Updated dependencies [d5fb3b5]
+  - @useairfoil/api@0.5.0
+
 ## 0.4.6
 
 Thu, 29 Oct 2026 08:35:20 GMT

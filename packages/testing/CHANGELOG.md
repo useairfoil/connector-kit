@@ -4,6 +4,22 @@
 
 <!-- Start content -->
 
+## 0.2.0
+
+### Minor Changes
+
+- d5fb3b5: Expose separate host and engine catalog URLs instead of guessing a shared LAN address. Remove AIRFOIL_TEST_CATALOG_HOST; external fixtures can set engineIcebergRestUri explicitly.
+- d5fb3b5: Expose accessKeyId and secretAccessKey on test engine instances and share their constants across the engine and SeaweedFS configuration.
+
+### Patch Changes
+
+- d5fb3b5: readme: cleanup package readmes
+- d5fb3b5: Fix test engine startup with explicit storage host mapping, local HTTP S3 access, and a readiness check for the dev server. Preserve startup error causes.
+- d5fb3b5: Rename @useairfoil/wings-testing to @useairfoil/testing and export the fixture as TestEngine.
+- 0d4a9da: Run storage engine fixtures on alpha10.
+- d5fb3b5: Update the integration fixture for the current storage engine and support table publication checks.
+- d5fb3b5: Publish integration data using the current engine worker and wait for a new Iceberg snapshot instead of invoking removed materialize and commit commands.
+
 ## 0.1.6
 
 Thu, 29 Oct 2026 08:35:20 GMT
