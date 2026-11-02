@@ -94,7 +94,7 @@ export const container = Layer.effect(Instance)(
     );
 
     const upstreamUri = `http://${seaweedfs.getHost()}:${seaweedfs.getMappedPort(8181)}`;
-    const image = "docker.useairfoil.com/airfoil/storage-engine:0.2.0-alpha.6";
+    const image = "docker.useairfoil.com/airfoil/storage-engine:0.2.0-alpha.10";
     const environment = {
       RUST_LOG: "info",
       SE_S3_BUCKET: "default-bucket",

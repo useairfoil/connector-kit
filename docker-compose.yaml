@@ -20,7 +20,7 @@ services:
       retries: 15
 
   engine:
-    image: docker.useairfoil.com/airfoil/storage-engine:0.2.0-alpha.6
+    image: docker.useairfoil.com/airfoil/storage-engine:0.2.0-alpha.10
     command:
       - dev
       - --server.address=0.0.0.0:7777

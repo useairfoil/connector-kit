@@ -48,7 +48,7 @@ export type DemoDefinition<
     readonly tables: Group;
     readonly rows: (index: number, context: DemoContext) => DemoRows<Group>;
     /**
-     * Groups written per chunk, 100 by default. A run can go over the size by
+     * Groups written per chunk, 1000 by default. A run can go over the size by
      * one chunk, so lower it when a group is big.
      */
     readonly groupsPerChunk?: number;

@@ -56,7 +56,7 @@ const add = (totals: DemoTotals, written: ReadonlyArray<readonly [string, Ingest
  */
 export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: RunOptions) {
   const ingestor = yield* Ingestor;
-  // The default keeps the widest demo rows below the engine's 4 MiB message limit.
+  // Wide rows may need a lower batch size to fit the engine's limits.
   const batchSize = yield* Schema.decodeUnknownEffect(Schema.Int.check(Schema.isGreaterThan(0)))(
     options.batchSize ?? 500,
   ).pipe(
@@ -86,27 +86,37 @@ export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: R
     tables: Effect.Success<ReturnType<typeof prepare>>,
     rowsOf: (name: string) => ReadonlyArray<object>,
   ) =>
-    Effect.forEach(tables, ({ table, fill, decode }) =>
-      Effect.forEach(rowsOf(table.name), (row) =>
-        decode(fill(context, row)).pipe(
-          Effect.mapError(
-            (cause) => new ConnectorError({ message: `Invalid demo row for ${table.name}`, cause }),
+    Effect.gen(function* () {
+      // Fill rows in table order before concurrent writes, keeping Faker deterministic.
+      const prepared = yield* Effect.forEach(tables, ({ table, fill, decode }) =>
+        Effect.forEach(rowsOf(table.name), (row) =>
+          decode(fill(context, row)).pipe(
+            Effect.mapError(
+              (cause) =>
+                new ConnectorError({ message: `Invalid demo row for ${table.name}`, cause }),
+            ),
           ),
-        ),
-      ).pipe(
-        Effect.flatMap((rows) =>
-          Effect.forEach(Arr.chunksOf(rows, batchSize), (batch) =>
-            ingestBatch({
-              connector: demo.name,
-              resource: table.name,
-              source: "demo",
-              batch: { rows: batch },
-            }),
-          ),
-        ),
-        Effect.map((results) => [table.name, sum(results)] as const),
-      ),
-    );
+        ).pipe(Effect.map((rows) => ({ table, rows }))),
+      );
+
+      // Share durable flushes with bounded parallel writes.
+      return yield* Effect.forEach(
+        prepared,
+        ({ table, rows }) =>
+          Effect.forEach(
+            Arr.chunksOf(rows, batchSize),
+            (rows) =>
+              ingestBatch({
+                connector: demo.name,
+                resource: table.name,
+                source: "demo",
+                batch: { rows },
+              }),
+            { concurrency: 8 },
+          ).pipe(Effect.map((results) => [table.name, sum(results)] as const)),
+        { concurrency: 4 },
+      );
+    });
 
   const setupTables = yield* prepare(demo.setup.tables);
   const groupTables = yield* prepare(demo.group.tables);
@@ -118,7 +128,7 @@ export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: R
     afterSetup.bytes >= options.bytes || groupTables.length === 0
       ? afterSetup
       : yield* Stream.range(0, (demo.group.count ?? Infinity) - 1).pipe(
-          Stream.grouped(options.groupsPerChunk ?? demo.group.groupsPerChunk ?? 100),
+          Stream.grouped(options.groupsPerChunk ?? demo.group.groupsPerChunk ?? 1000),
           Stream.mapEffect((indexes) => {
             const groups = indexes.map((index) => demo.group.rows(index, context));
             return write(groupTables, (name) => groups.flatMap((group) => group[name] ?? []));
