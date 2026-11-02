@@ -53,3 +53,5 @@ jobs:
           github-token: ${{ secrets.GIT_TOKEN }}
           version-script: pnpm run version-packages
           publish-script: pnpm run release
+          commit-message: "release: bump versions"
+          pr-title: release packages
