@@ -14,12 +14,14 @@ import { getCurrentSchema } from "iceberg-js";
 import { ConnectorError } from "../errors";
 import { IcebergSchemaError } from "../iceberg/error";
 import { compileTable, makeCreateRequest } from "../iceberg/table";
+import { retryCatalogRequest, type TableRetryOptions } from "./retry";
 
 type Catalog = Effect.Success<
   ReturnType<CatalogManager.CatalogManagerService["getIcebergCatalog"]>
 >;
 
 type TableOptions = {
+  readonly retry?: TableRetryOptions;
   readonly catalog: Pick<Catalog, "loadTable" | "createTable" | "createNamespaceIfNotExists">;
   readonly identifier: TableIdentifier;
   readonly location?: string | undefined;
@@ -196,21 +198,27 @@ export const ensureTable = (
 ): Effect.Effect<TableSchema, ConnectorError> =>
   Effect.gen(function* () {
     const table = yield* compileTable(schema);
-    const metadata = yield* options.catalog.loadTable(options.identifier).pipe(
+    const request = <A>(
+      effect: Effect.Effect<A, Effect.Error<ReturnType<Catalog["loadConfig"]>>>,
+    ) => retryCatalogRequest(effect, options.retry);
+    const metadata = yield* request(options.catalog.loadTable(options.identifier)).pipe(
       Effect.catchIf(
         (error) => error.status === 404,
         () =>
-          options.catalog
-            .createNamespaceIfNotExists({ namespace: options.identifier.namespace })
+          request(
+            options.catalog.createNamespaceIfNotExists({ namespace: options.identifier.namespace }),
+          )
             .pipe(
               Effect.andThen(
-                options.catalog.createTable(
-                  { namespace: options.identifier.namespace },
-                  makeCreateRequest(table, {
-                    name: options.identifier.name,
-                    location: options.location,
-                    properties: options.properties,
-                  }),
+                request(
+                  options.catalog.createTable(
+                    { namespace: options.identifier.namespace },
+                    makeCreateRequest(table, {
+                      name: options.identifier.name,
+                      location: options.location,
+                      properties: options.properties,
+                    }),
+                  ),
                 ),
               ),
             )
@@ -220,7 +228,7 @@ export const ensureTable = (
                 (error) => error.status === 409 || error.status === 412,
                 () => Effect.void,
               ),
-              Effect.flatMap(() => options.catalog.loadTable(options.identifier)),
+              Effect.flatMap(() => request(options.catalog.loadTable(options.identifier))),
             ),
       ),
     );

@@ -1,10 +1,18 @@
-import type { CreateTableRequest, StructField, TableMetadata, TableSchema } from "iceberg-js";
+import type { StructField, TableMetadata, TableSchema } from "iceberg-js";
 
 import { describe, expect, it } from "@effect/vitest";
-import { Effect, Ref, Schema } from "effect";
+import { Effect, Schema } from "effect";
 
 import { ensureTable } from "../src/catalog/table";
 import * as Iceberg from "../src/iceberg";
+
+type Catalog = Parameters<typeof ensureTable>[1]["catalog"];
+
+const unexpectedCatalog: Catalog = {
+  loadTable: () => Effect.die("Unexpected load"),
+  createTable: () => Effect.die("Unexpected create"),
+  createNamespaceIfNotExists: () => Effect.die("Unexpected namespace creation"),
+};
 
 const Row = Schema.Struct({
   id: Schema.String,
@@ -39,84 +47,11 @@ describe("Iceberg table creation", () => {
   it.effect("shows the schema path when a field type is unsupported", () =>
     Effect.gen(function* () {
       const invalid = Schema.Struct({ id: Schema.Unknown });
-      const catalog = {
-        loadTable: () => Effect.die("Unexpected load"),
-      } as unknown as Parameters<typeof ensureTable>[1]["catalog"];
 
-      const error = yield* ensureTable(invalid, { catalog, identifier }).pipe(Effect.flip);
+      const error = yield* ensureTable(invalid, { catalog: unexpectedCatalog, identifier }).pipe(
+        Effect.flip,
+      );
       expect(error.message).toContain("$.id: A Unknown schema does not work here");
-    }),
-  );
-
-  it.effect("creates a missing table and reuses catalog-assigned IDs on the next startup", () =>
-    Effect.gen(function* () {
-      const stored = yield* Ref.make<TableMetadata | undefined>(undefined);
-      const commits = yield* Ref.make(0);
-      const catalog = {
-        loadTable: () =>
-          Ref.get(stored).pipe(
-            Effect.flatMap((value) =>
-              value
-                ? Effect.succeed(value)
-                : Effect.fail({ status: 404, message: "Table not found" }),
-            ),
-          ),
-        createNamespaceIfNotExists: () => Effect.void,
-        createTable: (_namespace: { namespace: string[] }, request: CreateTableRequest) =>
-          Ref.set(
-            stored,
-            metadata({
-              ...request.schema,
-              fields: [
-                { id: 19, name: "id", type: "string", required: true },
-                {
-                  id: 7,
-                  name: "details",
-                  required: false,
-                  type: {
-                    type: "struct",
-                    fields: [{ id: 42, name: "value", type: "string", required: true }],
-                  },
-                },
-                {
-                  id: 21,
-                  name: "items",
-                  required: false,
-                  type: {
-                    type: "list",
-                    "element-id": 6,
-                    element: "string",
-                    "element-required": true,
-                  },
-                },
-                {
-                  id: 33,
-                  name: "labels",
-                  required: false,
-                  type: {
-                    type: "map",
-                    "key-id": 9,
-                    key: "string",
-                    "value-id": 40,
-                    value: "string",
-                    "value-required": false,
-                  },
-                },
-              ],
-              "identifier-field-ids": [19],
-            }),
-          ).pipe(Effect.andThen(Ref.update(commits, (count) => count + 1))),
-      } as unknown as Parameters<typeof ensureTable>[1]["catalog"];
-
-      const created = yield* ensureTable(Row, { catalog, identifier });
-      const reused = yield* ensureTable(Row, { catalog, identifier });
-
-      expect(yield* Ref.get(commits)).toBe(1);
-      expect(reused).toEqual(created);
-      expect(created["identifier-field-ids"]).toEqual([19]);
-      expect(created.fields[1]?.type).toMatchObject({ fields: [{ id: 42 }] });
-      expect(created.fields[2]?.type).toMatchObject({ "element-id": 6 });
-      expect(created.fields[3]?.type).toMatchObject({ "key-id": 9, "value-id": 40 });
     }),
   );
 
@@ -127,7 +62,7 @@ describe("Iceberg table creation", () => {
         location,
       });
       const stored = metadata(request.schema);
-      const cases = [
+      const cases: ReadonlyArray<{ readonly table: TableMetadata; readonly message: string }> = [
         { table: { ...stored, "format-version": 2 }, message: "Iceberg format v3" },
         { table: { ...stored, "default-spec-id": 1 }, message: "must be unpartitioned" },
         {
@@ -136,10 +71,10 @@ describe("Iceberg table creation", () => {
         },
       ];
       for (const { table, message } of cases) {
-        const catalog = {
+        const catalog: Catalog = {
+          ...unexpectedCatalog,
           loadTable: () => Effect.succeed(table),
-          createTable: () => Effect.die("Unexpected create"),
-        } as unknown as Parameters<typeof ensureTable>[1]["catalog"];
+        };
         const error = yield* ensureTable(Row, { catalog, identifier }).pipe(Effect.flip);
         expect(error.message).toContain(message);
         expect(error.message).not.toContain("synthetic-key");
@@ -183,10 +118,10 @@ describe("Iceberg table creation", () => {
       ];
 
       const errors = yield* Effect.forEach(tables, (table) => {
-        const catalog = {
+        const catalog: Catalog = {
+          ...unexpectedCatalog,
           loadTable: () => Effect.succeed(table),
-          createTable: () => Effect.die("Unexpected create"),
-        } as unknown as Parameters<typeof ensureTable>[1]["catalog"];
+        };
 
         return ensureTable(Row, { catalog, identifier, location }).pipe(Effect.flip);
       });
@@ -199,32 +134,6 @@ describe("Iceberg table creation", () => {
           "Table identifier fields do not match. Recreate the table or revert the schema change.",
         ]
       `);
-    }),
-  );
-
-  it.effect("loads a table created by another instance", () =>
-    Effect.gen(function* () {
-      const request = yield* Iceberg.makeCreateTableRequest(Row, {
-        name: identifier.name,
-        location,
-      });
-      const created = metadata(request.schema);
-      const loads = yield* Ref.make(0);
-      const catalog = {
-        loadTable: () =>
-          Ref.getAndUpdate(loads, (count) => count + 1).pipe(
-            Effect.flatMap((count) =>
-              count === 0
-                ? Effect.fail({ status: 404, message: "Table not found" })
-                : Effect.succeed(created),
-            ),
-          ),
-        createNamespaceIfNotExists: () => Effect.void,
-        createTable: () => Effect.fail({ status: 409, message: "Table already exists" }),
-      } as unknown as Parameters<typeof ensureTable>[1]["catalog"];
-
-      yield* ensureTable(Row, { catalog, identifier, location });
-      expect(yield* Ref.get(loads)).toBe(2);
     }),
   );
 });

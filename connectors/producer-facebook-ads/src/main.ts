@@ -6,7 +6,7 @@ import { Command } from "effect/cli";
 import { FetchHttpClient } from "effect/http";
 
 import packageJson from "../package.json";
-import { createTableCommand } from "./create-table";
+import { createTableCommand, setupCommand } from "./create-table";
 import { demoCommand } from "./demo";
 import { sandboxCommand } from "./sandbox";
 import { startCommand } from "./start";
@@ -14,7 +14,13 @@ import { startCommand } from "./start";
 const BootstrapLayer = Layer.mergeAll(FetchHttpClient.layer, NodeServices.layer);
 
 const program = Command.make("producer-facebook-ads", {}, () => Effect.void).pipe(
-  Command.withSubcommands([startCommand, sandboxCommand, createTableCommand, demoCommand]),
+  Command.withSubcommands([
+    setupCommand,
+    startCommand,
+    sandboxCommand,
+    createTableCommand,
+    demoCommand,
+  ]),
 );
 
 const cli = Command.run(program, { version: packageJson.version });
