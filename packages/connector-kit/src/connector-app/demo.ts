@@ -1,4 +1,4 @@
-import { DateTime, Effect, Option } from "effect";
+import { DateTime, Effect, Option, Schema } from "effect";
 import { Command, Flag } from "effect/cli";
 import humanFormat from "human-format";
 
@@ -23,16 +23,37 @@ export const makeDemoCommand = (demo: DemoDefinition) =>
         Flag.filterMap(parseSize, () => "a size like 512kB, 128MB or 1.5GB"),
       ),
       seed: Flag.Int("seed").pipe(Flag.optional),
+      batchSize: Flag.Int("batch-size").pipe(
+        Flag.withSchema(Schema.Int.check(Schema.isGreaterThan(0))),
+        Flag.withDescription("Maximum rows per ingestion batch (default: 500)"),
+        Flag.optional,
+      ),
+      checkpointIntervalSec: Flag.Int("checkpoint-interval-sec").pipe(
+        Flag.withSchema(Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 900 }))),
+        Flag.withDescription(
+          "Checkpoint interval for new tables in seconds (0 disables the interval delay)",
+        ),
+        Flag.optional,
+      ),
     },
-    ({ size, seed }) =>
+    ({ size, seed, batchSize, checkpointIntervalSec }) =>
       Effect.gen(function* () {
         const now = yield* DateTime.nowAsDate;
 
-        yield* run(demo, { bytes: size, seed: Option.getOrUndefined(seed), now }).pipe(
+        yield* run(demo, {
+          bytes: size,
+          seed: Option.getOrUndefined(seed),
+          batchSize: Option.getOrUndefined(batchSize),
+          now,
+        }).pipe(
           Effect.provide(
-            layerArrowFlightConfig({
-              resources: [...demo.setup.tables, ...demo.group.tables],
-            }),
+            layerArrowFlightConfig(
+              { resources: [...demo.setup.tables, ...demo.group.tables] },
+              Option.match(checkpointIntervalSec, {
+                onNone: () => undefined,
+                onSome: (seconds) => ({ "airfoil.checkpoint.interval-sec": String(seconds) }),
+              }),
+            ),
           ),
         );
       }),

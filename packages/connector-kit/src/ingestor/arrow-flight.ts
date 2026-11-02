@@ -18,6 +18,8 @@ export type ArrowFlightIngestorConfig<Source extends TableSource = TableSource> 
   readonly connector: Source;
   readonly catalog: string;
   readonly tables: RuntimeConfig.ResolvedTableBindings<Source>;
+  /** Properties for newly created tables. Existing tables are left unchanged. */
+  readonly tableProperties?: Readonly<Record<string, string>> | undefined;
 };
 
 type IngestorEntry = {
@@ -57,6 +59,7 @@ export const layerArrowFlight = <const Source extends TableSource>(
           catalog,
           identifier,
           location,
+          properties: config.tableProperties,
         }).pipe(
           Effect.mapError((cause) =>
             connectorError(`Failed to prepare table for ${resource.name}: ${cause.message}`, cause),
@@ -119,7 +122,10 @@ export const layerArrowFlight = <const Source extends TableSource>(
   );
 
 /** Configures Arrow Flight ingestion from the hosted URL, catalog and table bindings. */
-export const layerArrowFlightConfig = (connector: TableSource) =>
+export const layerArrowFlightConfig = (
+  connector: TableSource,
+  tableProperties?: Readonly<Record<string, string>>,
+) =>
   Layer.unwrap(
     Effect.gen(function* () {
       const { catalog, uri, flightUri } = yield* Config.all({
@@ -144,6 +150,8 @@ export const layerArrowFlightConfig = (connector: TableSource) =>
         Layer.provide(FetchHttpClient.layer),
       );
 
-      return layerArrowFlight({ connector, catalog, tables }).pipe(Layer.provide(manager));
+      return layerArrowFlight({ connector, catalog, tables, tableProperties }).pipe(
+        Layer.provide(manager),
+      );
     }),
   );

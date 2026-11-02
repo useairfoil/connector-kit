@@ -1,11 +1,15 @@
+import { NodeServices } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
 import { CatalogManager } from "@useairfoil/api";
 import { TestEngine } from "@useairfoil/testing";
 import { ConfigProvider, Effect, Schema } from "effect";
+import { Command } from "effect/cli";
 import { FetchHttpClient } from "effect/http";
 import { createServer } from "node:http";
 
 import { Connector, Iceberg, Ingestor, Resource } from "../src";
+import { makeDemoCommand } from "../src/connector-app";
+import * as Demo from "../src/demo";
 
 const Row = Schema.Struct({
   id: Schema.String,
@@ -104,6 +108,72 @@ describe("Arrow Flight storage-engine connector ingestion", () => {
           )?.["identifier-field-ids"],
         ).toEqual([1]);
         expect(metadata.snapshots?.at(-1)?.summary?.["total-records"]).toBe("1");
+
+        const demo = Demo.define({
+          name: "checkpoint-test",
+          setup: {
+            tables: [Demo.table({ name: "events", rowSchema: Row, version: "version" })],
+            rows: () => ({
+              events: Array.from({ length: 5 }, (_, index) => ({
+                id: `demo-${index}`,
+                version: 1n,
+                name: "Demo",
+              })),
+            }),
+          },
+          group: { tables: [], rows: () => ({}) },
+        });
+        for (const seconds of [undefined, 0, 17, 900]) {
+          const table = { namespace: ["startup"], name: `demo_${seconds ?? "default"}` };
+          const run = (interval?: number, batchSize = 2) =>
+            Command.runWith(makeDemoCommand(demo), { version: "1.0.0", renderErrors: false })([
+              "--size",
+              "1B",
+              "--batch-size",
+              String(batchSize),
+              ...(interval === undefined ? [] : ["--checkpoint-interval-sec", String(interval)]),
+            ]).pipe(
+              Effect.provide(NodeServices.layer),
+              Effect.provide(
+                ConfigProvider.layer(
+                  ConfigProvider.fromUnknown({
+                    ENGINE_URI: `http://127.0.0.1:${address.port}`,
+                    FLIGHT_URI: uri,
+                    AIRFOIL_CATALOG: id,
+                    AIRFOIL_TABLE_BINDINGS: JSON.stringify({ events: table }),
+                  }),
+                ),
+              ),
+            );
+
+          if (seconds === undefined) {
+            for (const invalid of [0, -1, 1.5]) {
+              const error = yield* run(undefined, invalid).pipe(Effect.flip);
+              expect(error).toMatchObject({
+                _tag: "ShowHelp",
+                errors: [{ _tag: "InvalidValue", option: "batch-size" }],
+              });
+            }
+            for (const invalid of [-1, 901, 1.5]) {
+              const error = yield* run(invalid).pipe(Effect.flip);
+              expect(error).toMatchObject({
+                _tag: "ShowHelp",
+                errors: [{ _tag: "InvalidValue", option: "checkpoint-interval-sec" }],
+              });
+            }
+          }
+          yield* run(seconds);
+          // A later run must not change the properties of an existing table.
+          yield* run(seconds === 900 ? 0 : 900);
+          if (seconds === 0) yield* engine.materializeAndCommit(id, table);
+          const stored = yield* catalog.loadTable(table);
+          expect(stored.properties?.["airfoil.checkpoint.interval-sec"]).toBe(
+            seconds === undefined ? undefined : String(seconds),
+          );
+          if (seconds === 0) {
+            expect(stored.snapshots?.at(-1)?.summary?.["total-records"]).toBe("5");
+          }
+        }
       }).pipe(
         Effect.provide(FetchHttpClient.layer),
         Effect.provide(TestEngine.container),

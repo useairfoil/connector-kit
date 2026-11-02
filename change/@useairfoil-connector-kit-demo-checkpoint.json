@@ -1,0 +1,6 @@
+{
+  "type": "patch",
+  "comment": "Allow setting table creation properties and add a demo checkpoint interval flag.",
+  "packageName": "@useairfoil/connector-kit",
+  "dependentChangeType": "patch"
+}
