@@ -4,6 +4,12 @@
 
 <!-- Start content -->
 
+## 0.4.9
+
+### Patch Changes
+
+- 225e545: Replay responses with status 204, 205, or 304 without creating a response body.
+
 ## 0.4.8
 
 Thu, 29 Oct 2026 08:35:20 GMT

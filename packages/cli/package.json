@@ -1,6 +1,6 @@
 {
   "name": "airfoil",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "repository": "useairfoil/connector-kit",
   "bin": {
     "airfoil": "./dist/index.mjs"

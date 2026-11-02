@@ -4,6 +4,22 @@
 
 <!-- Start content -->
 
+## 0.5.0
+
+### Minor Changes
+
+- d5fb3b5: Match the engine catalog API: createCatalog returns void for an empty 201 response, and getCatalog returns a bare id instead of name.
+
+### Patch Changes
+
+- d5fb3b5: Update apache-arrow to 21.2.0.
+- d5fb3b5: Allow a separate Arrow Flight endpoint and rename the catalog manager baseUrl option to engineUri.
+- d5fb3b5: Rename @useairfoil/wings to @useairfoil/api, preserving its exports and runtime behavior.
+- d5fb3b5: Connect to registered Iceberg catalogs directly with their configured HTTP credentials.
+- Updated dependencies [d5fb3b5]
+- Updated dependencies [225e545]
+  - @useairfoil/flight@0.4.9
+
 ## 0.4.7
 
 Thu, 29 Oct 2026 08:35:20 GMT
