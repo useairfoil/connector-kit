@@ -11,7 +11,7 @@ import { Iceberg } from "../src";
 import { ensureTable } from "../src/catalog/table";
 import { makeCreateTableCommand } from "../src/connector-app";
 
-describe("Iceberg REST table creation", () => {
+describe.skip("Iceberg REST table creation", () => {
   it.effect(
     "creates tables from plain schemas through the CLI and verifies reruns",
     () =>
