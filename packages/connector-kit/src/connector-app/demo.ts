@@ -28,15 +28,8 @@ export const makeDemoCommand = (demo: DemoDefinition) =>
         Flag.withDescription("Maximum rows per ingestion batch (default: 500)"),
         Flag.optional,
       ),
-      checkpointIntervalSec: Flag.Int("checkpoint-interval-sec").pipe(
-        Flag.withSchema(Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 900 }))),
-        Flag.withDescription(
-          "Checkpoint interval for new tables in seconds (0 disables the interval delay)",
-        ),
-        Flag.optional,
-      ),
     },
-    ({ size, seed, batchSize, checkpointIntervalSec }) =>
+    ({ size, seed, batchSize }) =>
       Effect.gen(function* () {
         const now = yield* DateTime.nowAsDate;
 
@@ -47,13 +40,7 @@ export const makeDemoCommand = (demo: DemoDefinition) =>
           now,
         }).pipe(
           Effect.provide(
-            layerArrowFlightConfig(
-              { resources: [...demo.setup.tables, ...demo.group.tables] },
-              Option.match(checkpointIntervalSec, {
-                onNone: () => undefined,
-                onSome: (seconds) => ({ "airfoil.checkpoint.interval-sec": String(seconds) }),
-              }),
-            ),
+            layerArrowFlightConfig({ resources: [...demo.setup.tables, ...demo.group.tables] }),
           ),
         );
       }),

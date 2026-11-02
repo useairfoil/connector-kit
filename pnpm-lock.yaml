@@ -698,9 +698,6 @@ importers:
       flatbuffers:
         specifier: 'catalog:'
         version: 25.9.23
-      iter-ops:
-        specifier: ^3.5.0
-        version: 3.5.0
       long:
         specifier: ^5.3.2
         version: 5.3.2
@@ -2707,10 +2704,6 @@ packages:
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
     peerDependencies:
       ws: '*'
-
-  iter-ops@3.5.0:
-    resolution: {integrity: sha512-0/DU67w30nLAyyYETTAVOwtts871N6jjQEY9NAzSXqtlAGuo8CX6O+/Hx11eRZIchACaAMUn6alEndINx27j/Q==}
-    engines: {node: '>=18'}
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
@@ -4982,8 +4975,6 @@ snapshots:
   isomorphic-ws@5.0.0(ws@8.20.0):
     dependencies:
       ws: 8.20.0
-
-  iter-ops@3.5.0: {}
 
   jackspeak@3.4.3:
     dependencies:

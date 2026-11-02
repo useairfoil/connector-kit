@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@effect/vitest";
 import { Faker, base, en } from "@faker-js/faker";
-import { Effect, Layer, Logger, Option, Ref, References, Schema } from "effect";
+import { Deferred, Effect, Fiber, Layer, Logger, Option, Ref, References, Schema } from "effect";
 
 import { parseSize } from "../src/connector-app/demo";
 import * as Demo from "../src/demo";
@@ -348,3 +348,46 @@ describe("demo run", () => {
     }),
   );
 });
+
+it.effect("pipelines bounded batches and waits for every acknowledgement", () =>
+  Effect.gen(function* () {
+    const started = yield* Ref.make(0);
+    const active = yield* Ref.make(0);
+    const maximum = yield* Ref.make(0);
+    const windowFull = yield* Deferred.make<void>();
+    const acknowledge = yield* Deferred.make<void>();
+    const big = Demo.define({
+      ...demo,
+      setup: {
+        tables: [plans],
+        rows: () => ({ plans: Array.from({ length: 4_500 }, (_, n) => ({ id: `plan_${n}` })) }),
+      },
+    });
+    const layer = Layer.succeed(Ingestor)({
+      resourceNames: ["plans"],
+      ingest: ({ batch }) =>
+        Effect.gen(function* () {
+          const count = yield* Ref.updateAndGet(started, (n) => n + 1);
+          const inFlight = yield* Ref.updateAndGet(active, (n) => n + 1);
+          yield* Ref.update(maximum, (n) => Math.max(n, inFlight));
+          if (count === 8) yield* Deferred.succeed(windowFull, undefined);
+          yield* Deferred.await(acknowledge);
+          yield* Ref.update(active, (n) => n - 1);
+          return { rows: batch.rows.length, bytes: batch.rows.length * 100 };
+        }),
+    });
+    const fiber = yield* Demo.run(big, { bytes: 1, seed: 1, now }).pipe(
+      Effect.provide(layer),
+      Effect.forkChild,
+    );
+    yield* Deferred.await(windowFull);
+    expect(yield* Ref.get(started)).toBe(8);
+    expect(yield* Ref.get(active)).toBe(8);
+    yield* Deferred.succeed(acknowledge, undefined);
+    const totals = yield* Fiber.join(fiber);
+    expect(totals.rows).toBe(4_500);
+    expect(yield* Ref.get(started)).toBe(9);
+    expect(yield* Ref.get(maximum)).toBe(8);
+    expect(yield* Ref.get(active)).toBe(0);
+  }),
+);

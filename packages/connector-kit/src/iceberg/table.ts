@@ -432,7 +432,7 @@ export const makeCreateRequest = (
 
 /**
  * Builds a REST create-table request from an Effect schema.
- * The catalog assigns the stored field IDs. Load its schema before encoding rows.
+ * The catalog assigns the stored field IDs.
  *
  * A root `description` becomes the table `comment`, and a field `description`
  * becomes its `doc`. `title` and `examples` are dropped.

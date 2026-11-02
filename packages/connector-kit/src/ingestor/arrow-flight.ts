@@ -7,8 +7,8 @@ import { FetchHttpClient } from "effect/http";
 
 import type { TableSource } from "../core/types";
 
-import { ensureTable } from "../catalog/table";
 import { ConnectorError } from "../errors";
+import { compileTable } from "../iceberg/table";
 import * as RuntimeConfig from "../runtime-config";
 import { makeRowEncoder, type RowEncoder } from "./arrow";
 import { Ingestor, type IngestorService } from "./service";
@@ -18,8 +18,6 @@ export type ArrowFlightIngestorConfig<Source extends TableSource = TableSource> 
   readonly connector: Source;
   readonly catalog: string;
   readonly tables: RuntimeConfig.ResolvedTableBindings<Source>;
-  /** Properties for newly created tables. Existing tables are left unchanged. */
-  readonly tableProperties?: Readonly<Record<string, string>> | undefined;
 };
 
 type IngestorEntry = {
@@ -35,17 +33,13 @@ type PreparedTable = {
 
 const connectorError = (message: string, cause?: unknown) => new ConnectorError({ message, cause });
 
-/** Loads each table schema and opens one Arrow Flight stream per bound resource. */
+/** Compiles local schemas and opens one Arrow Flight stream per bound resource. */
 export const layerArrowFlight = <const Source extends TableSource>(
   config: ArrowFlightIngestorConfig<Source>,
 ): Layer.Layer<Ingestor, ConnectorError, CatalogManager.CatalogManager> =>
   Layer.effect(Ingestor)(
     Effect.gen(function* () {
       const manager = yield* CatalogManager.CatalogManager;
-      const catalog = yield* manager
-        .getIcebergCatalog(config.catalog)
-        .pipe(Effect.mapError((cause) => connectorError("Failed to load Iceberg catalog", cause)));
-
       const bindings: Partial<Record<string, RuntimeConfig.TableBinding>> = config.tables;
 
       const prepared: Array<PreparedTable> = [];
@@ -53,16 +47,11 @@ export const layerArrowFlight = <const Source extends TableSource>(
         const binding = bindings[resource.name];
         if (!binding) continue;
 
-        const { namespace, name, location } = binding;
+        const { namespace, name } = binding;
         const identifier = { namespace, name };
-        const schema = yield* ensureTable(resource.rowSchema, {
-          catalog,
-          identifier,
-          location,
-          properties: config.tableProperties,
-        }).pipe(
+        const { schema } = yield* compileTable(resource.rowSchema).pipe(
           Effect.mapError((cause) =>
-            connectorError(`Failed to prepare table for ${resource.name}: ${cause.message}`, cause),
+            connectorError(`Invalid schema for ${resource.name}: ${cause.message}`, cause),
           ),
         );
 
@@ -122,10 +111,7 @@ export const layerArrowFlight = <const Source extends TableSource>(
   );
 
 /** Configures Arrow Flight ingestion from the hosted URL, catalog and table bindings. */
-export const layerArrowFlightConfig = (
-  connector: TableSource,
-  tableProperties?: Readonly<Record<string, string>>,
-) =>
+export const layerArrowFlightConfig = (connector: TableSource) =>
   Layer.unwrap(
     Effect.gen(function* () {
       const { catalog, uri, flightUri } = yield* Config.all({
@@ -150,8 +136,6 @@ export const layerArrowFlightConfig = (
         Layer.provide(FetchHttpClient.layer),
       );
 
-      return layerArrowFlight({ connector, catalog, tables, tableProperties }).pipe(
-        Layer.provide(manager),
-      );
+      return layerArrowFlight({ connector, catalog, tables }).pipe(Layer.provide(manager));
     }),
   );

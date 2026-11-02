@@ -263,8 +263,9 @@ const replayResponse = (
   request: HttpClientRequest.HttpClientRequest,
   entry: VcrEntry,
 ): HttpClientResponse.HttpClientResponse => {
-  const web = new Response(entry.response.body, {
-    status: entry.response.status,
+  const { status, body } = entry.response;
+  const web = new Response(status === 204 || status === 205 || status === 304 ? null : body, {
+    status,
     headers: entry.response.headers,
   });
   return HttpClientResponse.fromWeb(request, web);

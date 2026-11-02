@@ -8,6 +8,7 @@ import { FetchHttpClient } from "effect/http";
 import { getCurrentSchema } from "iceberg-js";
 
 import { Iceberg } from "../src";
+import { ensureTable } from "../src/catalog/table";
 import { makeCreateTableCommand } from "../src/connector-app";
 
 describe("Iceberg REST table creation", () => {
@@ -83,6 +84,12 @@ describe("Iceberg REST table creation", () => {
         ];
         expect(schema).toMatchObject({ fields });
         expect(schema?.["identifier-field-ids"]).toEqual([schema?.fields[0]?.id]);
+
+        const concurrentIdentifier = { namespace, name: "concurrent" };
+        const ensure = ensureTable(Row, { catalog, identifier: concurrentIdentifier });
+        const results = yield* Effect.all([ensure, ensure], { concurrency: 2 });
+        const stored = yield* catalog.loadTable(concurrentIdentifier);
+        expect(results).toEqual([getCurrentSchema(stored), getCurrentSchema(stored)]);
 
         const derivedIdentifier = { namespace, name: "derived" };
         const request = yield* Iceberg.makeCreateTableRequest(Row, {

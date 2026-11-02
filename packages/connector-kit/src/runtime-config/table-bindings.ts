@@ -2,15 +2,17 @@ import type { TableIdentifier } from "iceberg-js";
 
 import { Config, Effect, Schema } from "effect";
 
-import type { TableSource } from "../core/types";
-
 import { PlatformRuntimeKey } from "./constants";
 import { RuntimeConfigError } from "./error";
+
+type BindingSource = {
+  readonly resources: ReadonlyArray<{ readonly name: string }>;
+};
 
 /** An Iceberg table and its storage location for each connector resource. */
 export type TableBinding = TableIdentifier & { readonly location?: string | undefined };
 
-export type ResolvedTableBindings<Source extends TableSource> = Readonly<
+export type ResolvedTableBindings<Source extends BindingSource> = Readonly<
   Partial<Record<Source["resources"][number]["name"], TableBinding>>
 >;
 
@@ -31,7 +33,7 @@ const fail = (code: "TABLE_BINDINGS_INVALID" | "TABLE_BINDINGS_MISMATCH", messag
   new RuntimeConfigError({ code, message, cause: new Error(message) });
 
 /** Reads hosted table bindings and checks they name resources of the connector. */
-export const loadTableBindings = <const Source extends TableSource>(
+export const loadTableBindings = <const Source extends BindingSource>(
   connector: Source,
 ): Effect.Effect<ResolvedTableBindings<Source>, RuntimeConfigError> =>
   Effect.gen(function* () {

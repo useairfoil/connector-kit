@@ -1,5 +1,4 @@
 import type { RecordBatch, TypeMap } from "apache-arrow";
-import type { TableIdentifier, TableMetadata, TableSchema } from "iceberg-js";
 
 import { describe, expect, it } from "@effect/vitest";
 import { CatalogManager, type Ingestor as ApiIngestor, IngestorError } from "@useairfoil/api";
@@ -31,34 +30,8 @@ const identifier = {
   location: "s3://warehouse/default/products",
 };
 
-const tableMetadata = (schema?: TableSchema): TableMetadata => ({
-  "format-version": 3,
-  "table-uuid": "table-uuid",
-  schemas: schema ? [{ ...schema, "schema-id": 0 }] : [],
-  "current-schema-id": 0,
-  "partition-specs": [{ "spec-id": 0, fields: [] }],
-  "default-spec-id": 0,
-  "sort-orders": [{ "order-id": 0, fields: [] }],
-  "default-sort-order-id": 0,
-  properties: {},
-});
-
-const icebergSchema: TableSchema = {
-  type: "struct",
-  fields: [
-    { id: 17, name: "id", type: "string", required: true },
-    { id: 8, name: "version", type: "long", required: false },
-    { id: 29, name: "count", type: "double", required: false },
-    { id: 5, name: "_deleted", type: "boolean", required: false },
-  ],
-  "identifier-field-ids": [17],
-};
-
 const makeManagerLayer = (options: {
-  readonly metadata?: TableMetadata;
-  readonly loadFailure?: ConnectorError;
   readonly pushFailure?: IngestorError;
-  readonly loaded: Ref.Ref<ReadonlyArray<TableIdentifier>>;
   readonly opened: Ref.Ref<ReadonlyArray<ApiIngestor.IngestorOptions>>;
   readonly pushed: Ref.Ref<ReadonlyArray<RecordBatch<TypeMap>>>;
 }) =>
@@ -66,17 +39,7 @@ const makeManagerLayer = (options: {
     createCatalog: () => Effect.die("Unexpected createCatalog"),
     getCatalog: () => Effect.die("Unexpected getCatalog"),
     deleteCatalog: () => Effect.die("Unexpected deleteCatalog"),
-    getIcebergCatalog: () =>
-      Effect.succeed({
-        loadTable: (table: TableIdentifier) =>
-          Ref.update(options.loaded, (loaded) => [...loaded, table]).pipe(
-            Effect.andThen(
-              options.loadFailure
-                ? Effect.fail(options.loadFailure)
-                : Effect.succeed(options.metadata ?? tableMetadata(icebergSchema)),
-            ),
-          ),
-      } as never),
+    getIcebergCatalog: () => Effect.die("Ingestion must not access the catalog"),
 
     ingestor: (ingestorOptions) =>
       Ref.update(options.opened, (opened) => [...opened, ingestorOptions]).pipe(
@@ -90,18 +53,16 @@ const makeManagerLayer = (options: {
   });
 
 const makeTest = Effect.gen(function* () {
-  const loaded = yield* Ref.make<ReadonlyArray<TableIdentifier>>([]);
   const opened = yield* Ref.make<ReadonlyArray<ApiIngestor.IngestorOptions>>([]);
   const pushed = yield* Ref.make<ReadonlyArray<RecordBatch<TypeMap>>>([]);
 
-  return { loaded, opened, pushed };
+  return { opened, pushed };
 });
 
 const useIngestor = <A, E, R>(
   refs: Effect.Success<typeof makeTest>,
   use: (ingestor: IngestorService) => Effect.Effect<A, E, R>,
   options?: {
-    readonly metadata?: TableMetadata;
     readonly pushFailure?: IngestorError;
   },
 ) =>
@@ -113,7 +74,7 @@ const useIngestor = <A, E, R>(
   );
 
 describe("Arrow Flight ingestor adapter", () => {
-  it.effect("loads native bindings and reuses one full-schema stream", () =>
+  it.effect("compiles bindings without catalog calls and reuses one full-schema stream", () =>
     Effect.gen(function* () {
       const refs = yield* makeTest;
       const first = yield* useIngestor(refs, (ingestor) =>
@@ -137,9 +98,6 @@ describe("Arrow Flight ingestor adapter", () => {
         }),
       );
 
-      expect(yield* Ref.get(refs.loaded)).toEqual([
-        { namespace: identifier.namespace, name: identifier.name },
-      ]);
       expect(yield* Ref.get(refs.opened)).toEqual([
         { catalog: "default-catalog", namespace: ["default"], table: "products" },
       ]);
@@ -152,12 +110,6 @@ describe("Arrow Flight ingestor adapter", () => {
           "version",
           "count",
           "_deleted",
-        ]);
-        expect(batch.schema.fields.map((field) => field.metadata.get("PARQUET:field_id"))).toEqual([
-          "17",
-          "8",
-          "29",
-          "5",
         ]);
       }
 
@@ -200,114 +152,30 @@ describe("Arrow Flight ingestor adapter", () => {
     }),
   );
 
-  it.effect("fails for missing current schemas", () =>
+  it.effect("maps encoding and Arrow Flight push failures to ConnectorError", () =>
     Effect.gen(function* () {
       const refs = yield* makeTest;
-      const missingSchema = yield* useIngestor(refs, () => Effect.void, {
-        metadata: tableMetadata(),
-      }).pipe(Effect.flip);
-      const missingVersion = yield* useIngestor(refs, () => Effect.void, {
-        metadata: tableMetadata({
-          type: "struct",
-          fields: [{ id: 1, name: "id", type: "string", required: true }],
+      const encodingFailure = yield* useIngestor(refs, (ingestor) =>
+        ingestor.ingest({
+          resource: "products",
+          source: "webhook",
+          batch: { rows: [{ id: "p1", version: 1n, count: "invalid" }] },
         }),
-      }).pipe(Effect.flip);
-
-      expect(missingSchema.message).toContain("no current schema");
-      expect(missingVersion.message).toContain("Table schema does not match");
-    }),
-  );
-
-  it.effect("does not open any stream when a table schema differs", () =>
-    Effect.gen(function* () {
-      const refs = yield* makeTest;
-      const Other = Resource.entity({
-        name: "other",
-        rowSchema: Schema.Struct({
-          id: Schema.String,
-          version: Schema.BigInt,
-          extra: Schema.String,
-        }).pipe(icebergIdentifier("id")),
-        version: "version",
-        check: Effect.void,
-      });
-      const both = Connector.define({ name: "test", resources: [Products, Other] });
-
-      const error = yield* Ingestor.pipe(
-        Effect.provide(
-          layerArrowFlight({
-            connector: both,
-            catalog: "default-catalog",
-            tables: { products: identifier, other: { ...identifier, name: "other" } },
-          }),
-        ),
-        Effect.provide(makeManagerLayer(refs)),
-        Effect.flip,
-      );
-
-      expect(error.message).toContain("Table schema does not match");
-      expect(yield* Ref.get(refs.opened)).toEqual([]);
-    }),
-  );
-
-  it.effect(
-    "maps table, metadata, encoding, and Arrow Flight push failures to ConnectorError",
-    () =>
-      Effect.gen(function* () {
-        const loadRefs = yield* makeTest;
-        const loadFailure = yield* Ingestor.pipe(
-          Effect.provide(
-            layerArrowFlight({
-              connector,
-              catalog: "default-catalog",
-              tables: { products: identifier },
-            }),
-          ),
-          Effect.provide(
-            makeManagerLayer({
-              ...loadRefs,
-              loadFailure: new ConnectorError({ message: "load failed" }),
-            }),
-          ),
-          Effect.flip,
-        );
-
-        const metadataRefs = yield* makeTest;
-        const metadata = tableMetadata(icebergSchema);
-
-        Reflect.deleteProperty(metadata, "schemas");
-
-        const metadataFailure = yield* useIngestor(metadataRefs, () => Effect.void, {
-          metadata,
-        }).pipe(Effect.flip);
-
-        const encodeRefs = yield* makeTest;
-        const encodingFailure = yield* useIngestor(encodeRefs, (ingestor) =>
+      ).pipe(Effect.flip);
+      const pushFailure = yield* useIngestor(
+        refs,
+        (ingestor) =>
           ingestor.ingest({
             resource: "products",
-            source: "webhook",
-            batch: { rows: [{ id: "p1", version: 1n, count: "invalid" }] },
+            source: "changes",
+            batch: { rows: [{ id: "p1", version: 1n }] },
           }),
-        ).pipe(Effect.flip);
-
-        const pushRefs = yield* makeTest;
-        const pushFailure = yield* useIngestor(
-          pushRefs,
-          (ingestor) =>
-            ingestor.ingest({
-              resource: "products",
-              source: "changes",
-              batch: { rows: [{ id: "p1", version: 1n, count: 1 }] },
-            }),
-          { pushFailure: new IngestorError({ message: "push failed" }) },
-        ).pipe(Effect.flip);
-
-        expect(loadFailure).toBeInstanceOf(ConnectorError);
-        expect(loadFailure.message).toContain("load failed");
-        expect(metadataFailure.message).toContain("Invalid table metadata");
-        expect(encodingFailure.message).toBe("Failed to encode rows");
-        expect(pushFailure.message).toContain("Failed to ingest rows");
-      }),
+        { pushFailure: new IngestorError({ message: "push failed" }) },
+      ).pipe(Effect.flip);
+      expect(encodingFailure).toBeInstanceOf(ConnectorError);
+      expect(encodingFailure.message).toBe("Failed to encode rows");
+      expect(pushFailure.message).toContain("Failed to ingest rows");
+    }),
   );
 
   it.effect("requires a complete HTTP Arrow Flight URL in hosted mode", () =>
