@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@effect/vitest";
 import { Faker, base, en } from "@faker-js/faker";
-import { Effect, Layer, Option, Ref, Schema } from "effect";
+import { Effect, Layer, Logger, Option, Ref, References, Schema } from "effect";
 
 import { parseSize } from "../src/connector-app/demo";
 import * as Demo from "../src/demo";
@@ -107,18 +107,21 @@ describe("demo rows", () => {
 });
 
 describe("demo sizes", () => {
-  it("parse binary units", () => {
+  it("parses decimal and binary byte sizes", () => {
+    expect([parseSize("512kB"), parseSize("128MB"), parseSize("1.5 GB")]).toEqual([
+      Option.some(512_000),
+      Option.some(128_000_000),
+      Option.some(1_500_000_000),
+    ]);
     expect([parseSize("512KiB"), parseSize("128MiB"), parseSize("1GiB")]).toEqual([
       Option.some(512 * 1024),
       Option.some(128 * 1024 ** 2),
       Option.some(1024 ** 3),
     ]);
 
-    expect([parseSize("0MiB"), parseSize("1MB"), parseSize("1.5GiB")]).toEqual([
-      Option.none(),
-      Option.none(),
-      Option.none(),
-    ]);
+    for (const input of ["0MB", "-1MB", "garbage", "5 apples", "Infinity", "0.5 B"]) {
+      expect(parseSize(input)).toEqual(Option.none());
+    }
     expect(parseSize(`${Number.MAX_SAFE_INTEGER}GiB`)).toEqual(Option.none());
   });
 });
@@ -192,6 +195,50 @@ const runWith = (
   });
 
 describe("demo run", () => {
+  it.effect("repeats explicit seeds, including zero, but not unseeded runs", () =>
+    Effect.gen(function* () {
+      const rows = (seed?: number) =>
+        Effect.gen(function* () {
+          const { written, layer } = yield* recordingIngestor();
+          yield* Demo.run(demo, { bytes: 700, now, seed, groupsPerChunk: 2 }).pipe(
+            Effect.provide(layer),
+          );
+          return yield* Ref.get(written);
+        });
+
+      const zero = yield* rows(0);
+      expect(yield* rows(0)).toEqual(zero);
+      const one = yield* rows(1);
+      expect(yield* rows(1)).toEqual(one);
+      expect(zero).not.toEqual(one);
+      expect(yield* rows()).not.toEqual(yield* rows());
+    }),
+  );
+
+  it.effect("logs progress with human-readable sizes instead of bytes", () =>
+    Effect.gen(function* () {
+      const progress: Array<Readonly<Record<string, unknown>>> = [];
+      const logger = Logger.make((options) => {
+        const messages = Array.isArray(options.message) ? options.message : [options.message];
+        if (messages.includes("demo progress")) {
+          progress.push(options.fiber.getRef(References.CurrentLogAnnotations));
+        }
+      });
+
+      yield* runWith({ bytes: 1700 }).pipe(Effect.provide(Logger.layer([logger])));
+
+      expect(progress.map(({ size }) => size)).toEqual([
+        "100 B",
+        "300 B",
+        "500 B",
+        "900 B",
+        "1.27 KiB",
+        "1.66 KiB",
+      ]);
+      expect(progress.every((annotations) => !("bytes" in annotations))).toBe(true);
+    }),
+  );
+
   it.effect("writes setup rows first, then chunks until the size", () =>
     Effect.gen(function* () {
       // Setup is 100 bytes, then chunks of 2 groups add 200, 200 and 400.

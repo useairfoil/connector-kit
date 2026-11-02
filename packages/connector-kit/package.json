@@ -94,6 +94,7 @@
     "@faker-js/faker": "10.6.0",
     "@useairfoil/api": "workspace:*",
     "apache-arrow": "catalog:",
+    "human-format": "^1.4.0",
     "iceberg-js": "catalog:"
   },
   "devDependencies": {

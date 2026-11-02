@@ -1,5 +1,6 @@
 import { Faker, base, en } from "@faker-js/faker";
 import { Array as Arr, Effect, Option, Schema, Stream } from "effect";
+import humanFormat from "human-format";
 
 import type { DemoDefinition, DemoTable } from "./definition";
 
@@ -11,7 +12,8 @@ import { compileRow, type DemoContext } from "./generate";
 export type RunOptions = {
   /** Stop once this many Arrow bytes are written. */
   readonly bytes: number;
-  readonly seed: number;
+  /** Omit for random data on each run. */
+  readonly seed?: number;
   /** The time data is made around. Same seed, time and tables give the same rows. */
   readonly now: Date;
   /** Groups per chunk. Overrides the demo's. */
@@ -60,7 +62,7 @@ export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: R
   const bound = (table: DemoTable) =>
     ingestor.resourceNames === undefined || ingestor.resourceNames.includes(table.name);
 
-  // A fresh Faker per run, so its sequence depends only on the seed.
+  // A fresh Faker per run keeps explicit seeds repeatable.
   const faker = new Faker({ locale: [en, base] });
   faker.seed(options.seed);
   const context: DemoContext = { faker, now: options.now };
@@ -121,7 +123,7 @@ export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: R
           Stream.takeUntil((current) => current.bytes >= options.bytes),
           Stream.tap((current) =>
             Effect.logInfo("demo progress").pipe(
-              Effect.annotateLogs({ rows: current.rows, bytes: current.bytes }),
+              Effect.annotateLogs({ rows: current.rows, size: humanFormat.bytes(current.bytes) }),
             ),
           ),
           Stream.runLast,
@@ -131,11 +133,25 @@ export const run = Effect.fnUntraced(function* (demo: DemoDefinition, options: R
   if (totals.bytes < options.bytes) {
     yield* Effect.logWarning(
       "The selected tables ran out of rows, so the run wrote less than the size asked for",
-    ).pipe(Effect.annotateLogs({ bytes: totals.bytes, target: options.bytes }));
+    ).pipe(
+      Effect.annotateLogs({
+        size: humanFormat.bytes(totals.bytes),
+        target: humanFormat.bytes(options.bytes),
+      }),
+    );
   }
 
   yield* Effect.logInfo("demo done").pipe(
-    Effect.annotateLogs({ rows: totals.rows, bytes: totals.bytes, tables: totals.tables }),
+    Effect.annotateLogs({
+      rows: totals.rows,
+      size: humanFormat.bytes(totals.bytes),
+      tables: Object.fromEntries(
+        Object.entries(totals.tables).map(([name, result]) => [
+          name,
+          { rows: result.rows, size: humanFormat.bytes(result.bytes) },
+        ]),
+      ),
+    }),
   );
 
   return totals;
