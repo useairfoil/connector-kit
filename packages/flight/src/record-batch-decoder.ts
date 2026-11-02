@@ -266,41 +266,14 @@ export class RecordBatchStreamReaderFromFlightData<T extends TypeMap = any>
     return this as AsyncIterableIterator<RecordBatchWithMetadata<T>>;
   }
 
-  /*
-  public async cancel() {
-    if (!this.closed && (this.closed = true)) {
-      await this.reset()._reader.return();
-      this._reader = <any>null;
-      this.dictionaries = <any>null;
-    }
-  }
-
-  public async open(options?: OpenOptions) {
-    if (!this.closed) {
-      this.autoDestroy = shouldAutoDestroy(this, options);
-      if (
-        !(this.schema || (this.schema = (await this._reader.readSchema())!))
-      ) {
-        await this.cancel();
-      }
-    }
-    return this;
-  }
-
-  public async throw(value?: any): Promise<IteratorResult<any>> {
-    if (!this.closed && this.autoDestroy && (this.closed = true)) {
-      return await this.reset()._reader.throw(value);
+  public async return(): Promise<IteratorResult<RecordBatchWithMetadata<T>>> {
+    if (!this.closed && this.autoDestroy) {
+      this.closed = true;
+      this.reset();
+      await this._reader.return?.();
     }
     return ITERATOR_DONE;
   }
-
-  public async return(value?: any): Promise<IteratorResult<any>> {
-    if (!this.closed && this.autoDestroy && (this.closed = true)) {
-      return await this.reset()._reader.return(value);
-    }
-    return ITERATOR_DONE;
-  }
-  */
 
   public async next() {
     if (this.closed) {
@@ -347,8 +320,7 @@ export class RecordBatchStreamReaderFromFlightData<T extends TypeMap = any>
       };
     }
 
-    // return await this.return();
-    return ITERATOR_DONE;
+    return this.return();
   }
 
   protected async _readNextMessageAndValidate<T extends MessageHeader>(type?: T | null) {

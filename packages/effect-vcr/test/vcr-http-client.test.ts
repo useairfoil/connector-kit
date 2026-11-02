@@ -216,54 +216,57 @@ describe("concurrent recording", () => {
 });
 
 describe("replay mode", () => {
-  it.effect("returns stored response without live client", () => {
-    const config: VcrConfig = {
-      cassetteName: "replay-basic",
-      mode: "replay",
-    };
-    const { layer: storeLayer, cassettes } = mockCassetteStoreLayer();
-    const client = makeFailingClient();
+  for (const status of [200, 204, 205, 304]) {
+    it.effect(`replays a stored ${status} response without the live client`, () => {
+      const config: VcrConfig = {
+        cassetteName: "replay-basic",
+        mode: "replay",
+      };
+      const { layer: storeLayer, cassettes } = mockCassetteStoreLayer();
+      const client = makeFailingClient();
 
-    const entry: VcrEntry = {
-      request: {
-        method: "GET",
-        url: "https://example.com/",
-        headers: {},
-        body: "",
-      },
-      response: {
-        status: 200,
-        headers: { "content-type": "text/plain" },
-        body: "replayed",
-      },
-    };
-
-    const liveLayer = Layer.succeed(HttpClient.HttpClient)(client);
-    const vcrLayer = layer(config).pipe(
-      Layer.provide(Layer.mergeAll(storeLayer, liveLayer, NodeServices.layer)),
-    );
-
-    return Effect.gen(function* () {
-      const requestKey = yield* buildRequestKey(
-        { method: "GET", url: "https://example.com/", headers: {}, body: "" },
-        {},
-      );
-      cassettes.set("replay-basic.cassette", {
-        exports: {
-          default: {
-            meta: { createdAt: "2024-01-01T00:00:00.000Z", version: "1" },
-            entries: { [requestKey]: entry },
-          },
+      const entry: VcrEntry = {
+        request: {
+          method: "GET",
+          url: "https://example.com/",
+          headers: {},
+          body: "",
         },
-      });
+        response: {
+          status,
+          headers: { "content-type": "text/plain" },
+          body: status === 200 ? "replayed" : "",
+        },
+      };
 
-      const client = yield* HttpClient.HttpClient;
-      const response = yield* client.get("https://example.com/");
-      const text = yield* response.text;
+      const liveLayer = Layer.succeed(HttpClient.HttpClient)(client);
+      const vcrLayer = layer(config).pipe(
+        Layer.provide(Layer.mergeAll(storeLayer, liveLayer, NodeServices.layer)),
+      );
 
-      expect(text).toBe("replayed");
-    }).pipe(Effect.provide(vcrLayer));
-  });
+      return Effect.gen(function* () {
+        const requestKey = yield* buildRequestKey(
+          { method: "GET", url: "https://example.com/", headers: {}, body: "" },
+          {},
+        );
+        cassettes.set("replay-basic.cassette", {
+          exports: {
+            default: {
+              meta: { createdAt: "2024-01-01T00:00:00.000Z", version: "1" },
+              entries: { [requestKey]: entry },
+            },
+          },
+        });
+
+        const client = yield* HttpClient.HttpClient;
+        const response = yield* client.get("https://example.com/");
+        const text = yield* response.text;
+
+        expect(response.status).toBe(status);
+        expect(text).toBe(status === 200 ? "replayed" : "");
+      }).pipe(Effect.provide(vcrLayer));
+    });
+  }
 });
 
 describe("auto mode", () => {
