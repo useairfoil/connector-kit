@@ -93,5 +93,5 @@ from the root. `pnpm format` only checks formatting; it doesn't fix it.
 
 ## Releases
 
-Published package changes need a Beachball change file. Major changes aren't
+Published package changes need a changesets change file. Major changes aren't
 allowed.

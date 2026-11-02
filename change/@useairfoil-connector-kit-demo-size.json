@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Parse demo sizes with human-format and show human-readable sizes in demo logs.",
-  "packageName": "@useairfoil/connector-kit",
-  "email": "francesco@ceccon.me",
-  "dependentChangeType": "patch"
-}

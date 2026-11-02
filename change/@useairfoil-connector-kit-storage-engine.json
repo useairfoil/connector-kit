@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Prepare missing namespaces and validate unencrypted, unpartitioned v3 tables for ingestion and repeated create-table commands.",
-  "packageName": "@useairfoil/connector-kit",
-  "email": "jadejajaipal5@gmail.com",
-  "dependentChangeType": "patch"
-}

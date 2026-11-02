@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Use the renamed @useairfoil/api client package.",
-  "packageName": "@useairfoil/connector-kit",
-  "email": "francesco@ceccon.me",
-  "dependentChangeType": "patch"
-}

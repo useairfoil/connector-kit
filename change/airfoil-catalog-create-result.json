@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Report the created catalog ID after the API's empty creation response.",
-  "packageName": "airfoil",
-  "email": "francesco@ceccon.me",
-  "dependentChangeType": "patch"
-}

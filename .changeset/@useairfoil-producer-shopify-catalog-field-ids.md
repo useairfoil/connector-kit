@@ -1,0 +1,5 @@
+---
+"@useairfoil/producer-shopify": patch
+---
+
+Let the catalog assign field IDs instead of storing IDs in row schemas.

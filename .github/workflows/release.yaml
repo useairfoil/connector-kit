@@ -1,28 +1,33 @@
 name: Release
 
 on:
-  # Releases are triggered manually to avoid making a billion releases by
-  # accident.
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
-    # The PAT token used for publishing is in this environment
+    # Keep the environment and workflow filename for npm trusted publishing.
     environment: release
 
     permissions:
-      # Used by trusted publishing
+      contents: write
+      pull-requests: write
       id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          # Don't save git credentials. We are going to override them later.
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set Node version
@@ -36,19 +41,17 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install dependencies
-        run: pnpm install
-      - name: Show nx projects
-        run: pnpm dlx nx show projects
-      # If changes made it to main, we only need to rerun the build.
-      # Tests, lints, are expected to be working.
-      - name: Run build
-        run: pnpm run build
-      - name: Set git credentials
+        run: pnpm install --frozen-lockfile
+      - name: Check release plan
         run: |
-          git config user.name "Kapy Bot"
-          git config user.email "capy-bot@apibara.com"
-          git remote set-url origin "https://${GIT_TOKEN}@github.com/${GITHUB_REPOSITORY}"
-        env:
-          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      - name: Publish package
-        run: pnpm beachball publish --access public -y
+          pnpm changeset status --output "$RUNNER_TEMP/changeset-status.json"
+          jq -e 'all(.releases[]; .type != "major")' "$RUNNER_TEMP/changeset-status.json"
+      - name: Version or publish packages
+        uses: changesets/action@v2.1.2
+        with:
+          # A PAT lets the release PR trigger the normal CI checks.
+          github-token: ${{ secrets.GIT_TOKEN }}
+          version-script: pnpm run version-packages
+          publish-script: pnpm run release
+          commit-message: "release: bump versions"
+          pr-title: release packages

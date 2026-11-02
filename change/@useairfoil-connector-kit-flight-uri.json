@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Support FLIGHT_URI for ingestion, defaulting to ENGINE_URI when unset.",
-  "packageName": "@useairfoil/connector-kit",
-  "email": "francesco@ceccon.me",
-  "dependentChangeType": "patch"
-}

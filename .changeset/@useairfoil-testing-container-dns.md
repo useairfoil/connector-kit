@@ -1,0 +1,5 @@
+---
+"@useairfoil/testing": patch
+---
+
+Fix test engine startup with explicit storage host mapping, local HTTP S3 access, and a readiness check for the dev server. Preserve startup error causes.

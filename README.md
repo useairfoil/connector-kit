@@ -15,7 +15,7 @@ This repository contains the Airfoil Connector Kit and Connectors.
 - `pnpm build`: build all packages.
 - `pnpm typecheck`: typecheck all packages.
 - `pnpm test:ci`: run non-interactive tests.
-- `pnpm beachball check`: check change files.
+- `pnpm changeset status`: check change files.
 
 ## License
 
