@@ -3,11 +3,9 @@ import { Clock, Context, Duration, Effect, Layer, Redacted, Schedule, Schema } f
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { createPrivateKey, sign } from "node:crypto";
 
-import type { GitHubConfig } from "../manifest";
+import type { GitHubConnectionConfig } from "../manifest";
 
 import { GITHUB_API_VERSION, baseUrl } from "./constants";
-
-type GitHubAuthConfig = Pick<GitHubConfig, "appClientId" | "appPrivateKey" | "installationId">;
 
 export type GitHubAuthService = Auth.TokenCache<ConnectorError>;
 
@@ -46,7 +44,7 @@ export const makeAppJwt = (options: {
     catch: (cause) => new ConnectorError({ message: "Invalid GitHub App private key", cause }),
   });
 
-export const make = Effect.fnUntraced(function* (config: GitHubAuthConfig) {
+export const make = Effect.fnUntraced(function* (config: GitHubConnectionConfig) {
   const client = (yield* HttpClient.HttpClient).pipe(
     HttpClient.retryTransient({
       schedule: Schedule.exponential("250 millis").pipe(Schedule.jittered),
@@ -109,5 +107,5 @@ export const make = Effect.fnUntraced(function* (config: GitHubAuthConfig) {
 });
 
 export const layer = (
-  config: GitHubAuthConfig,
+  config: GitHubConnectionConfig,
 ): Layer.Layer<GitHubAuth, never, HttpClient.HttpClient> => Layer.effect(GitHubAuth)(make(config));

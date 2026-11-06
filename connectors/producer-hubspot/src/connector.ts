@@ -1,7 +1,12 @@
-import { Connector, type ResourceDefinition } from "@useairfoil/connector-kit";
+import {
+  ConnectorError,
+  RuntimeConfig,
+  Connector,
+  type ResourceDefinition,
+} from "@useairfoil/connector-kit";
 import { Config, Context, Duration, Effect, Exit, Layer, Option, Redacted } from "effect";
 
-import type { HubSpotConfig } from "./manifest";
+import type { HubSpotConfig, HubSpotWebhookConfig } from "./manifest";
 
 import * as HubSpotClient from "./client/client";
 import { customObjectTypes, makeCustomObjects } from "./resources/custom-objects";
@@ -14,12 +19,12 @@ import { makeTeams } from "./resources/teams";
 import { AccountSchema } from "./schemas/api";
 import { makeWebhookRoute } from "./webhook/route";
 export { HubSpotConfigDef, manifest } from "./manifest";
-export type { HubSpotConfig } from "./manifest";
+export type { HubSpotConfig, HubSpotWebhookConfig } from "./manifest";
 
 // Other standard objects reject the pipelines API.
 const pipelineObjects = new Set(["deals", "tickets", "leads", "orders"]);
 
-export const make = Effect.fnUntraced(function* (config: HubSpotConfig) {
+const build = Effect.gen(function* () {
   const client = yield* HubSpotClient.HubSpotClient;
   const crm = yield* makeCrmResources(client);
   const customTypes = yield* customObjectTypes(client);
@@ -42,13 +47,7 @@ export const make = Effect.fnUntraced(function* (config: HubSpotConfig) {
       Effect.cachedWithTTL((exit) => (Exit.isSuccess(exit) ? Duration.infinity : Duration.zero)),
     );
 
-  if (Option.isNone(config.clientSecret)) {
-    yield* Effect.logInfo(
-      "HUBSPOT_CLIENT_SECRET is not set. Webhooks are off, and changes come from polling.",
-    );
-  }
-
-  return Connector.define({
+  const connector = Connector.define({
     name: "producer-hubspot",
     title: "HubSpot",
     resources: [
@@ -60,18 +59,38 @@ export const make = Effect.fnUntraced(function* (config: HubSpotConfig) {
       makeTeams(client),
       makeLists(client),
     ],
-    webhooks: Option.match(config.clientSecret, {
-      onNone: () => [],
-      onSome: (secret) => [
-        makeWebhookRoute({
-          secret: Redacted.value(secret),
-          portalId,
-          targets: new Map<string, ResourceDefinition>(Object.entries(crm)),
-          customObjects,
-        }),
-      ],
-    }),
   });
+
+  return {
+    connector,
+    webhooks: (config: HubSpotWebhookConfig) =>
+      Effect.forEach(Option.toArray(config.clientSecret), (secret) =>
+        Config.URL(RuntimeConfig.PlatformRuntimeKey.webhookUrl).pipe(
+          Effect.mapError(() => new ConnectorError({ message: "Public webhook URL is required" })),
+          Effect.map((url) =>
+            makeWebhookRoute({
+              secret: Redacted.value(secret),
+              publicUrl: url.href,
+              portalId,
+              targets: new Map<string, ResourceDefinition>(Object.entries(crm)),
+              customObjects,
+            }),
+          ),
+        ),
+      ),
+  };
+});
+
+export const resources = build.pipe(Effect.map(({ connector }) => connector.resources));
+
+export const webhooks = (config: HubSpotWebhookConfig) =>
+  build.pipe(Effect.flatMap((built) => built.webhooks(config)));
+
+export const make = Effect.fnUntraced(function* (config: HubSpotConfig) {
+  const built = yield* build;
+  const webhooks = yield* built.webhooks(config);
+
+  return Connector.define({ ...built.connector, webhooks });
 });
 
 export type HubSpotConnectorRuntime = Effect.Success<ReturnType<typeof make>>;

@@ -238,6 +238,13 @@ export type WebhookRoute<
 > = {
   readonly path: HttpRouter.PathInput;
   readonly ackMode: WebhookAckMode;
+  /**
+   * Authenticates without ingesting. Fail to reject the request; return true to
+   * confirm setup, or false to acknowledge and discard without confirming setup.
+   */
+  verify?(
+    context: Pick<WebhookRouteContext<Resources, Payload>, "request" | "rawBody" | "payload">,
+  ): Effect.Effect<boolean, ConnectorError>;
   readonly schema: Schema.Decoder<Payload>;
   handler(
     context: WebhookRouteContext<Resources, Payload>,
