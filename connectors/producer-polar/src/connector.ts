@@ -14,9 +14,8 @@ import { Base64 } from "effect/encoding";
 import { HttpServerResponse } from "effect/http";
 import { Webhook as StandardWebhook } from "standardwebhooks";
 
-import type { PolarConfig } from "./manifest";
-
 import * as PolarApiClient from "./api";
+import { manifest, type PolarConfig, type PolarWebhookConfig } from "./manifest";
 import { CheckoutSchema } from "./resources/checkouts";
 import { CustomerSchema } from "./resources/customers";
 import { DiscountSchema } from "./resources/discounts";
@@ -97,7 +96,7 @@ const pageResource = <Key extends string, Row extends { readonly [K in Key]: Dat
     },
   });
 
-export const make = Effect.fnUntraced(function* (config: PolarConfig) {
+const build = Effect.gen(function* () {
   const api = yield* PolarApiClient.PolarApiClient;
 
   const Customers = Resource.entity({
@@ -263,39 +262,62 @@ export const make = Effect.fnUntraced(function* (config: PolarConfig) {
     ].flatMap(({ resource, eventTypes }) => eventTypes.map((type) => [type, resource])),
   );
 
-  const webhookRoute = Webhook.route({
-    path: "/webhooks/polar",
-    ackMode: "after-ingest",
-    schema: WebhookPayloadSchema,
-    handler: ({ request, rawBody, payload, to }) =>
-      Effect.gen(function* () {
-        const verified = yield* verifyWebhookSignature({
-          rawBody,
-          headers: request.headers,
-          secret: Redacted.value(config.webhookSecret),
-        }).pipe(Effect.result);
-        if (Result.isFailure(verified)) {
-          return HttpServerResponse.jsonUnsafe(
-            { ok: false, error: verified.failure.message },
-            { status: 401 },
-          );
-        }
-
-        const resource = byType.get(payload.type);
-        if (resource !== undefined && "data" in payload) {
-          yield* to(resource, payload);
-        }
-
-        return HttpServerResponse.jsonUnsafe({ ok: true });
-      }),
-  });
-
-  return Connector.define({
+  const connector = Connector.define({
     name: "producer-polar",
     title: "Polar",
     resources: [Customers, Checkouts, Orders, Subscriptions, Refunds, Products, Discounts],
-    webhooks: [webhookRoute],
   });
+
+  return {
+    connector,
+    webhooks: (config: PolarWebhookConfig) =>
+      Effect.succeed([
+        Webhook.route({
+          path: manifest.webhook.path,
+          ackMode: "after-ingest",
+          verify: ({ request, rawBody, payload }) =>
+            verifyWebhookSignature({
+              rawBody,
+              headers: request.headers,
+              secret: Redacted.value(config.webhookSecret),
+            }).pipe(Effect.as(byType.has(payload.type))),
+          schema: WebhookPayloadSchema,
+          handler: ({ request, rawBody, payload, to }) =>
+            Effect.gen(function* () {
+              const verified = yield* verifyWebhookSignature({
+                rawBody,
+                headers: request.headers,
+                secret: Redacted.value(config.webhookSecret),
+              }).pipe(Effect.result);
+              if (Result.isFailure(verified)) {
+                return HttpServerResponse.jsonUnsafe(
+                  { ok: false, error: verified.failure.message },
+                  { status: 401 },
+                );
+              }
+
+              const resource = byType.get(payload.type);
+              if (resource !== undefined && "data" in payload) {
+                yield* to(resource, payload);
+              }
+
+              return HttpServerResponse.jsonUnsafe({ ok: true });
+            }),
+        }),
+      ]),
+  };
+});
+
+export const resources = build.pipe(Effect.map(({ connector }) => connector.resources));
+
+export const webhooks = (config: PolarWebhookConfig) =>
+  build.pipe(Effect.flatMap((built) => built.webhooks(config)));
+
+export const make = Effect.fnUntraced(function* (config: PolarConfig) {
+  const built = yield* build;
+  const webhooks = yield* built.webhooks(config);
+
+  return Connector.define({ ...built.connector, webhooks });
 });
 
 export type PolarConnectorRuntime = Effect.Success<ReturnType<typeof make>>;

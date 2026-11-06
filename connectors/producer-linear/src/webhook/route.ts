@@ -2,9 +2,10 @@ import { type ResourceDefinition, Webhook } from "@useairfoil/connector-kit";
 import { Effect, Result, Schema } from "effect";
 import { HttpServerResponse } from "effect/http";
 
+import { manifest } from "../manifest";
 import { verifySignature } from "./signature";
 
-export const webhookPath = "/webhooks/linear";
+export const webhookPath = manifest.webhook.path;
 
 const WebhookEventSchema = Schema.Struct({
   type: Schema.String,
@@ -12,6 +13,8 @@ const WebhookEventSchema = Schema.Struct({
   webhookTimestamp: Schema.Number,
   data: Schema.Struct({ id: Schema.String }),
 });
+
+const isRemovalOrRestore = (action: string) => action === "remove" || action === "restore";
 
 export const makeWebhookRoute = (options: {
   readonly secret: string;
@@ -22,6 +25,13 @@ export const makeWebhookRoute = (options: {
   Webhook.route({
     path: webhookPath,
     ackMode: "after-enqueue",
+    verify: ({ request, rawBody, payload }) =>
+      verifySignature({
+        rawBody,
+        header: request.headers["linear-signature"],
+        secret: options.secret,
+        timestamp: payload.webhookTimestamp,
+      }).pipe(Effect.as(isRemovalOrRestore(payload.action) && options.targets.has(payload.type))),
     schema: WebhookEventSchema,
     handler: ({ request, rawBody, payload, to }) =>
       Effect.gen(function* () {
@@ -40,7 +50,7 @@ export const makeWebhookRoute = (options: {
 
         // Polling reads creates and updates.
         const resource = options.targets.get(payload.type);
-        if (payload.action === "remove" || payload.action === "restore") {
+        if (isRemovalOrRestore(payload.action)) {
           if (resource !== undefined) yield* to(resource, payload);
           if (payload.type === "Issue") yield* to(options.issueHistory, payload);
         }

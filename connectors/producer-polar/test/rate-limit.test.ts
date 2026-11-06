@@ -26,7 +26,6 @@ describe("producer-polar rate limiting", () => {
         accessToken: Redacted.make("test-token"),
         apiBaseUrl: "https://api.polar.sh/v1",
         organizationId: Option.none(),
-        webhookSecret: Redacted.make("test-webhook-secret"),
       }).pipe(Layer.provide(Layer.succeed(HttpClient.HttpClient)(client)));
 
       const fiber = yield* Effect.gen(function* () {

@@ -1,6 +1,8 @@
 import * as Manifest from "@useairfoil/connector-kit/manifest";
 
-export const GitHubConfigDef = Manifest.defineConfig({
+import { webhookSubscriptions } from "./webhook/events";
+
+const connectionFields = {
   appClientId: Manifest.string({
     runtimeKey: "GITHUB_APP_CLIENT_ID",
     description: "Client ID of the GitHub App, for example Iv23li...",
@@ -15,17 +17,37 @@ export const GitHubConfigDef = Manifest.defineConfig({
     integer: true,
     minimum: 1,
   }),
+};
+
+const webhookFields = {
   webhookSecret: Manifest.secret({
     runtimeKey: "GITHUB_WEBHOOK_SECRET",
     description: "Webhook secret of the GitHub App.",
   }),
+  installationId: connectionFields.installationId,
+};
+
+export const GitHubConnectionConfigDef = Manifest.defineConfig(connectionFields);
+export const GitHubWebhookConfigDef = Manifest.defineConfig(webhookFields);
+export const GitHubConfigDef = Manifest.defineConfig({
+  ...connectionFields,
+  ...webhookFields,
 });
 
+export type GitHubConnectionConfig = Manifest.ConfigValuesOf<typeof GitHubConnectionConfigDef>;
+export type GitHubWebhookConfig = Manifest.ConfigValuesOf<typeof GitHubWebhookConfigDef>;
 export type GitHubConfig = Manifest.ConfigValuesOf<typeof GitHubConfigDef>;
 
 export const manifest = Manifest.define({
   name: "producer-github",
   title: "GitHub",
+  webhook: {
+    path: "/webhooks/github",
+    requirement: "required",
+    events: webhookSubscriptions,
+    configFields: ["webhookSecret"],
+    documentationUrl: "https://docs.github.com/en/webhooks",
+  },
   config: GitHubConfigDef.spec,
   resources: [
     { name: "repositories", capabilities: ["backfill", "changes", "webhook"] },

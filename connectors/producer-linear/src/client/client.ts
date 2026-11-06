@@ -13,7 +13,7 @@ import {
 } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 
-import { type LinearConfig, manifest } from "../manifest";
+import { type LinearConnectionConfig, manifest } from "../manifest";
 
 const endpoint = "https://api.linear.app/graphql";
 const maxRetries = 5;
@@ -60,7 +60,7 @@ const isNotFound = (message: string) => message.startsWith("Entity not found");
 
 const operationName = (document: string) => /^\s*query\s+(\w+)/.exec(document)?.[1] ?? "query";
 
-export const make = Effect.fnUntraced(function* (config: Pick<LinearConfig, "apiKey">) {
+export const make = Effect.fnUntraced(function* (config: LinearConnectionConfig) {
   const client = (yield* HttpClient.HttpClient).pipe(
     HttpClient.mapRequest((request) =>
       request.pipe(
@@ -190,11 +190,11 @@ export const make = Effect.fnUntraced(function* (config: Pick<LinearConfig, "api
 });
 
 export const layer = (
-  config: Pick<LinearConfig, "apiKey">,
+  config: LinearConnectionConfig,
 ): Layer.Layer<LinearClient, never, HttpClient.HttpClient> =>
   Layer.effect(LinearClient)(make(config));
 
 export const layerConfig = (
-  config: Config.Wrap<LinearConfig>,
+  config: Config.Wrap<LinearConnectionConfig>,
 ): Layer.Layer<LinearClient, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.unwrap(Config.unwrap(config).pipe(Effect.map(layer)));

@@ -9,7 +9,8 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
-import { StripeConnector } from "./index";
+import { StripeClient, StripeConnector } from "./index";
+import { StripeConnectionConfigDef, StripeWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = StripeConnector.layerConfig(StripeConnector.StripeConfigDef.config);
 const TelemetryLayer = Telemetry.layerOtlp();
@@ -45,3 +46,16 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = StripeClient.layerConfig(StripeConnectionConfigDef.config);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  StripeWebhookConfigDef.config.pipe(
+    Effect.flatMap(StripeConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  StripeConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);

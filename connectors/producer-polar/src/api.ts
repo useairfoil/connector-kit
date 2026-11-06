@@ -3,7 +3,7 @@ import { Config, Context, Duration, Effect, Layer, Option, Schema } from "effect
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { RateLimiter } from "effect/persistence";
 
-import { manifest, type PolarConfig } from "./manifest";
+import { manifest, type PolarConnectionConfig } from "./manifest";
 import { type ListResponse, makeListResponseSchema } from "./resources/shared";
 
 export type PolarApiClientService = {
@@ -59,7 +59,7 @@ const statusError = (response: HttpClientResponse.HttpClientResponse, path: stri
     Effect.tapError((error) => Telemetry.annotateError("api_status", error)),
   );
 
-export const make = Effect.fnUntraced(function* (config: PolarConfig) {
+export const make = Effect.fnUntraced(function* (config: PolarConnectionConfig) {
   const limiter = yield* RateLimiter.RateLimiter;
   const retrySchedule = Metrics.retrySchedule({
     connector: manifest.name,
@@ -154,12 +154,12 @@ export const make = Effect.fnUntraced(function* (config: PolarConfig) {
 const RateLimiterLive = RateLimiter.layer.pipe(Layer.provide(RateLimiter.layerStoreMemory));
 
 export const layer = (
-  config: PolarConfig,
+  config: PolarConnectionConfig,
 ): Layer.Layer<PolarApiClient, never, HttpClient.HttpClient> =>
   Layer.effect(PolarApiClient)(make(config)).pipe(Layer.provide(RateLimiterLive));
 
 export const layerConfig = (
-  config: Config.Wrap<PolarConfig>,
+  config: Config.Wrap<PolarConnectionConfig>,
 ): Layer.Layer<PolarApiClient, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.effect(PolarApiClient)(Config.unwrap(config).pipe(Effect.flatMap(make))).pipe(
     Layer.provide(RateLimiterLive),

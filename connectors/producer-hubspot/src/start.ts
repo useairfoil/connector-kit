@@ -9,7 +9,9 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
+import * as HubSpotClient from "./client/client";
 import { HubSpotConnector } from "./index";
+import { HubSpotConnectionConfigDef, HubSpotWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = HubSpotConnector.layerConfig(HubSpotConnector.HubSpotConfigDef.config);
 const TelemetryLayer = Telemetry.layerOtlp();
@@ -45,3 +47,16 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = HubSpotClient.layerConfig(HubSpotConnectionConfigDef.config);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  HubSpotWebhookConfigDef.config.pipe(
+    Effect.flatMap(HubSpotConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  HubSpotConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);

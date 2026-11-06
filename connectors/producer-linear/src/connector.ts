@@ -1,7 +1,7 @@
 import { Connector, type ResourceDefinition } from "@useairfoil/connector-kit";
 import { Config, Context, Effect, Layer, Redacted } from "effect";
 
-import type { LinearConfig } from "./manifest";
+import type { LinearConfig, LinearWebhookConfig } from "./manifest";
 
 import * as LinearClient from "./client/client";
 import { makeComments } from "./resources/comments";
@@ -49,11 +49,12 @@ import {
   makeUsers,
   makeWorkflowStates,
 } from "./resources/teams";
+import { webhookEvents } from "./webhook/events";
 import { makeWebhookRoute } from "./webhook/route";
 export { LinearConfigDef, manifest } from "./manifest";
-export type { LinearConfig } from "./manifest";
+export type { LinearConfig, LinearWebhookConfig } from "./manifest";
 
-export const make = Effect.fnUntraced(function* (config: LinearConfig) {
+const build = Effect.gen(function* () {
   const client = yield* LinearClient.LinearClient;
 
   const Issues = makeIssues(client);
@@ -72,7 +73,7 @@ export const make = Effect.fnUntraced(function* (config: LinearConfig) {
   const Customers = makeCustomers(client);
   const CustomerNeeds = makeCustomerNeeds(client);
 
-  return Connector.define({
+  const connector = Connector.define({
     name: "producer-linear",
     title: "Linear",
     resources: [
@@ -110,30 +111,47 @@ export const make = Effect.fnUntraced(function* (config: LinearConfig) {
       makeReleaseStages(client),
       makeIssueToReleases(client),
     ],
-    webhooks: [
-      makeWebhookRoute({
-        secret: Redacted.value(config.webhookSecret),
-        issueHistory: IssueHistory,
-        // Release webhooks need the Business plan.
-        targets: new Map<string, ResourceDefinition>([
-          ["Issue", Issues],
-          ["Comment", Comments],
-          ["Attachment", Attachments],
-          ["IssueLabel", IssueLabels],
-          ["User", Users],
-          ["Cycle", Cycles],
-          ["Project", Projects],
-          ["ProjectUpdate", ProjectUpdates],
-          ["ProjectLabel", ProjectLabels],
-          ["Initiative", Initiatives],
-          ["InitiativeUpdate", InitiativeUpdates],
-          ["Document", Documents],
-          ["Customer", Customers],
-          ["CustomerNeed", CustomerNeeds],
-        ]),
-      }),
-    ],
   });
+
+  return {
+    connector,
+    webhooks: (config: LinearWebhookConfig) =>
+      Effect.succeed([
+        makeWebhookRoute({
+          secret: Redacted.value(config.webhookSecret),
+          issueHistory: IssueHistory,
+          // Release webhooks need the Business plan.
+          targets: new Map<string, ResourceDefinition>([
+            [webhookEvents.Issue, Issues],
+            [webhookEvents.Comment, Comments],
+            [webhookEvents.Attachment, Attachments],
+            [webhookEvents.IssueLabel, IssueLabels],
+            [webhookEvents.User, Users],
+            [webhookEvents.Cycle, Cycles],
+            [webhookEvents.Project, Projects],
+            [webhookEvents.ProjectUpdate, ProjectUpdates],
+            [webhookEvents.ProjectLabel, ProjectLabels],
+            [webhookEvents.Initiative, Initiatives],
+            [webhookEvents.InitiativeUpdate, InitiativeUpdates],
+            [webhookEvents.Document, Documents],
+            [webhookEvents.Customer, Customers],
+            [webhookEvents.CustomerNeed, CustomerNeeds],
+          ]),
+        }),
+      ]),
+  };
+});
+
+export const resources = build.pipe(Effect.map(({ connector }) => connector.resources));
+
+export const webhooks = (config: LinearWebhookConfig) =>
+  build.pipe(Effect.flatMap((built) => built.webhooks(config)));
+
+export const make = Effect.fnUntraced(function* (config: LinearConfig) {
+  const built = yield* build;
+  const webhooks = yield* built.webhooks(config);
+
+  return Connector.define({ ...built.connector, webhooks });
 });
 
 export type LinearConnectorRuntime = Effect.Success<ReturnType<typeof make>>;

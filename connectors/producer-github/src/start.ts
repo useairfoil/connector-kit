@@ -9,7 +9,9 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
+import * as GitHubClient from "./client/client";
 import { GitHubConnector } from "./index";
+import { GitHubConnectionConfigDef, GitHubWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = GitHubConnector.layerConfig(GitHubConnector.GitHubConfigDef.config);
 const TelemetryLayer = Telemetry.layerOtlp();
@@ -45,3 +47,16 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = GitHubClient.layerConfig(GitHubConnectionConfigDef.config);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  GitHubWebhookConfigDef.config.pipe(
+    Effect.flatMap(GitHubConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  GitHubConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);
