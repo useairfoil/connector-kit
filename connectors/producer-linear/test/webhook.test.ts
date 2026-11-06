@@ -2,7 +2,7 @@ import { NodeHttpServer } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
 import { Ingestion, StateStore } from "@useairfoil/connector-kit";
 import { DateTime, Deferred, Effect, Layer, Ref } from "effect";
-import { HttpClient, HttpClientRequest } from "effect/http";
+import { HttpClient, HttpClientRequest, HttpServerRequest } from "effect/http";
 import { TestClock } from "effect/testing";
 
 import { LinearConnector, webhookPath } from "../src/index";
@@ -89,6 +89,39 @@ const post = (
   }).pipe(Effect.scoped);
 
 describe("webhook", () => {
+  it.effect("confirms only removal and restore events for supported types", () =>
+    Effect.gen(function* () {
+      yield* TestClock.setTime(now);
+      const { client } = yield* makeFakeClient((request) => fake(request, false));
+      const connector = yield* LinearConnector.LinearConnector.pipe(
+        Effect.provide(connectorLayer(client)),
+      );
+      const verify = connector.webhooks?.[0]?.verify;
+      if (verify === undefined) throw new Error("Webhook verification is missing");
+
+      const accepts = (action: string, type = "Issue") => {
+        const payload = { action, type, webhookTimestamp: now, data: { id: issue.id } };
+        const body = JSON.stringify(payload);
+        return verify({
+          request: HttpServerRequest.fromWeb(
+            new Request(`https://hooks.example.test${webhookPath}`, {
+              method: "POST",
+              headers: { "linear-signature": signPayload(body) },
+            }),
+          ),
+          rawBody: new TextEncoder().encode(body),
+          payload,
+        });
+      };
+
+      expect(yield* accepts("create")).toBe(false);
+      expect(yield* accepts("update")).toBe(false);
+      expect(yield* accepts("remove", "Unknown")).toBe(false);
+      expect(yield* accepts("remove")).toBe(true);
+      expect(yield* accepts("restore")).toBe(true);
+    }),
+  );
+
   it.effect("refreshes archived and restored issues and history, and deletes missing items", () =>
     Effect.gen(function* () {
       expect({

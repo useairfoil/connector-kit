@@ -1,8 +1,18 @@
 import { NodeHttpServer } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
 import { ConnectorError, Ingestion, StateStore } from "@useairfoil/connector-kit";
-import { ConfigProvider, DateTime, Deferred, Effect, Layer, Option, Ref, Schema } from "effect";
-import { HttpClient, HttpClientRequest } from "effect/http";
+import {
+  ConfigProvider,
+  DateTime,
+  Deferred,
+  Effect,
+  Layer,
+  Option,
+  Ref,
+  Result,
+  Schema,
+} from "effect";
+import { HttpClient, HttpClientRequest, HttpServerRequest } from "effect/http";
 import { createHmac } from "node:crypto";
 
 import type { ShopifyApiClientService } from "../src/api/client";
@@ -298,6 +308,41 @@ const expectProductWebhookRefetch = (
   });
 
 describe("producer-shopify webhook", () => {
+  it.effect("requires the topic payload and timestamp before confirming verification", () =>
+    Effect.gen(function* () {
+      const connector = yield* ShopifyConnector.ShopifyConnector;
+      const verify = connector.webhooks?.[0]?.verify;
+      if (verify === undefined) throw new Error("Webhook verification is missing");
+
+      const accepts = (payload: unknown, timestamp?: string, topic = "products/create") => {
+        const body = JSON.stringify(payload);
+        return verify({
+          request: HttpServerRequest.fromWeb(
+            new Request("https://hooks.example.test/webhooks/shopify", {
+              method: "POST",
+              headers: {
+                "x-shopify-topic": topic,
+                "x-shopify-hmac-sha256": signPayload(body),
+                ...(timestamp === undefined ? {} : { "x-shopify-triggered-at": timestamp }),
+              },
+            }),
+          ),
+          rawBody: new TextEncoder().encode(body),
+          payload,
+        });
+      };
+
+      expect(Result.isFailure(yield* accepts({}, refetchTriggeredAt).pipe(Effect.result))).toBe(
+        true,
+      );
+      expect(Result.isFailure(yield* accepts(productWebhookPayload).pipe(Effect.result))).toBe(
+        true,
+      );
+      expect(yield* accepts(productWebhookPayload, refetchTriggeredAt)).toBe(true);
+      expect(yield* accepts({}, refetchTriggeredAt, "unknown/topic")).toBe(false);
+    }).pipe(Effect.provide(connectorTestLayer)),
+  );
+
   it.effect("ingests live product webhook batches", () =>
     Effect.gen(function* () {
       const { ingestedRef, done, layer } = yield* makeTestIngestor(2);

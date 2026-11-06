@@ -9,7 +9,9 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
+import * as LinearClient from "./client/client";
 import { LinearConnector } from "./index";
+import { LinearConnectionConfigDef, LinearWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = LinearConnector.layerConfig(LinearConnector.LinearConfigDef.config);
 const TelemetryLayer = Telemetry.layerOtlp();
@@ -45,3 +47,16 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = LinearClient.layerConfig(LinearConnectionConfigDef.config);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  LinearWebhookConfigDef.config.pipe(
+    Effect.flatMap(LinearConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  LinearConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);

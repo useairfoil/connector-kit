@@ -7,7 +7,7 @@ import packageJson from "../package.json";
 import { createTableCommand, setupCommand } from "./create-table";
 import { demoCommand } from "./demo";
 import { sandboxCommand } from "./sandbox";
-import { startCommand } from "./start";
+import { startCommand, webhookCommand, checkCommand } from "./start";
 
 const BootstrapLayer = Layer.mergeAll(FetchHttpClient.layer, NodeServices.layer);
 
@@ -15,6 +15,8 @@ const program = Command.make("producer-shopify", {}, () => Effect.void).pipe(
   Command.withSubcommands([
     setupCommand,
     startCommand,
+    webhookCommand,
+    checkCommand,
     sandboxCommand,
     createTableCommand,
     demoCommand,

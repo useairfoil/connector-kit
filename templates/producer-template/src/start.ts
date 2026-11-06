@@ -46,3 +46,10 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  TemplateConnector.TemplateConnector.pipe(
+    Effect.map((connector) => connector.resources),
+    Effect.provide(ConnectorLayer),
+  ),
+);

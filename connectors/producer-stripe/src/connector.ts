@@ -1,7 +1,7 @@
 import { Connector, Cursor, Fetch, type ResourceDefinition } from "@useairfoil/connector-kit";
 import { Config, Context, Effect, Layer, Redacted } from "effect";
 
-import type { StripeConfig } from "./manifest";
+import type { StripeConfig, StripeWebhookConfig } from "./manifest";
 
 import * as StripeClient from "./client/client";
 import { chargeSpec, makeCharges } from "./resources/charges";
@@ -14,9 +14,9 @@ import { changesInterval, readEventWindow, rowsForWindow } from "./resources/sha
 import { makeSubscriptionSpec, makeSubscriptions } from "./resources/subscriptions";
 import { makeWebhookRoute } from "./webhook/route";
 export { manifest, StripeConfigDef } from "./manifest";
-export type { StripeConfig } from "./manifest";
+export type { StripeConfig, StripeWebhookConfig } from "./manifest";
 
-export const make = Effect.fnUntraced(function* (config: StripeConfig) {
+const build = Effect.gen(function* () {
   const client = yield* StripeClient.StripeClient;
 
   const Customers = makeCustomers(client);
@@ -28,7 +28,7 @@ export const make = Effect.fnUntraced(function* (config: StripeConfig) {
   const Charges = makeCharges(client);
   const Refunds = makeRefunds(client);
 
-  return Connector.define({
+  const connector = Connector.define({
     name: "producer-stripe",
     title: "Stripe",
     resources: [Customers, Products, Prices, Subscriptions, Invoices, Charges, Refunds],
@@ -61,21 +61,38 @@ export const make = Effect.fnUntraced(function* (config: StripeConfig) {
           return { rows, cursor: window.cursor, hasMore: window.hasMore };
         }),
     }),
-    webhooks: [
-      makeWebhookRoute({
-        secret: Redacted.value(config.webhookSecret),
-        targets: [
-          { resource: Customers, eventTypes: customerSpec.eventTypes },
-          { resource: Products, eventTypes: productSpec.eventTypes },
-          { resource: Prices, eventTypes: priceSpec.eventTypes },
-          { resource: Subscriptions, eventTypes: subscriptionSpec.eventTypes },
-          { resource: Invoices, eventTypes: invoiceSpec.eventTypes },
-          { resource: Charges, eventTypes: chargeSpec.eventTypes },
-          { resource: Refunds, eventTypes: refundSpec.eventTypes },
-        ],
-      }),
-    ],
   });
+
+  return {
+    connector,
+    webhooks: (config: StripeWebhookConfig) =>
+      Effect.succeed([
+        makeWebhookRoute({
+          secret: Redacted.value(config.webhookSecret),
+          targets: [
+            { resource: Customers, eventTypes: customerSpec.eventTypes },
+            { resource: Products, eventTypes: productSpec.eventTypes },
+            { resource: Prices, eventTypes: priceSpec.eventTypes },
+            { resource: Subscriptions, eventTypes: subscriptionSpec.eventTypes },
+            { resource: Invoices, eventTypes: invoiceSpec.eventTypes },
+            { resource: Charges, eventTypes: chargeSpec.eventTypes },
+            { resource: Refunds, eventTypes: refundSpec.eventTypes },
+          ],
+        }),
+      ]),
+  };
+});
+
+export const resources = build.pipe(Effect.map(({ connector }) => connector.resources));
+
+export const webhooks = (config: StripeWebhookConfig) =>
+  build.pipe(Effect.flatMap((built) => built.webhooks(config)));
+
+export const make = Effect.fnUntraced(function* (config: StripeConfig) {
+  const built = yield* build;
+  const webhooks = yield* built.webhooks(config);
+
+  return Connector.define({ ...built.connector, webhooks });
 });
 
 export type StripeConnectorRuntime = Effect.Success<ReturnType<typeof make>>;

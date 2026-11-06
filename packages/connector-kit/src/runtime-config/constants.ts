@@ -2,6 +2,10 @@ import { HashSet } from "effect";
 
 /** Shared runtime keys owned by Airfoil rather than an individual connector. */
 export const PlatformRuntimeKey = {
+  webhookUrl: "AIRFOIL_WEBHOOK_URL",
+  notificationUrl: "AIRFOIL_NOTIFICATION_URL",
+  notificationTokenPath: "AIRFOIL_NOTIFICATION_TOKEN_PATH",
+  notificationAttempt: "AIRFOIL_NOTIFICATION_ATTEMPT",
   configPath: "AIRFOIL_CONFIG_PATH",
   httpPort: "AIRFOIL_HTTP_PORT",
   tableBindings: "AIRFOIL_TABLE_BINDINGS",

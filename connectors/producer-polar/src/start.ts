@@ -9,7 +9,9 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
+import * as PolarApiClient from "./api";
 import { PolarConnector } from "./index";
+import { PolarConnectionConfigDef, PolarWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = PolarConnector.layerConfig(PolarConnector.PolarConfigDef.config);
 const TelemetryLayer = Telemetry.layerOtlp();
@@ -45,3 +47,16 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = PolarApiClient.layerConfig(PolarConnectionConfigDef.config);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  PolarWebhookConfigDef.config.pipe(
+    Effect.flatMap(PolarConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  PolarConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);

@@ -2,7 +2,7 @@ import { ConnectorError } from "@useairfoil/connector-kit";
 import { Config, Context, Effect, Layer, Option, Schema, Stream } from "effect";
 import { HttpClient } from "effect/http";
 
-import type { ShopifyConfig } from "../manifest";
+import type { ShopifyConnectionConfig } from "../manifest";
 import type { Customer } from "../resources/customers/row";
 import type { Order } from "../resources/orders/row";
 import type { Product } from "../resources/products/row";
@@ -167,7 +167,7 @@ const CustomersAccessSchema = Schema.Struct({
 const nestedPageSchema = <S extends Schema.Top>(connection: S) =>
   Schema.Struct({ node: Schema.NullOr(Schema.Struct({ connection })) });
 
-export const make = Effect.fnUntraced(function* (config: ShopifyConfig) {
+export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig) {
   const fetchGraphQL = yield* ShopifyGraphQL.make(config);
 
   const nextPageCursor = (pageInfo: PageInfo): Option.Option<string> =>
@@ -416,12 +416,12 @@ export const make = Effect.fnUntraced(function* (config: ShopifyConfig) {
 });
 
 export const layer = (
-  config: ShopifyConfig,
+  config: ShopifyConnectionConfig,
 ): Layer.Layer<ShopifyApiClient, ConnectorError, HttpClient.HttpClient | ShopifyAuth.ShopifyAuth> =>
   Layer.effect(ShopifyApiClient)(make(config));
 
 export const layerConfig = (
-  config: Config.Wrap<ShopifyConfig>,
+  config: Config.Wrap<ShopifyConnectionConfig>,
 ): Layer.Layer<
   ShopifyApiClient,
   ConnectorError | Config.ConfigError,

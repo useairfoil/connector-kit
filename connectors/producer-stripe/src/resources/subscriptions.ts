@@ -10,6 +10,7 @@ import {
   type SubscriptionRow,
   SubscriptionSchema,
 } from "../schemas/subscriptions";
+import { webhookEvents } from "../webhook/events";
 import {
   type StripeResourceSpec,
   backfillPages,
@@ -18,15 +19,7 @@ import {
   listAll,
 } from "./shared";
 
-export const subscriptionEventTypes = [
-  "customer.subscription.created",
-  "customer.subscription.updated",
-  "customer.subscription.deleted",
-  "customer.subscription.paused",
-  "customer.subscription.resumed",
-  "customer.subscription.pending_update_applied",
-  "customer.subscription.pending_update_expired",
-] as const;
+export const subscriptionEventTypes = webhookEvents.subscriptions;
 
 export const makeSubscriptionSpec = (
   client: StripeClientService,

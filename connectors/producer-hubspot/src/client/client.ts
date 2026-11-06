@@ -3,7 +3,7 @@ import { Config, Context, DateTime, Duration, Effect, Layer, Redacted, Schema } 
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { RateLimiter } from "effect/persistence";
 
-import { type HubSpotConfig, manifest } from "../manifest";
+import { type HubSpotConnectionConfig, manifest } from "../manifest";
 
 // Keep this version aligned with the resource schemas.
 export const HUBSPOT_API_VERSION = "2026-09";
@@ -65,7 +65,7 @@ const statusError = (response: HttpClientResponse.HttpClientResponse, path: stri
 
 const isSearch = (path: string) => path.endsWith("/search");
 
-export const make = Effect.fnUntraced(function* (config: HubSpotConfig) {
+export const make = Effect.fnUntraced(function* (config: HubSpotConnectionConfig) {
   const limiter = yield* RateLimiter.RateLimiter;
   const retrySchedule = Metrics.retrySchedule({
     connector: manifest.name,
@@ -167,12 +167,12 @@ export const make = Effect.fnUntraced(function* (config: HubSpotConfig) {
 const RateLimiterLive = RateLimiter.layer.pipe(Layer.provide(RateLimiter.layerStoreMemory));
 
 export const layer = (
-  config: HubSpotConfig,
+  config: HubSpotConnectionConfig,
 ): Layer.Layer<HubSpotClient, never, HttpClient.HttpClient> =>
   Layer.effect(HubSpotClient)(make(config)).pipe(Layer.provide(RateLimiterLive));
 
 export const layerConfig = (
-  config: Config.Wrap<HubSpotConfig>,
+  config: Config.Wrap<HubSpotConnectionConfig>,
 ): Layer.Layer<HubSpotClient, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.effect(HubSpotClient)(Config.unwrap(config).pipe(Effect.flatMap(make))).pipe(
     Layer.provide(RateLimiterLive),

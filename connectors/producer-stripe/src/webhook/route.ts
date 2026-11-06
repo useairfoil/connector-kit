@@ -2,6 +2,7 @@ import { type ResourceDefinition, Webhook } from "@useairfoil/connector-kit";
 import { Effect, Result, Schema } from "effect";
 import { HttpServerResponse } from "effect/http";
 
+import { manifest } from "../manifest";
 import { StripeEventSchema } from "../schemas/events";
 import { verifySignature } from "./signature";
 
@@ -10,7 +11,7 @@ export type WebhookTarget = {
   readonly eventTypes: ReadonlyArray<string>;
 };
 
-export const webhookPath = "/webhooks/stripe";
+export const webhookPath = manifest.webhook.path;
 
 // Known events must fully decode. Other events get a 200 and are skipped.
 const makePayloadSchema = (handled: ReadonlySet<string>) =>
@@ -36,6 +37,12 @@ export const makeWebhookRoute = (options: {
   return Webhook.route({
     path: webhookPath,
     ackMode: "after-enqueue",
+    verify: ({ request, rawBody, payload }) =>
+      verifySignature({
+        rawBody,
+        header: request.headers["stripe-signature"],
+        secret: options.secret,
+      }).pipe(Effect.as(byType.has(payload.type))),
     schema: makePayloadSchema(new Set(byType.keys())),
     handler: ({ request, rawBody, payload, to }) =>
       Effect.gen(function* () {
