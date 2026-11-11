@@ -9,6 +9,8 @@ import { makeCommitStatuses } from "./resources/commit-statuses";
 import { makeCommits } from "./resources/commits";
 import { makeIssueComments } from "./resources/issue-comments";
 import { makeIssues } from "./resources/issues";
+import { makeLabels } from "./resources/labels";
+import { makeMilestones } from "./resources/milestones";
 import { makePullRequestCommits } from "./resources/pull-request-commits";
 import { makePullRequestReviewComments } from "./resources/pull-request-review-comments";
 import { makePullRequestReviews } from "./resources/pull-request-reviews";
@@ -42,6 +44,9 @@ const build = Effect.gen(function* () {
   const WorkflowJobs = makeWorkflowJobs(client, repositories);
   const Releases = makeReleases(client, repositories);
 
+  const Labels = makeLabels(client, repositories);
+  const Milestones = makeMilestones(client, repositories);
+
   const connector = Connector.define({
     name: "producer-github",
     title: "GitHub",
@@ -59,6 +64,8 @@ const build = Effect.gen(function* () {
       WorkflowRuns,
       WorkflowJobs,
       Releases,
+      Labels,
+      Milestones,
     ],
   });
 
@@ -82,6 +89,8 @@ const build = Effect.gen(function* () {
             [webhookEvents.workflow_run, [WorkflowRuns]],
             [webhookEvents.workflow_job, [WorkflowJobs]],
             [webhookEvents.release, [Releases]],
+            [webhookEvents.milestone, [Milestones]],
+            [webhookEvents.label, [Labels]],
           ]),
         }),
       ]),

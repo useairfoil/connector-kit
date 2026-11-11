@@ -11,3 +11,7 @@ export { PullRequestObjectSchema, PullRequestSchema } from "./schemas/pull-reque
 export type { Repository } from "./schemas/repositories";
 export { RepositoryObjectSchema, RepositorySchema } from "./schemas/repositories";
 export { webhookPath } from "./webhook/route";
+export type { Label } from "./schemas/labels";
+export { LabelObjectSchema, LabelSchema } from "./schemas/labels";
+export type { Milestone } from "./schemas/milestones";
+export { MilestoneObjectSchema, MilestoneSchema } from "./schemas/milestones";

@@ -20,6 +20,7 @@ const historyFields = `
   added_label_ids: addedLabelIds removed_label_ids: removedLabelIds
   attachment_id: attachmentId customer_need_id: customerNeedId
   to_converted_project_id: toConvertedProjectId updated_description: updatedDescription
+  added_to_release_ids: addedToReleaseIds removed_from_release_ids: removedFromReleaseIds
   archived trashed auto_archived: autoArchived auto_closed: autoClosed`;
 
 const HistoryPageSchema = Schema.Struct({

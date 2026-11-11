@@ -117,6 +117,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "carts": [
             "identifier: id",
@@ -129,6 +130,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "commerce_payments": [
             "identifier: id",
@@ -141,6 +143,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "communications": [
             "identifier: id",
@@ -154,6 +157,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "companies": [
             "identifier: id",
@@ -173,6 +177,7 @@ describe("Iceberg schemas", () => {
             "properties?: map<string, string>",
             "_deleted?: boolean",
             "company_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "custom_objects": [
             "identifier: key",
@@ -189,6 +194,7 @@ describe("Iceberg schemas", () => {
             "ticket_ids?: list<string>",
             "object_type_id?: string",
             "object_type?: string",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "deal_split": [
             "identifier: id",
@@ -199,6 +205,7 @@ describe("Iceberg schemas", () => {
             "properties?: map<string, string>",
             "_deleted?: boolean",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "deals": [
             "identifier: id",
@@ -210,6 +217,7 @@ describe("Iceberg schemas", () => {
             "_deleted?: boolean",
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "discounts": [
             "identifier: id",
@@ -232,6 +240,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "feedback_submissions": [
             "identifier: id",
@@ -245,6 +254,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "fees": [
             "identifier: id",
@@ -275,6 +285,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "leads": [
             "identifier: id",
@@ -286,6 +297,7 @@ describe("Iceberg schemas", () => {
             "_deleted?: boolean",
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "line_items": [
             "identifier: id",
@@ -296,6 +308,7 @@ describe("Iceberg schemas", () => {
             "properties?: map<string, string>",
             "_deleted?: boolean",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "lists": [
             "identifier: id",
@@ -322,6 +335,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "notes": [
             "identifier: id",
@@ -335,6 +349,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "orders": [
             "identifier: id",
@@ -347,6 +362,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "owners": [
             "identifier: id",
@@ -386,6 +402,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "products": [
             "identifier: id",
@@ -426,6 +443,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "subscriptions": [
             "identifier: id",
@@ -438,6 +456,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "tasks": [
             "identifier: id",
@@ -451,6 +470,7 @@ describe("Iceberg schemas", () => {
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
             "ticket_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "taxes": [
             "identifier: id",
@@ -480,6 +500,7 @@ describe("Iceberg schemas", () => {
             "company_ids?: list<string>",
             "contact_ids?: list<string>",
             "deal_ids?: list<string>",
+            "association_labels?: list<struct<object_type: string, object_id: string, category: string, type_id: long, label?: string>>",
           ],
           "users": [
             "identifier: id",

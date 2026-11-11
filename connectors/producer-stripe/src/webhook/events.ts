@@ -34,5 +34,6 @@ export const webhookEvents = {
     "charge.refunded",
     "charge.updated",
   ],
+  invoice_payments: ["invoice_payment.paid"],
   refunds: ["refund.created", "refund.updated", "refund.failed", "charge.refund.updated"],
 } as const;

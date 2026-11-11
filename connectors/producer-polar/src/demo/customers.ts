@@ -314,6 +314,7 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
     if (modified) lastChange = new Date(Math.max(lastChange.getTime(), modified.getTime()));
 
     rows.subscriptions.push({
+      prices: [{ id: priceId(itemIndex) }],
       id: subscriptionId,
       version: modified ?? checkoutCreated,
       created_at: checkoutCreated,

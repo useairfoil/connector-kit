@@ -4,6 +4,7 @@ import { Duration } from "effect";
 
 import type { Charge } from "../schemas/charges";
 import type { Customer } from "../schemas/customers";
+import type { InvoicePayment } from "../schemas/invoice-payments";
 import type { Invoice } from "../schemas/invoices";
 import type { Refund } from "../schemas/refunds";
 import type { Subscription } from "../schemas/subscriptions";
@@ -78,5 +79,6 @@ export type Rows = {
   readonly subscriptions: Array<Subscription>;
   readonly invoices: Array<Invoice>;
   readonly charges: Array<Charge>;
+  readonly invoice_payments: Array<InvoicePayment>;
   readonly refunds: Array<Refund>;
 };

@@ -186,8 +186,8 @@ export type RepoResourceSpec<Item, Row extends object> = {
    * before `since`. Without it, they read every page.
    */
   readonly recentFor?: Duration.Duration;
-  readonly createdAt: (item: Item) => Date;
-  readonly updatedAt: (item: Item) => Date;
+  readonly createdAt?: (item: Item) => Date;
+  readonly updatedAt?: (item: Item) => Date;
   /** Items the resource keeps. The issues list also returns pull requests. */
   readonly keep: (item: Item) => boolean;
   /** GitHub returns 404 for pull requests and comments when the feature is off. */
@@ -196,6 +196,7 @@ export type RepoResourceSpec<Item, Row extends object> = {
   readonly rows: (
     items: ReadonlyArray<Item>,
     repository: RepositoryRef,
+    readAt: Date,
   ) => Effect.Effect<ReadonlyArray<Row>, ConnectorError>;
 };
 
@@ -255,11 +256,12 @@ export const checkRepoResource = <Item, Row extends object>(
     // An installation without such a repository has nothing to check yet.
     const repository = Arr.findFirst(page.body.repositories, spec.enabled);
     if (Option.isSome(repository)) {
+      const readAt = yield* DateTime.nowAsDate;
       const items = yield* client.get(
         spec.pageSchema,
         withParams(repoPath(repository.value, spec.path), { ...spec.params, per_page: "1" }),
       );
-      yield* spec.rows(items.body.filter(spec.keep), repository.value);
+      yield* spec.rows(items.body.filter(spec.keep), repository.value, readAt);
     }
   });
 
@@ -319,11 +321,13 @@ export const backfillRepoResource = <Item, Row extends object>(
             }),
           ),
         );
+        const readAt = yield* DateTime.nowAsDate;
         const page = yield* client.get(spec.pageSchema, url);
         const beforeCutoff = page.body.filter(
-          (item) => spec.createdAt(item).getTime() <= cutoffDate.getTime(),
+          (item) =>
+            spec.createdAt === undefined || spec.createdAt(item).getTime() <= cutoffDate.getTime(),
         );
-        const rows = yield* spec.rows(beforeCutoff.filter(spec.keep), repository);
+        const rows = yield* spec.rows(beforeCutoff.filter(spec.keep), repository, readAt);
         // A sorted list is past the cutoff at the first newer item.
         const pastCutoff = spec.order === "sorted" && beforeCutoff.length < page.body.length;
 
@@ -371,7 +375,8 @@ const changesPages = <Item, Row extends object>(
     // Never send an old `since` to mean everything: GitHub then returns nothing.
     ...(spec.since && Option.isSome(since) ? { since: since.value.toISOString() } : {}),
   });
-  const isRecent = (item: Item) => isSince(since, spec.updatedAt(item));
+  const isRecent = (item: Item) =>
+    spec.updatedAt === undefined || isSince(since, spec.updatedAt(item));
   const { order, recentFor } = spec;
   const createdFrom = Option.map(since, (date) =>
     DateTime.toDateUtc(
@@ -380,18 +385,21 @@ const changesPages = <Item, Row extends object>(
   );
   const goOn = (items: ReadonlyArray<Item>) => {
     if (order === "sorted") return items.every(isRecent);
-    if (recentFor === undefined) return true;
-    return items.every((item) => isSince(createdFrom, spec.createdAt(item)));
+    const createdAt = spec.createdAt;
+    if (recentFor === undefined || createdAt === undefined) return true;
+    return items.every((item) => isSince(createdFrom, createdAt(item)));
   };
   return Stream.paginate(
     Option.getOrElse(url, () => first),
     (current) =>
       Effect.gen(function* () {
+        const readAt = yield* DateTime.nowAsDate;
         const page = yield* client.get(spec.pageSchema, current);
         const next = goOn(page.body) ? page.next : Option.none();
         const rows = yield* spec.rows(
           page.body.filter((item) => isRecent(item) && spec.keep(item)),
           repository,
+          readAt,
         );
         return [[{ repository, rows, next }], next] as const;
       }),

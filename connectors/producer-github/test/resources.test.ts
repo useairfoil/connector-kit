@@ -60,6 +60,39 @@ const plain = (value: unknown): unknown =>
   JSON.parse(JSON.stringify(value, (_key, item) => (typeof item === "bigint" ? `${item}n` : item)));
 
 describe("resources", () => {
+  it.effect("backfills closed milestones with their repository ID", () =>
+    Effect.gen(function* () {
+      const { backfill } = yield* getResource(
+        "milestones",
+        withRepositories([repository], {
+          "/repos/octocat/hello-world/milestones?state=all&per_page=100": [
+            {
+              id: 42,
+              number: 1,
+              title: "First release",
+              description: null,
+              state: "closed",
+              created_at: "2026-10-05T21:27:00Z",
+              updated_at: "2026-10-05T22:00:00Z",
+              closed_at: "2026-10-05T22:00:00Z",
+              due_on: null,
+            },
+          ],
+        }),
+      );
+
+      const page = yield* backfill.fetch({ cutoff });
+      expect(page.rows).toMatchObject([
+        {
+          id: 42n,
+          repository_id: BigInt(repository.id),
+          state: "closed",
+          version: new Date("2026-10-05T22:00:00Z"),
+        },
+      ]);
+    }),
+  );
+
   it.effect("matches the table schemas", () =>
     Effect.gen(function* () {
       const { client } = yield* makeFakeClient(() => undefined);
@@ -150,6 +183,10 @@ describe("resources", () => {
             "/repos/octocat/hello-world/actions/runs/38138322363/jobs?filter=all&per_page=100",
             "/installation/repositories?per_page=100",
             "/repos/octocat/hello-world/releases?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/labels?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/milestones?state=all&per_page=1",
           ],
           "result": {
             "check_runs": {
@@ -165,6 +202,12 @@ describe("resources", () => {
               "_tag": "ok",
             },
             "issues": {
+              "_tag": "ok",
+            },
+            "labels": {
+              "_tag": "ok",
+            },
+            "milestones": {
               "_tag": "ok",
             },
             "pull_request_commits": {

@@ -8,7 +8,15 @@ import { TestClock } from "effect/testing";
 import { StripeConnector, webhookPath } from "../src/index";
 import { customer } from "./fixtures/customers";
 import { event } from "./fixtures/events";
-import { canceledSubscription, charge, invoice, price, product, refund } from "./fixtures/objects";
+import {
+  canceledSubscription,
+  charge,
+  invoice,
+  invoicePayment,
+  price,
+  product,
+  refund,
+} from "./fixtures/objects";
 import {
   type FakeStripe,
   connectorLayer,
@@ -153,6 +161,11 @@ describe("webhook", () => {
           object: canceledSubscription,
         },
         { type: "invoice.paid", path: "invoices/in_1", object: invoice },
+        {
+          type: "invoice_payment.paid",
+          path: "invoice_payments/inpay_123",
+          object: invoicePayment,
+        },
         { type: "charge.refunded", path: "charges/ch_1", object: charge },
         { type: "charge.refund.updated", path: "refunds/re_1", object: refund },
       ];
@@ -232,6 +245,18 @@ describe("webhook", () => {
               {
                 "id": "in_1",
                 "resource": "invoices",
+              },
+            ],
+            "status": 200,
+          },
+          "invoice_payment.paid": {
+            "fetched": [
+              "invoice_payments/inpay_123",
+            ],
+            "rows": [
+              {
+                "id": "inpay_123",
+                "resource": "invoice_payments",
               },
             ],
             "status": 200,

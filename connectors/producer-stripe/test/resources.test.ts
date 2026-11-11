@@ -72,6 +72,7 @@ describe("resources", () => {
           "subscriptions",
           "invoices",
           "charges",
+          "invoice_payments",
           "refunds",
         ]
       `);
@@ -128,6 +129,8 @@ describe("resources", () => {
             "events?limit=1&types[]=invoice.created",
             "charges?limit=1",
             "events?limit=1&types[]=charge.succeeded",
+            "invoice_payments?limit=1&status=paid",
+            "events?limit=1&types[]=invoice_payment.paid",
             "refunds?limit=1",
             "events?limit=1&types[]=refund.created",
           ],
@@ -136,6 +139,9 @@ describe("resources", () => {
               "_tag": "ok",
             },
             "customers": {
+              "_tag": "ok",
+            },
+            "invoice_payments": {
               "_tag": "ok",
             },
             "invoices": {
@@ -156,6 +162,63 @@ describe("resources", () => {
           },
         }
       `);
+    }),
+  );
+
+  it.effect("replaces partial embedded invoice lines with every page", () =>
+    Effect.gen(function* () {
+      const line = {
+        id: "il_1",
+        amount: 2500,
+        subtotal: 2500,
+        currency: "usd",
+        description: null,
+        quantity: 1,
+        quantity_decimal: "1.5",
+        period: { start: 1791021600, end: 1791025200 },
+        pricing: {
+          type: "price_details",
+          price_details: { price: "price_1", product: "prod_1" },
+          unit_amount_decimal: "1666.6667",
+        },
+        discount_amounts: [{ amount: 500, discount: "di_1" }],
+        taxes: [],
+      };
+      const { backfill, requests } = yield* getResource("invoices", {
+        list: (path, params) => {
+          if (path === "invoices") {
+            return {
+              data: [{ ...invoice, lines: { data: [line], has_more: true } }],
+              has_more: false,
+            };
+          }
+          const next = params.some(([key, value]) => key === "starting_after" && value === line.id);
+          return next
+            ? { data: [{ ...line, id: "il_2" }], has_more: false }
+            : { data: [line], has_more: true };
+        },
+      });
+
+      const page = yield* backfill.fetch({ cutoff: cursor });
+      expect(page.rows).toMatchObject([
+        {
+          id: invoice.id,
+          lines: [
+            {
+              id: "il_1",
+              amount: 2500n,
+              quantity_decimal: "1.5",
+              discount_amounts: [{ amount: 500n, discount: "di_1" }],
+            },
+            { id: "il_2" },
+          ],
+        },
+      ]);
+      expect(yield* Ref.get(requests)).toEqual([
+        "invoices?limit=100&created[lte]=1791025200",
+        "invoices/in_1/lines?limit=100",
+        "invoices/in_1/lines?limit=100&starting_after=il_1",
+      ]);
     }),
   );
 
@@ -191,6 +254,7 @@ describe("resources", () => {
               "due_date": null,
               "effective_at": 2026-01-01T00:01:00.000Z,
               "id": "in_1",
+              "lines": [],
               "livemode": false,
               "metadata": Map {},
               "number": "ABC123-0001",
@@ -235,6 +299,7 @@ describe("resources", () => {
               "due_date": null,
               "effective_at": null,
               "id": "in_2",
+              "lines": [],
               "livemode": false,
               "metadata": Map {},
               "number": null,

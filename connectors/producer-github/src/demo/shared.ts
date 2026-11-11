@@ -53,12 +53,21 @@ type RepositoryItem = (typeof repositories)[number];
 
 export const repositoryId = (r: number) => BigInt(700_000_000 + r);
 
-export const labels = [
+const labels = [
   { id: 6_100_000_001n, name: "bug" },
   { id: 6_100_000_002n, name: "enhancement" },
   { id: 6_100_000_003n, name: "documentation" },
   { id: 6_100_000_004n, name: "good first issue" },
 ];
+
+export const labelsForRepository = (r: number) =>
+  labels.map((label) => ({ ...label, id: label.id + BigInt(r) * 10n }));
+
+export const milestoneForRepository = (r: number) => ({
+  id: 6_200_000_001n + BigInt(r),
+  number: 1n,
+  title: "First release",
+});
 
 export const verbs = ["Fix", "Add", "Improve", "Update", "Remove", "Refactor", "Support"] as const;
 
