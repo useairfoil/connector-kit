@@ -100,7 +100,7 @@ describe.skipIf(!canRun)("Linear API (vcr)", () => {
               "initiative_to_projects": "2 backfilled, 2 changed",
               "initiative_updates": "1 backfilled, 1 changed",
               "initiatives": "2 backfilled, 2 changed",
-              "issue_history": "20 backfilled, 20 changed",
+              "issue_history": "21 backfilled, 21 changed",
               "issue_labels": "4 backfilled, 4 changed",
               "issue_relations": "2 backfilled, 2 changed",
               "issue_to_releases": "0 backfilled, 0 changed",

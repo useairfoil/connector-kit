@@ -114,7 +114,7 @@ describe("Iceberg schemas", () => {
             "reference_to?: list<string>",
             "picklist_values?: list<struct<value: string, label?: string, active: boolean>>",
           ],
-          "tables": 89,
+          "tables": 96,
         }
       `);
     }),

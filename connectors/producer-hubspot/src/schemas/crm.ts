@@ -35,7 +35,25 @@ const contact_ids = ids("contacts");
 const deal_ids = ids("deals");
 const ticket_ids = ids("tickets");
 
-const activityFields = (object: string) => ({
+const association_labels = Schema.optionalKey(
+  Schema.Array(
+    Schema.Struct({
+      object_type: Schema.String.pipe(Schema.annotateKey({ description: "Target object type." })),
+      object_id: Schema.String.pipe(Schema.annotateKey({ description: "Target record ID." })),
+      category: Schema.String.pipe(
+        Schema.annotateKey({ description: "Who defined the association type." }),
+      ),
+      type_id: Schema.BigInt.pipe(
+        Schema.annotateKey({ description: "HubSpot association type ID." }),
+      ),
+      label: Schema.NullOr(Schema.String).pipe(
+        Schema.annotateKey({ description: "Label on this link, if one is set." }),
+      ),
+    }),
+  ),
+).pipe(Schema.annotateKey({ description: "Association types and labels on linked records." }));
+
+const linkedFields = (object: string) => ({
   ...baseFields(object),
   company_ids,
   contact_ids,
@@ -43,7 +61,13 @@ const activityFields = (object: string) => ({
   ticket_ids,
 });
 
-export const ContactSchema = Schema.Struct({ ...baseFields("contact"), company_ids })
+const activityFields = (object: string) => ({ ...linkedFields(object), association_labels });
+
+export const ContactSchema = Schema.Struct({
+  ...baseFields("contact"),
+  company_ids,
+  association_labels,
+})
   .annotate({
     description: "HubSpot contacts.",
   })
@@ -61,6 +85,7 @@ export const DealSchema = Schema.Struct({
   ...baseFields("deal"),
   company_ids,
   contact_ids,
+  association_labels,
 })
   .annotate({ description: "HubSpot deals." })
   .pipe(Iceberg.identifier("id"));
@@ -71,6 +96,7 @@ export const TicketSchema = Schema.Struct({
   company_ids,
   contact_ids,
   deal_ids,
+  association_labels,
 })
   .annotate({ description: "HubSpot tickets." })
   .pipe(Iceberg.identifier("id"));
@@ -111,7 +137,11 @@ export const TaskSchema = Schema.Struct(activityFields("task"))
   .pipe(Iceberg.identifier("id"));
 export type Task = Schema.Schema.Type<typeof TaskSchema>;
 
-export const LineItemSchema = Schema.Struct({ ...baseFields("line item"), deal_ids })
+export const LineItemSchema = Schema.Struct({
+  ...baseFields("line item"),
+  deal_ids,
+  association_labels,
+})
   .annotate({
     description: "Line items on HubSpot deals. The product is `hs_product_id` in `properties`.",
   })
@@ -130,6 +160,7 @@ const commerceFields = (object: string) => ({
   company_ids,
   contact_ids,
   deal_ids,
+  association_labels,
 });
 
 export const QuoteSchema = Schema.Struct(commerceFields("quote"))
@@ -143,6 +174,7 @@ export const LeadSchema = Schema.Struct({
   ...baseFields("lead"),
   company_ids,
   contact_ids,
+  association_labels,
 })
   .annotate({ description: "HubSpot leads." })
   .pipe(Iceberg.identifier("id"));
@@ -237,7 +269,11 @@ export const UserSchema = Schema.Struct(baseFields("user"))
   .pipe(Iceberg.identifier("id"));
 export type User = Schema.Schema.Type<typeof UserSchema>;
 
-export const DealSplitSchema = Schema.Struct({ ...baseFields("deal split"), deal_ids })
+export const DealSplitSchema = Schema.Struct({
+  ...baseFields("deal split"),
+  deal_ids,
+  association_labels,
+})
   .annotate({
     description: "How deal amounts are split between owners.",
   })
@@ -254,13 +290,14 @@ export const CustomObjectSchema = Schema.Struct({
   key: Schema.String.pipe(
     Schema.annotateKey({ description: "Object type ID and record ID, such as `2-123:456`." }),
   ),
-  ...activityFields("custom object record"),
+  ...linkedFields("custom object record"),
   object_type_id: Schema.String.pipe(
     Schema.annotateKey({ description: "Custom object type ID, such as `2-123`." }),
   ),
   object_type: Schema.String.pipe(
     Schema.annotateKey({ description: "Custom object name, such as `vehicle`." }),
   ),
+  association_labels,
 })
   .annotate({ description: "Records of every custom object type in one table." })
   .pipe(Iceberg.identifier("key"));

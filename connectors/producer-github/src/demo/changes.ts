@@ -7,7 +7,8 @@ import {
   actionsBot,
   clock,
   day,
-  labels,
+  labelsForRepository,
+  milestoneForRepository,
   minute,
   nodeId,
   org,
@@ -57,7 +58,7 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
   const reviewer = faker.helpers.arrayElement(people.filter((person) => person !== author));
   const association = (account: Account) => (account.type === "Bot" ? "NONE" : "MEMBER");
   const title = `${faker.helpers.arrayElement(verbs)} ${faker.hacker.adjective()} ${faker.hacker.noun()} handling`;
-  const label = faker.helpers.arrayElement(labels);
+  const label = faker.helpers.arrayElement(labelsForRepository(r));
   const opened = at(now.getTime() - faker.number.int({ min: day, max: 600 * day }));
 
   const comment = (issueNumber: bigint, n: number, created: Date): IssueComment => {
@@ -152,7 +153,7 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
     labels: [label],
     assignees: [author],
     requested_reviewers: prState === "open" ? [reviewer] : [],
-    milestone: null,
+    milestone: round === 0 ? milestoneForRepository(r) : null,
     head: { ref: branch, sha: headSha, label: `${org}:${branch}` },
     base: { ref: "main", sha: baseSha, label: `${org}:main` },
     created_at: prOpened,
@@ -385,7 +386,7 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
     author_association: "MEMBER",
     labels: [label],
     assignees: [author],
-    milestone: null,
+    milestone: round === 0 ? milestoneForRepository(r) : null,
     comments: BigInt(issueComments.length),
     created_at: opened,
     closed_at: issueClosed,

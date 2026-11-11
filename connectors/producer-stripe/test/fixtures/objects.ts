@@ -269,3 +269,17 @@ export const refund = {
   receipt_number: null,
   status: "succeeded",
 };
+
+export const invoicePayment = {
+  id: "inpay_123",
+  created: 1791021600,
+  invoice: "in_123",
+  currency: "usd",
+  amount_requested: 2000,
+  amount_paid: 1500,
+  is_default: true,
+  livemode: false,
+  payment: { type: "payment_intent", payment_intent: "pi_123" },
+  status: "paid",
+  status_transitions: { paid_at: 1791021700, canceled_at: null },
+};

@@ -7,7 +7,7 @@ import { FetchHttpClient } from "effect/http";
 import { generateKeyPairSync } from "node:crypto";
 import { existsSync } from "node:fs";
 
-import { GitHubConnector, manifest } from "../src/index";
+import { GitHubConnector } from "../src/index";
 
 // Recording needs a test installation. Skip until there is a cassette or a key.
 const canRun =
@@ -58,16 +58,49 @@ const connectorLayer = GitHubConnector.layerConfig(GitHubConnector.GitHubConfigD
 );
 
 describe.skipIf(!canRun)("GitHub API (vcr)", () => {
+  it.live("checks and backfills repository labels and milestones", () =>
+    Effect.gen(function* () {
+      const connector = yield* GitHubConnector.GitHubConnector;
+      for (const name of ["labels", "milestones"]) {
+        const resource = yield* Effect.fromOption(
+          Option.fromNullishOr(connector.resources.find((item) => item.name === name)),
+        );
+        yield* resource.check;
+        const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
+        const changes = yield* Effect.fromOption(Option.fromNullishOr(resource.changes));
+        let rows = 0;
+        let pageCursor: string | undefined;
+        for (;;) {
+          const page = yield* backfill.fetch({
+            cutoff: "2030-01-01T00:00:00.000Z",
+            ...(pageCursor === undefined ? {} : { pageCursor }),
+          });
+          rows += page.rows.length;
+          if (!page.hasMore) break;
+          pageCursor = String(page.nextPageCursor);
+        }
+        const changed = yield* changes.fetch({
+          cursor: JSON.stringify({ since: "2026-10-12T00:00:00.000Z", repositoryIds: [] }),
+        });
+        expect(changed.rows.length, name).toBe(rows);
+        if (name === "labels") expect(rows).toBeGreaterThan(0);
+      }
+    }).pipe(Effect.provide(connectorLayer)),
+  );
+
   // Live clock: GitHub rejects a JWT signed at the test clock's time.
   it.live("checks, backfills, and reads changes for every resource", () =>
     Effect.gen(function* () {
-      const check = yield* ConnectorApp.check(GitHubConnector.GitHubConnector, connectorLayer, {
-        resources: manifest.resources.map((resource) => resource.name),
-      });
       const connector = yield* GitHubConnector.GitHubConnector;
+      const resources = connector.resources.filter(
+        ({ name }) => name !== "labels" && name !== "milestones",
+      );
+      const check = yield* ConnectorApp.check(GitHubConnector.GitHubConnector, connectorLayer, {
+        resources: resources.map((resource) => resource.name),
+      });
 
       const results: Record<string, unknown> = {};
-      for (const resource of connector.resources) {
+      for (const resource of resources) {
         const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
         const changes = yield* Effect.fromOption(Option.fromNullishOr(resource.changes));
         const cutoff = "2026-10-12T00:00:00.000Z";

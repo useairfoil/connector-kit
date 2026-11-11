@@ -23,7 +23,14 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
   const { faker, now } = context;
   const { at } = clock(context);
 
-  const rows: Rows = { customers: [], subscriptions: [], invoices: [], charges: [], refunds: [] };
+  const rows: Rows = {
+    customers: [],
+    subscriptions: [],
+    invoices: [],
+    charges: [],
+    invoice_payments: [],
+    refunds: [],
+  };
 
   const id = `cus_demo_${index}`;
 
@@ -153,6 +160,31 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
         subtotal: total,
         total,
         total_excluding_tax: total,
+        total_discount_amounts: [],
+        total_taxes: [],
+        lines: lines.map(({ item, quantity }, lineIndex) => {
+          const unit = unitAmount(item, currency, interval);
+          return {
+            id: `il_demo_${index}_${s}_${n}_${lineIndex}`,
+            amount: unit * quantity,
+            subtotal: unit * quantity,
+            currency,
+            description: item.name,
+            quantity,
+            quantity_decimal: String(quantity),
+            period: {
+              start: periodStart,
+              end: addIntervals(periodStart, interval, 1),
+            },
+            pricing: {
+              type: "price_details",
+              price_details: { price: priceId(item, currency, interval), product: productId(item) },
+              unit_amount_decimal: String(unit),
+            },
+            discount_amounts: [],
+            taxes: [],
+          };
+        }),
         amount_due: total,
         amount_paid: unpaid ? 0n : total,
         amount_remaining: unpaid ? total : 0n,
@@ -181,6 +213,23 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
 
       const chargeId = `ch_demo_${index}_${s}_${n}`;
       const paymentIntent = `pi_demo_${index}_${s}_${n}`;
+
+      if (!unpaid) {
+        rows.invoice_payments.push({
+          id: `inpay_demo_${index}_${s}_${n}`,
+          version: now,
+          created: finalized,
+          invoice: invoiceId,
+          currency,
+          amount_requested: total,
+          amount_paid: total,
+          is_default: true,
+          livemode: false,
+          payment: { type: "payment_intent", payment_intent: paymentIntent },
+          status: "paid",
+          status_transitions: { paid_at: finalized, canceled_at: null },
+        });
+      }
 
       const refund =
         unpaid || !faker.datatype.boolean({ probability: 0.05 })

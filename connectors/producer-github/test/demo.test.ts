@@ -175,7 +175,11 @@ describe("GitHub demo", () => {
           ],
           "locked": false,
           "merged_at": 2026-08-27T20:24:13.320Z,
-          "milestone": null,
+          "milestone": {
+            "id": 6200000001n,
+            "number": 1n,
+            "title": "First release",
+          },
           "node_id": "PR_kwDO59682F00",
           "number": 2n,
           "repository_id": 700000000n,

@@ -15,6 +15,7 @@ import type { CrmSpec, DeleteRow } from "./spec";
 import { HUBSPOT_API_VERSION, type HubSpotClientService } from "../../client/client";
 import {
   AssociationBatchSchema,
+  type AssociationTarget,
   BatchReadSchema,
   type CrmObject,
   PropertyListSchema,
@@ -44,13 +45,13 @@ export type CrmReader<Row extends object> = {
   readonly propertyNames: Effect.Effect<ReadonlyArray<string>, ConnectorError>;
 };
 
-/** Each record's associated IDs. A record with many follows its own `after`. */
+/** Each record's associations. A record with many follows its own `after`. */
 const readAssociations = (
   client: HubSpotClientService,
   from: string,
   to: string,
   ids: ReadonlyArray<string>,
-): Effect.Effect<Readonly<Record<string, ReadonlyArray<string>>>, ConnectorError> =>
+): Effect.Effect<Readonly<Record<string, ReadonlyArray<AssociationTarget>>>, ConnectorError> =>
   Stream.paginate(
     ids.map((id): AssociationInput => ({ id })),
     (inputs: ReadonlyArray<AssociationInput>) =>
@@ -76,7 +77,7 @@ const readAssociations = (
     Effect.map((results) =>
       Rec.map(
         Arr.groupBy(results, (result) => result.from.id),
-        (byRecord) => byRecord.flatMap((result) => result.to.map((item) => item.toObjectId)),
+        (byRecord) => byRecord.flatMap((result) => result.to),
       ),
     ),
   );
@@ -123,7 +124,7 @@ export const makeReader = <Row extends object>(
           spec.associations,
           (association) =>
             readAssociations(client, spec.name, association.to, itemIds).pipe(
-              Effect.map((found) => [association.field, found] as const),
+              Effect.map((found) => ({ association, found })),
             ),
           { concurrency },
         );
@@ -136,8 +137,24 @@ export const makeReader = <Row extends object>(
             properties: nonEmpty(item.properties),
             _deleted: false,
             ...Object.fromEntries(
-              associations.map(([field, found]) => [field, found[item.id] ?? []]),
+              associations.map(({ association, found }) => [
+                association.field,
+                (found[item.id] ?? []).map((target) => target.toObjectId),
+              ]),
             ),
+            ...(associations.length > 0 && {
+              association_labels: associations.flatMap(({ association, found }) =>
+                (found[item.id] ?? []).flatMap((target) =>
+                  (target.associationTypes ?? []).map((type) => ({
+                    object_type: association.to,
+                    object_id: target.toObjectId,
+                    category: type.category,
+                    type_id: type.typeId,
+                    label: type.label,
+                  })),
+                ),
+              ),
+            }),
           }).pipe(
             Effect.mapError(
               (cause) =>

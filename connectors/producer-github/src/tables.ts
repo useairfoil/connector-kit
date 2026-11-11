@@ -5,6 +5,8 @@ import { CommitStatusSchema } from "./schemas/commit-statuses";
 import { CommitSchema } from "./schemas/commits";
 import { IssueCommentSchema } from "./schemas/issue-comments";
 import { IssueSchema } from "./schemas/issues";
+import { LabelSchema } from "./schemas/labels";
+import { MilestoneSchema } from "./schemas/milestones";
 import { PullRequestCommitSchema } from "./schemas/pull-request-commits";
 import { PullRequestReviewCommentSchema } from "./schemas/pull-request-review-comments";
 import { PullRequestReviewSchema } from "./schemas/pull-request-reviews";
@@ -28,4 +30,6 @@ export const tableSchemas: Readonly<Record<string, Schema.Top>> = {
   workflow_runs: WorkflowRunSchema,
   workflow_jobs: WorkflowJobSchema,
   releases: ReleaseSchema,
+  labels: LabelSchema,
+  milestones: MilestoneSchema,
 };

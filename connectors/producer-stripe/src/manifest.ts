@@ -52,6 +52,7 @@ export const manifest = Manifest.define({
     { name: "subscriptions", capabilities: ["backfill", "changes", "webhook"] },
     { name: "invoices", capabilities: ["backfill", "changes", "webhook"] },
     { name: "charges", capabilities: ["backfill", "changes", "webhook"] },
+    { name: "invoice_payments", capabilities: ["backfill", "changes", "webhook"] },
     { name: "refunds", capabilities: ["backfill", "changes", "webhook"] },
   ],
 });

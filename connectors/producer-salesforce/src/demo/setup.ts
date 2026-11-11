@@ -36,6 +36,11 @@ export const setupRows = ({ faker, now }: Demo.DemoContext) => {
   const row = (id: string, fields: Readonly<Record<string, Value>>) =>
     sobject(id, setup, setup, now, fields);
 
+  const picklist = (prefix: string, values: ReadonlyArray<string>) =>
+    values.map((name, index) =>
+      row(sfid(prefix, index), { ApiName: name, MasterLabel: name, SortOrder: index + 1 }),
+    );
+
   const profiles = ["System Administrator", "Standard User", "Sales User", "Service User"];
 
   const roles = [
@@ -65,6 +70,36 @@ export const setupRows = ({ faker, now }: Demo.DemoContext) => {
         IsSandbox: false,
       }),
     ],
+    opportunity_stages: opportunityStages.map(({ name, probability }, index) =>
+      row(sfid("01J", index), {
+        ApiName: name,
+        MasterLabel: name,
+        DefaultProbability: probability,
+        IsActive: true,
+        IsClosed: name === "Closed Won" || name === "Closed Lost",
+        IsWon: name === "Closed Won",
+        SortOrder: index + 1,
+      }),
+    ),
+    lead_statuses: [
+      "Open - Not Contacted",
+      "Working - Contacted",
+      "Closed - Not Converted",
+      "Closed - Converted",
+    ].map((name, index) =>
+      row(sfid("01X", index), {
+        ApiName: name,
+        MasterLabel: name,
+        IsConverted: name === "Closed - Converted",
+        IsDefault: index === 0,
+        SortOrder: index + 1,
+      }),
+    ),
+    case_statuses: picklist("01I", ["New", "Working", "Escalated", "Closed"]),
+    contract_statuses: picklist("01S", ["Draft", "In Approval Process", "Activated"]),
+    task_statuses: picklist("01J", ["Not Started", "In Progress", "Completed"]),
+    task_priorities: picklist("01P", ["High", "Normal", "Low"]),
+    solution_statuses: picklist("01N", ["Draft", "Reviewed"]),
     profiles: profiles.map((name, p) =>
       row(profileId(p), { Name: name, UserType: "Standard", Description: null }),
     ),

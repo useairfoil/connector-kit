@@ -181,6 +181,12 @@ export const IssueHistorySchema = Schema.Struct({
   auto_closed: Schema.NullOr(Schema.Boolean).pipe(
     Schema.annotateKey({ description: "Whether the issue was closed automatically." }),
   ),
+  added_to_release_ids: Schema.optionalKey(Schema.NullOr(Schema.Array(Schema.String))).pipe(
+    Schema.annotateKey({ description: "Releases the issue was added to." }),
+  ),
+  removed_from_release_ids: Schema.optionalKey(Schema.NullOr(Schema.Array(Schema.String))).pipe(
+    Schema.annotateKey({ description: "Releases the issue was removed from." }),
+  ),
 })
   .annotate({ description: "Linear issue history. One row per change to an issue." })
   .pipe(Iceberg.identifier("id"));
