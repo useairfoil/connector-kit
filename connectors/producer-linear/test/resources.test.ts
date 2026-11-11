@@ -201,22 +201,28 @@ describe("resources", () => {
 
   it.effect("reads the rest of a long issue history", () =>
     Effect.gen(function* () {
+      const releaseHistory = {
+        ...historyEntry,
+        added_to_release_ids: ["release-1"],
+        removed_from_release_ids: ["release-2"],
+      };
       const { backfill, requests } = yield* getResource("issue_history", ({ operation }) =>
         operation === "IssueHistory"
-          ? { issue: { history: page("history", [historyEntry]).history } }
+          ? { issue: { history: page("history", [releaseHistory]).history } }
           : page("issues", [
               {
                 id: issue.id,
                 updated_at: issue.updated_at,
-                history: page("history", [historyEntry], "history-1").history,
+                history: page("history", [releaseHistory], "history-1").history,
               },
             ]),
       );
       const result = yield* backfill.fetch({ cutoff });
-
       expect({
         rows: pick(result.rows, [
           "issue_id",
+          "added_to_release_ids",
+          "removed_from_release_ids",
           "from_state_id",
           "to_state_id",
           "from_priority",
@@ -231,16 +237,28 @@ describe("resources", () => {
           ],
           "rows": [
             {
+              "added_to_release_ids": [
+                "release-1",
+              ],
               "from_priority": 3,
               "from_state_id": "33849245-b58b-4c69-a1cc-47fb93d35d91",
               "issue_id": "0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9",
+              "removed_from_release_ids": [
+                "release-2",
+              ],
               "to_priority": 1,
               "to_state_id": "0eb344b1-e812-41c5-8c86-bc72fdfbf253",
             },
             {
+              "added_to_release_ids": [
+                "release-1",
+              ],
               "from_priority": 3,
               "from_state_id": "33849245-b58b-4c69-a1cc-47fb93d35d91",
               "issue_id": "0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9",
+              "removed_from_release_ids": [
+                "release-2",
+              ],
               "to_priority": 1,
               "to_state_id": "0eb344b1-e812-41c5-8c86-bc72fdfbf253",
             },

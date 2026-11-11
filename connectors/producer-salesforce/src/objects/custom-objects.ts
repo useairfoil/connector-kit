@@ -53,7 +53,7 @@ const ChangesCursorCodec = Schema.Union([
   ),
 ]);
 
-/** Custom objects Salesforce can replicate, sorted by name. */
+// Salesforce does not mark custom history objects as custom.
 export const customObjectNames = (describer: Describer) =>
   describer.objects.pipe(
     Effect.map((objects) =>
@@ -61,10 +61,9 @@ export const customObjectNames = (describer: Describer) =>
         objects
           .filter(
             (object) =>
-              object.custom &&
               object.replicateable &&
               object.queryable &&
-              object.name.endsWith("__c"),
+              ((object.custom && object.name.endsWith("__c")) || object.name.endsWith("__History")),
           )
           .map((object) => object.name),
         Order.String,

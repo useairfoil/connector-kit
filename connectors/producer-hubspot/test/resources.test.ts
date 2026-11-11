@@ -236,12 +236,33 @@ describe("resources", () => {
           "POST /crm/objects/2026-09/contacts/batch/read": () => ({ results: [ada] }),
           "POST /crm/associations/2026-09/contacts/companies/batch/read": (request) =>
             JSON.stringify(request.body).includes("after")
-              ? { results: [{ from: { id: "101" }, to: [{ toObjectId: 2 }] }] }
+              ? {
+                  results: [
+                    {
+                      from: { id: "101" },
+                      to: [
+                        {
+                          toObjectId: 2,
+                          associationTypes: [
+                            { category: "USER_DEFINED", typeId: 42, label: "Billing Contact" },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                }
               : {
                   results: [
                     {
                       from: { id: "101" },
-                      to: [{ toObjectId: 1 }],
+                      to: [
+                        {
+                          toObjectId: 1,
+                          associationTypes: [
+                            { category: "HUBSPOT_DEFINED", typeId: 1, label: "Primary" },
+                          ],
+                        },
+                      ],
                       paging: { next: { after: "page-2" } },
                     },
                   ],
@@ -259,6 +280,22 @@ describe("resources", () => {
             "rows": [
               {
                 "_deleted": false,
+                "association_labels": [
+                  {
+                    "category": "HUBSPOT_DEFINED",
+                    "label": "Primary",
+                    "object_id": "1",
+                    "object_type": "companies",
+                    "type_id": "1n",
+                  },
+                  {
+                    "category": "USER_DEFINED",
+                    "label": "Billing Contact",
+                    "object_id": "2",
+                    "object_type": "companies",
+                    "type_id": "42n",
+                  },
+                ],
                 "company_ids": [
                   "1",
                   "2",
@@ -327,6 +364,7 @@ describe("resources", () => {
           "rows": [
             {
               "_deleted": false,
+              "association_labels": [],
               "company_ids": [],
               "created_at": "2026-10-06T20:05:18.410Z",
               "id": "103",

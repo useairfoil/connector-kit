@@ -3,6 +3,7 @@ import { Command } from "effect/cli";
 
 import { ChargeSchema } from "../schemas/charges";
 import { CustomerSchema } from "../schemas/customers";
+import { InvoicePaymentSchema } from "../schemas/invoice-payments";
 import { InvoiceSchema } from "../schemas/invoices";
 import { PriceSchema } from "../schemas/prices";
 import { ProductSchema } from "../schemas/products";
@@ -26,6 +27,7 @@ export const demo = Demo.define({
       Demo.table({ name: "subscriptions", rowSchema: SubscriptionSchema, version: "version" }),
       Demo.table({ name: "invoices", rowSchema: InvoiceSchema, version: "version" }),
       Demo.table({ name: "charges", rowSchema: ChargeSchema, version: "version" }),
+      Demo.table({ name: "invoice_payments", rowSchema: InvoicePaymentSchema, version: "version" }),
       Demo.table({ name: "refunds", rowSchema: RefundSchema, version: "version" }),
     ],
     rows: customerRows,

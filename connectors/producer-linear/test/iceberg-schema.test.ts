@@ -387,6 +387,8 @@ describe("Iceberg schemas", () => {
             "trashed?: boolean",
             "auto_archived?: boolean",
             "auto_closed?: boolean",
+            "added_to_release_ids?: list<string>",
+            "removed_from_release_ids?: list<string>",
           ],
           "issue_labels": [
             "identifier: id",

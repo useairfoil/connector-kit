@@ -2,7 +2,17 @@ import type { Demo } from "@useairfoil/connector-kit";
 
 import type { Repository } from "../schemas/repositories";
 
-import { day, nodeId, org, owner, repositories, repositoryId, urlOf } from "./shared";
+import {
+  labelsForRepository,
+  milestoneForRepository,
+  day,
+  nodeId,
+  org,
+  owner,
+  repositories,
+  repositoryId,
+  urlOf,
+} from "./shared";
 
 /** The repositories, written once before any change. */
 export const setupRows = ({ now }: Demo.DemoContext) => {
@@ -30,5 +40,25 @@ export const setupRows = ({ now }: Demo.DemoContext) => {
     _deleted: false,
   }));
 
-  return { repositories: rows };
+  const labels = rows.flatMap((repo, r) =>
+    labelsForRepository(r).map((label, index) => ({
+      ...label,
+      version: now,
+      repository_id: repo.id,
+      description: "",
+      color: ["d73a4a", "a2eeef", "0075ca", "7057ff"][index] ?? "ededed",
+      default: true,
+    })),
+  );
+  const milestones = rows.map((repo, r) => ({
+    ...milestoneForRepository(r),
+    version: now,
+    repository_id: repo.id,
+    description: "Work planned for the first release.",
+    state: "open",
+    created_at: repo.created_at,
+    due_on: null,
+    closed_at: null,
+  }));
+  return { repositories: rows, labels, milestones };
 };

@@ -89,9 +89,16 @@ const SubscriptionInputSchema = Schema.Struct({
   custom_field_data: Schema.optional(CustomFieldDataJsonSchema).pipe(
     Schema.annotateKey({ description: "Subscription custom fields stored as JSON." }),
   ),
+  prices: Schema.optionalKey(
+    Schema.Array(
+      Schema.Struct({
+        id: Schema.String.pipe(Schema.annotateKey({ description: "Product price ID." })),
+      }),
+    ),
+  ).pipe(Schema.annotateKey({ description: "Enabled prices, linked by ID to product prices." })),
 });
 
-export const SubscriptionSchema = SubscriptionInputSchema.pipe(
+const subscriptionWithVersion = SubscriptionInputSchema.pipe(
   Schema.extendTo(
     {
       version: Schema.Date.pipe(
@@ -100,7 +107,15 @@ export const SubscriptionSchema = SubscriptionInputSchema.pipe(
     },
     { version: (row) => Option.some(row.modified_at ?? row.created_at) },
   ),
-)
+);
+
+// Keep the new fields after version so existing Iceberg IDs stay in place.
+export const SubscriptionSchema = subscriptionWithVersion
+  .pipe(
+    Schema.decodeTo(
+      subscriptionWithVersion.to.mapFields(({ prices, ...fields }) => ({ ...fields, prices })),
+    ),
+  )
   .annotate({
     description: "Subscriptions in a Polar organization.",
   })

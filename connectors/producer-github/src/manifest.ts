@@ -63,5 +63,7 @@ export const manifest = Manifest.define({
     { name: "workflow_runs", capabilities: ["backfill", "changes", "webhook"] },
     { name: "workflow_jobs", capabilities: ["backfill", "changes", "webhook"] },
     { name: "releases", capabilities: ["backfill", "changes", "webhook"] },
+    { name: "labels", capabilities: ["backfill", "changes", "webhook"] },
+    { name: "milestones", capabilities: ["backfill", "changes", "webhook"] },
   ],
 });

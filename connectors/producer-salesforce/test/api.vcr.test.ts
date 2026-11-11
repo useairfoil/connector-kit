@@ -59,11 +59,7 @@ const window = JSON.stringify({
   _tag: "updated",
 });
 const fullRead = JSON.stringify({ _tag: "reading", startedAt: cutoff });
-const customObjectsCursor = JSON.stringify({
-  objects: { Airfoil_Test__c: { _tag: "changes", cursor: window } },
-});
-
-// One of each kind: replicated, history, full read, setup, custom, and a
+// One of each kind: replicated, history, full read, setup, and a
 // feature object (Shared Activities). Every describe is about 100 KB, so the
 // cassette leaves the rest out.
 const resources = new Map([
@@ -73,11 +69,62 @@ const resources = new Map([
   ["account_history", window],
   ["users", window],
   ["permission_set_assignments", fullRead],
-  ["custom_objects", customObjectsCursor],
   ["task_relations", window],
 ]);
 
+const checkPicklists = (names: ReadonlyArray<string>) =>
+  Effect.gen(function* () {
+    const connector = yield* SalesforceConnector.SalesforceConnector;
+
+    for (const name of names) {
+      const resource = yield* Effect.fromOption(
+        Option.fromNullishOr(connector.resources.find((item) => item.name === name)),
+      );
+      yield* resource.check;
+      const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
+      const page = yield* backfill.fetch({ cutoff });
+      expect(page.rows.length, name).toBeGreaterThan(0);
+    }
+  }).pipe(Effect.provide(connectorLayer));
+
 describe.skipIf(!canRun)("Salesforce API (vcr)", () => {
+  it.live("reads opportunity stages and lead statuses", () =>
+    checkPicklists(["opportunity_stages", "lead_statuses"]),
+  );
+
+  it.live("reads case, contract, task, and solution picklists", () =>
+    checkPicklists([
+      "case_statuses",
+      "contract_statuses",
+      "task_statuses",
+      "task_priorities",
+      "solution_statuses",
+    ]),
+  );
+
+  it.live("backfills custom objects and their field history", () =>
+    Effect.gen(function* () {
+      const connector = yield* SalesforceConnector.SalesforceConnector;
+      const resource = yield* Effect.fromOption(
+        Option.fromNullishOr(connector.resources.find((item) => item.name === "custom_objects")),
+      );
+      yield* resource.check;
+      const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
+      const objects = new Set<string>();
+      let pageCursor: string | undefined;
+      for (;;) {
+        const page = yield* backfill.fetch({ cutoff, ...(pageCursor ? { pageCursor } : {}) });
+        for (const row of page.rows) {
+          if ("object" in row && typeof row.object === "string") objects.add(row.object);
+        }
+        if (!page.hasMore) break;
+        pageCursor = String(page.nextPageCursor);
+      }
+      expect(objects).toContain("Airfoil_Test__c");
+      expect(objects).toContain("Airfoil_Test__History");
+    }).pipe(Effect.provide(connectorLayer)),
+  );
+
   it.live(
     "checks, backfills, and reads changes for every resource",
     () =>
@@ -140,9 +187,6 @@ describe.skipIf(!canRun)("Salesforce API (vcr)", () => {
               "contacts": {
                 "_tag": "ok",
               },
-              "custom_objects": {
-                "_tag": "ok",
-              },
               "opportunities": {
                 "_tag": "ok",
               },
@@ -171,11 +215,6 @@ describe.skipIf(!canRun)("Salesforce API (vcr)", () => {
                 "backfillRows": 3,
                 "changedRows": 3,
                 "deletes": 2,
-              },
-              "custom_objects": {
-                "backfillRows": 2,
-                "changedRows": 2,
-                "deletes": 1,
               },
               "opportunities": {
                 "backfillRows": 2,
@@ -224,29 +263,6 @@ describe.skipIf(!canRun)("Salesforce API (vcr)", () => {
             },
             "id": "001g8000012rrsXAAQ",
             "updated_at": 2026-10-15T10:59:15.000Z,
-            "version": "<fetch time>",
-          }
-        `);
-        expect(firstRows.custom_objects).toMatchInlineSnapshot(`
-          {
-            "_deleted": false,
-            "created_at": 2026-10-15T10:53:13.000Z,
-            "fields": Map {
-              "Amount__c" => "99.5",
-              "CreatedById" => "005g800000CbOFmAAN",
-              "CreatedDate" => "2026-10-15T10:53:13.000+0000",
-              "Id" => "a00g800002TPwezAAD",
-              "IsDeleted" => "false",
-              "LastModifiedById" => "005g800000CbOFmAAN",
-              "LastModifiedDate" => "2026-10-15T10:59:18.000+0000",
-              "Name" => "Test 1",
-              "OwnerId" => "005g800000CbOFmAAN",
-              "Stage__c" => "Done",
-              "SystemModstamp" => "2026-10-15T10:59:18.000+0000",
-            },
-            "id": "a00g800002TPwezAAD",
-            "object": "Airfoil_Test__c",
-            "updated_at": 2026-10-15T10:59:18.000Z,
             "version": "<fetch time>",
           }
         `);

@@ -13,6 +13,8 @@ export type { Price } from "./schemas/prices";
 export { PriceObjectSchema, PriceSchema } from "./schemas/prices";
 export type { Product } from "./schemas/products";
 export { ProductObjectSchema, ProductSchema } from "./schemas/products";
+export type { InvoicePayment } from "./schemas/invoice-payments";
+export { InvoicePaymentObjectSchema, InvoicePaymentSchema } from "./schemas/invoice-payments";
 export type { Refund } from "./schemas/refunds";
 export { RefundObjectSchema, RefundSchema } from "./schemas/refunds";
 export type { Subscription, SubscriptionItem } from "./schemas/subscriptions";

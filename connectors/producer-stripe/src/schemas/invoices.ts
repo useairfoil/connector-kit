@@ -3,6 +3,72 @@ import { Schema, Struct } from "effect";
 
 import { Long, Metadata, UnixTime, address, deleted, shipping, version } from "./shared";
 
+const discountAmount = Schema.Struct({
+  amount: Long.pipe(Schema.annotateKey({ description: "Discount in the smallest currency unit." })),
+  discount: Schema.String.pipe(Schema.annotateKey({ description: "Discount applied." })),
+});
+
+const tax = Schema.Struct({
+  amount: Long.pipe(Schema.annotateKey({ description: "Tax in the smallest currency unit." })),
+  tax_behavior: Schema.String.pipe(Schema.annotateKey({ description: "Inclusive or exclusive." })),
+  taxability_reason: Schema.String.pipe(
+    Schema.annotateKey({ description: "Why this tax applies." }),
+  ),
+  taxable_amount: Schema.NullOr(Long).pipe(
+    Schema.annotateKey({ description: "Amount used to calculate tax, if known." }),
+  ),
+  tax_rate_details: Schema.NullOr(
+    Schema.Struct({
+      tax_rate: Schema.String.pipe(Schema.annotateKey({ description: "Stripe tax rate ID." })),
+    }),
+  ).pipe(Schema.annotateKey({ description: "Tax rate details, if present." })),
+  type: Schema.String.pipe(Schema.annotateKey({ description: "Type of tax information." })),
+});
+
+export const InvoiceLineSchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Invoice line ID." })),
+  amount: Long.pipe(
+    Schema.annotateKey({ description: "Line amount in the smallest currency unit." }),
+  ),
+  subtotal: Long.pipe(
+    Schema.annotateKey({ description: "Line amount before discounts and taxes." }),
+  ),
+  currency: Schema.String.pipe(Schema.annotateKey({ description: "Three-letter currency code." })),
+  description: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Description shown on the invoice." }),
+  ),
+  quantity: Schema.NullOr(Long).pipe(Schema.annotateKey({ description: "Whole units billed." })),
+  quantity_decimal: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Exact quantity billed, stored as decimal text." }),
+  ),
+  period: Schema.Struct({
+    start: UnixTime.pipe(
+      Schema.annotateKey({ description: "Start of the line's billing period." }),
+    ),
+    end: UnixTime.pipe(Schema.annotateKey({ description: "End of the line's billing period." })),
+  }).pipe(Schema.annotateKey({ description: "Billing period covered by this line." })),
+  pricing: Schema.NullOr(
+    Schema.Struct({
+      type: Schema.String.pipe(Schema.annotateKey({ description: "Type of pricing details." })),
+      price_details: Schema.optionalKey(
+        Schema.Struct({
+          price: Schema.String.pipe(Schema.annotateKey({ description: "Stripe price ID." })),
+          product: Schema.String.pipe(Schema.annotateKey({ description: "Stripe product ID." })),
+        }),
+      ).pipe(Schema.annotateKey({ description: "Price and product billed on the line." })),
+      unit_amount_decimal: Schema.NullOr(Schema.String).pipe(
+        Schema.annotateKey({ description: "Exact unit price, stored as decimal text." }),
+      ),
+    }),
+  ).pipe(Schema.annotateKey({ description: "Pricing information for this line." })),
+  discount_amounts: Schema.NullOr(Schema.Array(discountAmount)).pipe(
+    Schema.annotateKey({ description: "Discounts applied to this line." }),
+  ),
+  taxes: Schema.NullOr(Schema.Array(tax)).pipe(
+    Schema.annotateKey({ description: "Taxes applied to this line." }),
+  ),
+});
+
 export const InvoiceSchema = Schema.Struct({
   id: Schema.String.pipe(Schema.annotateKey({ description: "Unique invoice identifier." })),
   version,
@@ -116,6 +182,17 @@ export const InvoiceSchema = Schema.Struct({
       description: "Customer shipping details. Fixed when the invoice is finalized.",
     }),
   ),
+  total_discount_amounts: Schema.optionalKey(Schema.NullOr(Schema.Array(discountAmount))).pipe(
+    Schema.annotateKey({ description: "Discount totals across the invoice, by discount." }),
+  ),
+  total_taxes: Schema.optionalKey(Schema.NullOr(Schema.Array(tax))).pipe(
+    Schema.annotateKey({ description: "Tax totals across the invoice, by tax rate." }),
+  ),
+  lines: Schema.optionalKey(Schema.Array(InvoiceLineSchema)).pipe(
+    Schema.annotateKey({
+      description: "All invoice lines, including lines beyond the first page.",
+    }),
+  ),
 })
   .annotate({
     description: "Invoices in a Stripe account. Deleted drafts are marked deleted.",
@@ -124,6 +201,9 @@ export const InvoiceSchema = Schema.Struct({
 
 export type Invoice = Schema.Schema.Type<typeof InvoiceSchema>;
 
-export const InvoiceObjectSchema = InvoiceSchema.mapFields(Struct.omit(["version", "_deleted"]));
+export const InvoiceObjectSchema = InvoiceSchema.mapFields((fields) => ({
+  ...Struct.omit(fields, ["version", "_deleted", "lines"]),
+  lines: Schema.Struct({ data: Schema.Array(InvoiceLineSchema), has_more: Schema.Boolean }),
+}));
 
 export type InvoiceObject = Schema.Schema.Type<typeof InvoiceObjectSchema>;

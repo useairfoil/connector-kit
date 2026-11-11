@@ -6,6 +6,8 @@ import { CommitStatusSchema } from "../schemas/commit-statuses";
 import { CommitSchema } from "../schemas/commits";
 import { IssueCommentSchema } from "../schemas/issue-comments";
 import { IssueSchema } from "../schemas/issues";
+import { LabelSchema } from "../schemas/labels";
+import { MilestoneSchema } from "../schemas/milestones";
 import { PullRequestCommitSchema } from "../schemas/pull-request-commits";
 import { PullRequestReviewCommentSchema } from "../schemas/pull-request-review-comments";
 import { PullRequestReviewSchema } from "../schemas/pull-request-reviews";
@@ -20,7 +22,11 @@ import { setupRows } from "./setup";
 export const demo = Demo.define({
   name: "producer-github",
   setup: {
-    tables: [Demo.table({ name: "repositories", rowSchema: RepositorySchema, version: "version" })],
+    tables: [
+      Demo.table({ name: "repositories", rowSchema: RepositorySchema, version: "version" }),
+      Demo.table({ name: "milestones", rowSchema: MilestoneSchema, version: "version" }),
+      Demo.table({ name: "labels", rowSchema: LabelSchema, version: "version" }),
+    ],
     rows: setupRows,
   },
   group: {
