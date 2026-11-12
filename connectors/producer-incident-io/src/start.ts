@@ -9,7 +9,9 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
+import * as IncidentIoClient from "./client/client";
 import { IncidentIoConnector } from "./index";
+import { IncidentIoConnectionConfigDef, IncidentIoWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = IncidentIoConnector.layerConfig(
   IncidentIoConnector.IncidentIoConfigDef.config,
@@ -47,3 +49,16 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = IncidentIoClient.layerConfig(IncidentIoConnectionConfigDef.config);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  IncidentIoWebhookConfigDef.config.pipe(
+    Effect.flatMap(IncidentIoConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  IncidentIoConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);

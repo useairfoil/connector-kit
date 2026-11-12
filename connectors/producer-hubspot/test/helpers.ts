@@ -14,6 +14,7 @@ const testConfig = (options: { readonly webhooks: boolean }) =>
   ConfigProvider.layer(
     ConfigProvider.fromUnknown({
       HUBSPOT_ACCESS_TOKEN: "pat-test",
+      AIRFOIL_WEBHOOK_URL: "https://hooks.example.com/webhooks/hubspot",
       ...(options.webhooks ? { HUBSPOT_CLIENT_SECRET: clientSecret } : {}),
     }),
   );

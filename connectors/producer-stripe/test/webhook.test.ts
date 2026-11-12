@@ -1,8 +1,8 @@
 import { NodeHttpServer } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
-import { Ingestion, StateStore } from "@useairfoil/connector-kit";
+import { Ingestion, StateStore, Webhook } from "@useairfoil/connector-kit";
 import { DateTime, Deferred, Effect, Layer, Ref } from "effect";
-import { HttpClient, HttpClientRequest } from "effect/http";
+import { HttpClient, HttpClientRequest, HttpRouter } from "effect/http";
 import { TestClock } from "effect/testing";
 
 import { StripeConnector, webhookPath } from "../src/index";
@@ -265,3 +265,34 @@ describe("webhook", () => {
     }),
   );
 });
+
+it.effect("verifies signed setup events without fetching or ingesting rows", () =>
+  Effect.gen(function* () {
+    yield* TestClock.setTime(now);
+    const { client, requests } = yield* makeFakeClient({});
+    const connector = yield* StripeConnector.StripeConnector.pipe(
+      Effect.provide(connectorLayer(client)),
+    );
+    const reported = yield* Ref.make(0);
+    const routes = yield* Webhook.verificationRouter(
+      connector.webhooks ?? [],
+      Ref.update(reported, (count) => count + 1),
+    );
+    yield* Layer.build(HttpRouter.serve(routes, { disableLogger: true }));
+    const rawBody = JSON.stringify(
+      event({ id: "evt_setup", type: "customer.updated", objectId: "cus_setup" }),
+    );
+    const send = (signature: string) =>
+      HttpClient.execute(
+        HttpClientRequest.post(webhookPath).pipe(
+          HttpClientRequest.setHeader("stripe-signature", signature),
+          HttpClientRequest.bodyText(rawBody, "application/json"),
+        ),
+      );
+    expect((yield* send("invalid")).status).toBe(401);
+    expect(yield* Ref.get(reported)).toBe(0);
+    expect((yield* send(signPayload(rawBody, { timestamp: nowSeconds }))).status).toBe(200);
+    expect(yield* Ref.get(reported)).toBe(1);
+    expect(yield* Ref.get(requests)).toEqual([]);
+  }).pipe(Effect.provide(NodeHttpServer.layerTest)),
+);

@@ -1,16 +1,32 @@
 import * as Manifest from "@useairfoil/connector-kit/manifest";
 
-export const IncidentIoConfigDef = Manifest.defineConfig({
+import { webhookSubscriptions } from "./webhook/events";
+
+const connectionFields = {
   apiKey: Manifest.secret({
     runtimeKey: "INCIDENT_IO_API_KEY",
     description: "incident.io API key with read-only roles, for example inc_...",
   }),
+};
+
+const webhookFields = {
   webhookSecret: Manifest.secret({
     runtimeKey: "INCIDENT_IO_WEBHOOK_SECRET",
     description: "Signing secret of the incident.io webhook endpoint, for example whsec_...",
   }),
+};
+
+export const IncidentIoConnectionConfigDef = Manifest.defineConfig(connectionFields);
+export const IncidentIoWebhookConfigDef = Manifest.defineConfig(webhookFields);
+export const IncidentIoConfigDef = Manifest.defineConfig({
+  ...connectionFields,
+  ...webhookFields,
 });
 
+export type IncidentIoConnectionConfig = Manifest.ConfigValuesOf<
+  typeof IncidentIoConnectionConfigDef
+>;
+export type IncidentIoWebhookConfig = Manifest.ConfigValuesOf<typeof IncidentIoWebhookConfigDef>;
 export type IncidentIoConfig = Manifest.ConfigValuesOf<typeof IncidentIoConfigDef>;
 
 const capabilities = ["backfill", "changes"] as const;
@@ -19,6 +35,13 @@ const withWebhook = ["backfill", "changes", "webhook"] as const;
 export const manifest = Manifest.define({
   name: "producer-incident-io",
   title: "incident.io",
+  webhook: {
+    path: "/webhooks/incident-io",
+    requirement: "required",
+    events: webhookSubscriptions,
+    configFields: ["webhookSecret"],
+    documentationUrl: "https://api-docs.incident.io/#section/Webhooks",
+  },
   config: IncidentIoConfigDef.spec,
   resources: [
     { name: "incidents", capabilities: withWebhook },

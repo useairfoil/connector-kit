@@ -2,7 +2,7 @@ import { ConnectorError, Metrics, Telemetry } from "@useairfoil/connector-kit";
 import { Data, Duration, Effect, Option, Redacted, Schedule, Schema } from "effect";
 import { HttpClient, HttpClientRequest } from "effect/http";
 
-import { manifest, type ShopifyConfig } from "../manifest";
+import { manifest, type ShopifyConnectionConfig } from "../manifest";
 import * as ShopifyAuth from "./auth";
 import { retrySchedule } from "./http";
 
@@ -61,7 +61,7 @@ class Retryable extends Data.TaggedError("Retryable")<{
   readonly body: unknown;
 }> {}
 
-export const make = Effect.fnUntraced(function* (config: ShopifyConfig) {
+export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig) {
   const auth = yield* ShopifyAuth.ShopifyAuth;
   const client = (yield* HttpClient.HttpClient).pipe(
     HttpClient.mapRequestEffect((request) =>

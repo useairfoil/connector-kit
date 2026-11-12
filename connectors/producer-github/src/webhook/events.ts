@@ -1,0 +1,30 @@
+export const webhookEvents = {
+  repository: "repository",
+  issues: "issues",
+  pull_request: "pull_request",
+  issue_comment: "issue_comment",
+  pull_request_review: "pull_request_review",
+  pull_request_review_comment: "pull_request_review_comment",
+  push: "push",
+  check_run: "check_run",
+  status: "status",
+  workflow_run: "workflow_run",
+  workflow_job: "workflow_job",
+  release: "release",
+} as const;
+
+export const webhookSubscriptions = [
+  { resource: "repositories", types: [webhookEvents.repository] },
+  { resource: "issues", types: [webhookEvents.issues] },
+  { resource: "pull_requests", types: [webhookEvents.pull_request] },
+  { resource: "pull_request_commits", types: [webhookEvents.pull_request] },
+  { resource: "issue_comments", types: [webhookEvents.issue_comment] },
+  { resource: "pull_request_reviews", types: [webhookEvents.pull_request_review] },
+  { resource: "pull_request_review_comments", types: [webhookEvents.pull_request_review_comment] },
+  { resource: "commits", types: [webhookEvents.push] },
+  { resource: "check_runs", types: [webhookEvents.check_run] },
+  { resource: "commit_statuses", types: [webhookEvents.status] },
+  { resource: "workflow_runs", types: [webhookEvents.workflow_run] },
+  { resource: "workflow_jobs", types: [webhookEvents.workflow_job] },
+  { resource: "releases", types: [webhookEvents.release] },
+];

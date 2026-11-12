@@ -2,9 +2,7 @@ import { Auth } from "@useairfoil/connector-kit";
 import { Config, Context, Data, Duration, Effect, Layer, Redacted, Schema } from "effect";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 
-import type { ShopifyConfig } from "../manifest";
-
-type ShopifyAuthConfig = Pick<ShopifyConfig, "shopDomain" | "clientId" | "clientSecret">;
+import type { ShopifyConnectionConfig } from "../manifest";
 
 export type ShopifyAuthErrorReason = "shop_not_permitted" | "invalid_client" | "exchange_failed";
 
@@ -48,7 +46,7 @@ const decodeRejectedResponse = (
     Effect.catch(() => Effect.succeed<ShopifyAuthErrorReason>("exchange_failed")),
   );
 
-export const make = Effect.fnUntraced(function* (config: ShopifyAuthConfig) {
+export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig) {
   const client = yield* HttpClient.HttpClient;
   const endpoint = `${shopUrl(config.shopDomain)}/admin/oauth/access_token`;
 
@@ -86,11 +84,11 @@ export const make = Effect.fnUntraced(function* (config: ShopifyAuthConfig) {
 });
 
 export const layer = (
-  config: ShopifyAuthConfig,
+  config: ShopifyConnectionConfig,
 ): Layer.Layer<ShopifyAuth, never, HttpClient.HttpClient> =>
   Layer.effect(ShopifyAuth)(make(config));
 
 export const layerConfig = (
-  config: Config.Wrap<ShopifyAuthConfig>,
+  config: Config.Wrap<ShopifyConnectionConfig>,
 ): Layer.Layer<ShopifyAuth, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.unwrap(Config.unwrap(config).pipe(Effect.map(layer)));

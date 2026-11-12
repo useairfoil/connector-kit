@@ -14,7 +14,7 @@ import {
 import { HttpClient, HttpClientRequest, HttpClientResponse, type UrlParams } from "effect/http";
 import { RateLimiter } from "effect/persistence";
 
-import { type IncidentIoConfig, manifest } from "../manifest";
+import { type IncidentIoConnectionConfig, manifest } from "../manifest";
 
 const baseUrl = "https://api.incident.io";
 
@@ -77,7 +77,7 @@ const retrySchedule = Metrics.retrySchedule({
   }),
 );
 
-export const make = Effect.fnUntraced(function* (config: Pick<IncidentIoConfig, "apiKey">) {
+export const make = Effect.fnUntraced(function* (config: IncidentIoConnectionConfig) {
   const limiter = yield* RateLimiter.RateLimiter;
   const base = (yield* HttpClient.HttpClient).pipe(
     HttpClient.mapRequest(HttpClientRequest.prependUrl(baseUrl)),
@@ -175,11 +175,11 @@ export const make = Effect.fnUntraced(function* (config: Pick<IncidentIoConfig, 
 const RateLimiterLive = RateLimiter.layer.pipe(Layer.provide(RateLimiter.layerStoreMemory));
 
 export const layer = (
-  config: Pick<IncidentIoConfig, "apiKey">,
+  config: IncidentIoConnectionConfig,
 ): Layer.Layer<IncidentIoClient, never, HttpClient.HttpClient> =>
   Layer.effect(IncidentIoClient)(make(config)).pipe(Layer.provide(RateLimiterLive));
 
 export const layerConfig = (
-  config: Config.Wrap<IncidentIoConfig>,
+  config: Config.Wrap<IncidentIoConnectionConfig>,
 ): Layer.Layer<IncidentIoClient, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.unwrap(Config.unwrap(config).pipe(Effect.map(layer)));

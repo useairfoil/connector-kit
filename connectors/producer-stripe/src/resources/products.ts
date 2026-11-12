@@ -4,13 +4,14 @@ import { Effect } from "effect";
 import type { StripeClientService } from "../client/client";
 
 import { type ProductObject, ProductObjectSchema, ProductSchema } from "../schemas/products";
+import { webhookEvents } from "../webhook/events";
 import { type StripeResourceSpec, backfillPages, checkResource, eventWebhook } from "./shared";
 
 export const productSpec: StripeResourceSpec<ProductObject, ProductObject> = {
   path: "products",
   objectSchema: ProductObjectSchema,
   toRow: Effect.succeed,
-  eventTypes: ["product.created", "product.updated", "product.deleted"],
+  eventTypes: webhookEvents.products,
   deleteEventTypes: ["product.deleted"],
 };
 

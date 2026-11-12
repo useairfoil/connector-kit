@@ -9,7 +9,7 @@ import packageJson from "../package.json";
 import { createTableCommand, setupCommand } from "./create-table";
 import { demoCommand } from "./demo";
 import { sandboxCommand } from "./sandbox";
-import { startCommand } from "./start";
+import { startCommand, checkCommand } from "./start";
 
 const BootstrapLayer = Layer.mergeAll(FetchHttpClient.layer, NodeServices.layer);
 
@@ -17,6 +17,7 @@ const program = Command.make("producer-google-analytics", {}, () => Effect.void)
   Command.withSubcommands([
     setupCommand,
     startCommand,
+    checkCommand,
     sandboxCommand,
     createTableCommand,
     demoCommand,

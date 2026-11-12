@@ -1,8 +1,8 @@
 import { NodeHttpServer } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
 import { Ingestion, StateStore } from "@useairfoil/connector-kit";
-import { DateTime, Deferred, Effect, Layer, Option, Ref } from "effect";
-import { HttpClient, HttpClientRequest } from "effect/http";
+import { DateTime, Deferred, Effect, Layer, Option, Ref, Result } from "effect";
+import { HttpClient, HttpClientRequest, HttpServerRequest } from "effect/http";
 import { TestClock } from "effect/testing";
 
 import { IncidentIoConnector, webhookPath } from "../src/index";
@@ -98,6 +98,41 @@ const post = (
   }).pipe(Effect.scoped);
 
 describe("webhook", () => {
+  it.live("requires an event body and record ID before confirming verification", () =>
+    Effect.gen(function* () {
+      const { client } = yield* makeFakeClient(fake);
+      const connector = yield* IncidentIoConnector.IncidentIoConnector.pipe(
+        Effect.provide(connectorLayer(client)),
+      );
+      const verify = connector.webhooks?.[0]?.verify;
+      if (verify === undefined) throw new Error("Webhook verification is missing");
+
+      const accepts = (payload: Readonly<Record<string, unknown>>) => {
+        const body = JSON.stringify(payload);
+        return verify({
+          request: HttpServerRequest.fromWeb(
+            new Request(`https://hooks.example.test${webhookPath}`, {
+              method: "POST",
+              headers: signedHeaders(body),
+            }),
+          ),
+          rawBody: new TextEncoder().encode(body),
+          payload,
+        });
+      };
+
+      const event = "private_incident.incident_updated_v2";
+      expect(Result.isFailure(yield* accepts({ event_type: event }).pipe(Effect.result))).toBe(
+        true,
+      );
+      expect(
+        Result.isFailure(yield* accepts({ event_type: event, [event]: {} }).pipe(Effect.result)),
+      ).toBe(true);
+      expect(yield* accepts({ event_type: event, [event]: { id: incidentId } })).toBe(true);
+      expect(yield* accepts({ event_type: "unknown.event" })).toBe(false);
+    }),
+  );
+
   it.effect("reads an incident and its lists again, for public and private events", () =>
     Effect.gen(function* () {
       expect({

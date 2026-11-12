@@ -9,7 +9,10 @@ import {
 import { Config, Effect, Layer, Logger, Schema } from "effect";
 import { Command } from "effect/cli";
 
+import * as ShopifyAuth from "./api/auth";
+import * as ShopifyApiClient from "./api/client";
 import { ShopifyConnector } from "./index";
+import { ShopifyConnectionConfigDef, ShopifyWebhookConfigDef } from "./manifest";
 
 const ConnectorLayer = ShopifyConnector.layerConfig(ShopifyConnector.ShopifyConfigDef.config);
 
@@ -48,3 +51,18 @@ export const startCommand = Command.make("start", {}, () =>
     Effect.provide(RuntimeConfig.layerHosted()),
   ),
 ).pipe(Command.withDescription("Run the connector"));
+
+const ConnectionLayer = ShopifyApiClient.layerConfig(ShopifyConnectionConfigDef.config).pipe(
+  Layer.provide(ShopifyAuth.layerConfig(ShopifyConnectionConfigDef.config)),
+);
+
+export const webhookCommand = ConnectorApp.makeWebhookCommand(
+  ShopifyWebhookConfigDef.config.pipe(
+    Effect.flatMap(ShopifyConnector.webhooks),
+    Effect.provide(ConnectionLayer),
+  ),
+);
+
+export const checkCommand = ConnectorApp.makeCheckCommand(
+  ShopifyConnector.resources.pipe(Effect.provide(ConnectionLayer)),
+);

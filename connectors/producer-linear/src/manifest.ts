@@ -1,16 +1,30 @@
 import * as Manifest from "@useairfoil/connector-kit/manifest";
 
-export const LinearConfigDef = Manifest.defineConfig({
+import { webhookSubscriptions } from "./webhook/events";
+
+const connectionFields = {
   apiKey: Manifest.secret({
     runtimeKey: "LINEAR_API_KEY",
     description: "Linear personal API key with Read permission, for example lin_api_...",
   }),
+};
+
+const webhookFields = {
   webhookSecret: Manifest.secret({
     runtimeKey: "LINEAR_WEBHOOK_SECRET",
     description: "Signing secret of the Linear webhook.",
   }),
+};
+
+export const LinearConnectionConfigDef = Manifest.defineConfig(connectionFields);
+export const LinearWebhookConfigDef = Manifest.defineConfig(webhookFields);
+export const LinearConfigDef = Manifest.defineConfig({
+  ...connectionFields,
+  ...webhookFields,
 });
 
+export type LinearConnectionConfig = Manifest.ConfigValuesOf<typeof LinearConnectionConfigDef>;
+export type LinearWebhookConfig = Manifest.ConfigValuesOf<typeof LinearWebhookConfigDef>;
 export type LinearConfig = Manifest.ConfigValuesOf<typeof LinearConfigDef>;
 
 const capabilities = ["backfill", "changes"] as const;
@@ -19,6 +33,13 @@ const withWebhook = ["backfill", "changes", "webhook"] as const;
 export const manifest = Manifest.define({
   name: "producer-linear",
   title: "Linear",
+  webhook: {
+    path: "/webhooks/linear",
+    requirement: "required",
+    events: webhookSubscriptions,
+    configFields: ["webhookSecret"],
+    documentationUrl: "https://linear.app/developers/webhooks",
+  },
   config: LinearConfigDef.spec,
   resources: [
     { name: "issues", capabilities: withWebhook },

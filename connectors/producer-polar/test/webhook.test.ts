@@ -1,9 +1,9 @@
 import { NodeHttpServer } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
-import { ConnectorError, Ingestion, StateStore } from "@useairfoil/connector-kit";
+import { ConnectorError, Ingestion, StateStore, Webhook } from "@useairfoil/connector-kit";
 import { ConfigProvider, DateTime, Deferred, Effect, Layer, Ref } from "effect";
 import { Base64 } from "effect/encoding";
-import { HttpClient, HttpClientRequest } from "effect/http";
+import { HttpClient, HttpClientRequest, HttpRouter } from "effect/http";
 import { Webhook as StandardWebhook } from "standardwebhooks";
 
 import type { PolarApiClientService } from "../src/api";
@@ -294,3 +294,27 @@ describe("producer-polar webhook", () => {
     }).pipe(Effect.provide(connectorTestLayer), Effect.scoped),
   );
 });
+
+it.effect("verifies setup requests without starting ingestion", () =>
+  Effect.gen(function* () {
+    const connector = yield* PolarConnector.PolarConnector;
+    const reported = yield* Ref.make(0);
+    const routes = yield* Webhook.verificationRouter(
+      connector.webhooks ?? [],
+      Ref.update(reported, (count) => count + 1),
+    );
+    yield* Layer.build(HttpRouter.serve(routes, { disableLogger: true }));
+    const rawBody = JSON.stringify(customerWebhookPayload);
+    const send = (headers: Record<string, string>) =>
+      HttpClient.execute(
+        HttpClientRequest.post("/webhooks/polar").pipe(
+          HttpClientRequest.setHeaders(headers),
+          HttpClientRequest.bodyText(rawBody, "application/json"),
+        ),
+      );
+    expect((yield* send({})).status).toBe(401);
+    expect(yield* Ref.get(reported)).toBe(0);
+    expect((yield* send(signPayload(rawBody))).status).toBe(200);
+    expect(yield* Ref.get(reported)).toBe(1);
+  }).pipe(Effect.provide(Layer.merge(connectorTestLayer, NodeHttpServer.layerTest))),
+);

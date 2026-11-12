@@ -2,7 +2,7 @@ import { NodeHttpServer } from "@effect/platform-node";
 import { describe, expect, it } from "@effect/vitest";
 import { Ingestion, StateStore } from "@useairfoil/connector-kit";
 import { DateTime, Deferred, Effect, Layer, Ref, Schema } from "effect";
-import { HttpClient, HttpClientRequest } from "effect/http";
+import { HttpClient, HttpClientRequest, HttpServerRequest } from "effect/http";
 import { TestClock } from "effect/testing";
 
 import { HubSpotConnector, webhookPath } from "../src/index";
@@ -115,6 +115,65 @@ const post = (
   }).pipe(Effect.scoped);
 
 describe("webhook", () => {
+  it.effect("confirms only events routed to a resource in this portal", () =>
+    Effect.gen(function* () {
+      yield* TestClock.setTime(now);
+      const { client } = yield* makeFakeClient(fake);
+      const connector = yield* HubSpotConnector.HubSpotConnector.pipe(
+        Effect.provide(connectorLayer(client)),
+      );
+      const verify = connector.webhooks?.[0]?.verify;
+      if (verify === undefined) throw new Error("Webhook verification is missing");
+
+      const accepts = (events: ReadonlyArray<unknown>) => {
+        const body = JSON.stringify(events);
+        return verify({
+          request: HttpServerRequest.fromWeb(
+            new Request(url, {
+              method: "POST",
+              headers: {
+                "x-hubspot-signature-v3": sign({ method: "POST", url, body, timestamp: now }),
+                "x-hubspot-request-timestamp": String(now),
+              },
+            }),
+          ),
+          rawBody: new TextEncoder().encode(body),
+          payload: events,
+        });
+      };
+
+      expect(
+        yield* accepts([
+          event({ subscriptionType: "object.creation", objectTypeId: "0-999", objectId: 101 }),
+        ]),
+      ).toBe(false);
+      expect(
+        yield* accepts([
+          event({
+            subscriptionType: "object.creation",
+            objectTypeId: "0-1",
+            objectId: 101,
+            portalId: 1,
+          }),
+        ]),
+      ).toBe(false);
+      expect(
+        yield* accepts([
+          event({ subscriptionType: "object.creation", objectTypeId: "0-1", objectId: 101 }),
+        ]),
+      ).toBe(true);
+      expect(
+        yield* accepts([
+          event({
+            subscriptionType: "object.creation",
+            objectTypeId: "2-269974093",
+            objectId: 601,
+          }),
+        ]),
+      ).toBe(true);
+    }),
+  );
+
   it.effect("rejects a bad signature", () =>
     Effect.gen(function* () {
       expect(

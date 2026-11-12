@@ -10,10 +10,9 @@ import { Config, Context, Effect, Layer, Option, Redacted, Schema } from "effect
 import { HttpServerResponse } from "effect/http";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-import type { ShopifyConfig } from "./manifest";
-
 import * as ShopifyAuth from "./api/auth";
 import * as ShopifyApiClient from "./api/client";
+import { manifest, type ShopifyConfig, type ShopifyWebhookConfig } from "./manifest";
 import { CartSchema } from "./resources/carts/row";
 import {
   CartWebhookEventSchema,
@@ -51,8 +50,34 @@ import {
   RefundWebhookPayloadSchema,
 } from "./resources/refunds/webhook";
 import { gid } from "./resources/shared";
+import { webhookTopics } from "./webhook-events";
 export { manifest, ShopifyConfigDef } from "./manifest";
 export type { ShopifyConfig } from "./manifest";
+
+const webhookPayloads = {
+  [webhookTopics.products_create]: ProductWebhookPayloadSchema,
+  [webhookTopics.products_update]: ProductWebhookPayloadSchema,
+  [webhookTopics.products_delete]: ProductDeleteWebhookPayloadSchema,
+  [webhookTopics.carts_create]: CartWebhookPayloadSchema,
+  [webhookTopics.carts_update]: CartWebhookPayloadSchema,
+  [webhookTopics.customers_create]: CustomerWebhookPayloadSchema,
+  [webhookTopics.customers_disable]: CustomerWebhookPayloadSchema,
+  [webhookTopics.customers_enable]: CustomerWebhookPayloadSchema,
+  [webhookTopics.customers_update]: CustomerWebhookPayloadSchema,
+  [webhookTopics.customers_purchasing_summary]: CustomerPurchaseSummaryPayloadSchema,
+  [webhookTopics.customers_email_marketing_consent_update]: CustomerEmailConsentPayloadSchema,
+  [webhookTopics.customers_marketing_consent_update]: CustomerSmsConsentPayloadSchema,
+  [webhookTopics.customer_tags_added]: CustomerTagsPayloadSchema,
+  [webhookTopics.customer_tags_removed]: CustomerTagsPayloadSchema,
+  [webhookTopics.customers_delete]: CustomerDeleteWebhookPayloadSchema,
+  [webhookTopics.orders_create]: OrderWebhookPayloadSchema,
+  [webhookTopics.orders_updated]: OrderWebhookPayloadSchema,
+  [webhookTopics.orders_delete]: OrderDeleteWebhookPayloadSchema,
+  [webhookTopics.refunds_create]: RefundWebhookPayloadSchema,
+};
+
+const isWebhookTopic = (topic: string): topic is keyof typeof webhookPayloads =>
+  Object.hasOwn(webhookPayloads, topic);
 
 const isValidWebhookSignature = (
   rawBody: Uint8Array,
@@ -90,7 +115,7 @@ const backfillPages = <A extends object>(
       ),
   });
 
-export const make = Effect.fnUntraced(function* (config: ShopifyConfig) {
+const build = Effect.gen(function* () {
   const api = yield* ShopifyApiClient.ShopifyApiClient;
 
   const Products = Resource.entity({
@@ -198,158 +223,201 @@ export const make = Effect.fnUntraced(function* (config: ShopifyConfig) {
     },
   });
 
-  const webhookRoute = Webhook.route({
-    path: "/webhooks/shopify",
-    ackMode: "after-ingest",
-    schema: Schema.Unknown,
-    handler: ({ request, rawBody, payload: json, to }) =>
-      Effect.gen(function* () {
-        const signature = request.headers["x-shopify-hmac-sha256"];
-        if (!isValidWebhookSignature(rawBody, signature, Redacted.value(config.webhookSecret))) {
-          return HttpServerResponse.jsonUnsafe(
-            { ok: false, error: "Shopify webhook verification failed" },
-            { status: 401 },
-          );
-        }
-
-        const topic = request.headers["x-shopify-topic"] ?? "";
-        const decode = <A>(schema: Schema.Decoder<A>) => Schema.decodeUnknownOption(schema)(json);
-        const invalid = HttpServerResponse.jsonUnsafe(
-          { ok: false, error: `Invalid Shopify webhook for ${topic}` },
-          { status: 400 },
-        );
-        // Shopify sends it on every webhook.
-        const triggeredAt = decodeTriggeredAt(request.headers["x-shopify-triggered-at"]);
-        if (triggeredAt === null) return invalid;
-
-        switch (topic) {
-          case "products/create":
-          case "products/update": {
-            const payload = decode(ProductWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Products, { _tag: "upsert", payload: payload.value, triggeredAt });
-            break;
-          }
-          case "products/delete": {
-            const payload = decode(ProductDeleteWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Products, {
-              _tag: "delete",
-              id: gid("Product", payload.value.id),
-              version: triggeredAt,
-            });
-            break;
-          }
-          case "carts/create":
-          case "carts/update": {
-            const payload = decode(CartWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Carts, { ...payload.value, topic });
-            break;
-          }
-          case "customers/create":
-          case "customers/disable":
-          case "customers/enable":
-          case "customers/update": {
-            const payload = decode(CustomerWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Customers, {
-              _tag: "refresh",
-              id: payload.value.admin_graphql_api_id,
-              version: payload.value.updated_at,
-            });
-            break;
-          }
-          case "customers/purchasing_summary": {
-            const payload = decode(CustomerPurchaseSummaryPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Customers, {
-              _tag: "refresh",
-              id: payload.value.customerId,
-              version: payload.value.occurredAt,
-            });
-            break;
-          }
-          case "customers_email_marketing_consent/update": {
-            const payload = decode(CustomerEmailConsentPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Customers, {
-              _tag: "refresh",
-              id: gid("Customer", payload.value.customer_id),
-              version: triggeredAt,
-            });
-            break;
-          }
-          case "customers_marketing_consent/update": {
-            const payload = decode(CustomerSmsConsentPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Customers, {
-              _tag: "refresh",
-              id: gid("Customer", payload.value.id),
-              version: triggeredAt,
-            });
-            break;
-          }
-          case "customer.tags_added":
-          case "customer.tags_removed": {
-            const payload = decode(CustomerTagsPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Customers, {
-              _tag: "refresh",
-              id: payload.value.customerId,
-              version: payload.value.occurredAt,
-            });
-            break;
-          }
-          case "customers/delete": {
-            const payload = decode(CustomerDeleteWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Customers, {
-              _tag: "delete",
-              id: gid("Customer", payload.value.id),
-              version: triggeredAt,
-            });
-            break;
-          }
-          case "orders/create":
-          case "orders/updated": {
-            const payload = decode(OrderWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Orders, { _tag: "upsert", payload: payload.value });
-            break;
-          }
-          case "orders/delete": {
-            const payload = decode(OrderDeleteWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Orders, {
-              _tag: "delete",
-              id: gid("Order", payload.value.id),
-              version: triggeredAt,
-            });
-            break;
-          }
-          case "refunds/create": {
-            const payload = decode(RefundWebhookPayloadSchema);
-            if (Option.isNone(payload)) return invalid;
-            yield* to(Refunds, payload.value);
-            break;
-          }
-          default:
-            yield* Effect.logWarning("Ignoring unknown Shopify webhook topic").pipe(
-              Effect.annotateLogs({ topic }),
-            );
-        }
-
-        return HttpServerResponse.jsonUnsafe({ ok: true });
-      }),
-  });
-
-  return Connector.define({
+  const connector = Connector.define({
     name: "producer-shopify",
     title: "Shopify",
     resources: [Products, Carts, Customers, Orders, Refunds],
-    webhooks: [webhookRoute],
   });
+
+  return {
+    connector,
+    webhooks: (config: ShopifyWebhookConfig) =>
+      Effect.succeed([
+        Webhook.route({
+          path: manifest.webhook.path,
+          ackMode: "after-ingest",
+          verify: ({ request, rawBody, payload }) =>
+            Effect.gen(function* () {
+              if (
+                !isValidWebhookSignature(
+                  rawBody,
+                  request.headers["x-shopify-hmac-sha256"],
+                  Redacted.value(config.webhookSecret),
+                )
+              )
+                return yield* new ConnectorError({ message: "Invalid Shopify webhook signature" });
+
+              const topic = request.headers["x-shopify-topic"] ?? "";
+              if (!isWebhookTopic(topic)) return false;
+              if (decodeTriggeredAt(request.headers["x-shopify-triggered-at"]) === null)
+                return yield* new ConnectorError({ message: "Invalid Shopify webhook timestamp" });
+
+              yield* Schema.decodeUnknownEffect(webhookPayloads[topic])(payload).pipe(
+                Effect.mapError(
+                  () => new ConnectorError({ message: "Invalid Shopify webhook payload" }),
+                ),
+              );
+              return true;
+            }),
+          schema: Schema.Unknown,
+          handler: ({ request, rawBody, payload: json, to }) =>
+            Effect.gen(function* () {
+              const signature = request.headers["x-shopify-hmac-sha256"];
+              if (
+                !isValidWebhookSignature(rawBody, signature, Redacted.value(config.webhookSecret))
+              ) {
+                return HttpServerResponse.jsonUnsafe(
+                  { ok: false, error: "Shopify webhook verification failed" },
+                  { status: 401 },
+                );
+              }
+
+              const topic = request.headers["x-shopify-topic"] ?? "";
+              const decode = <A>(schema: Schema.Decoder<A>) =>
+                Schema.decodeUnknownOption(schema)(json);
+              const invalid = HttpServerResponse.jsonUnsafe(
+                { ok: false, error: `Invalid Shopify webhook for ${topic}` },
+                { status: 400 },
+              );
+              // Shopify sends it on every webhook.
+              const triggeredAt = decodeTriggeredAt(request.headers["x-shopify-triggered-at"]);
+              if (triggeredAt === null) return invalid;
+
+              switch (topic) {
+                case webhookTopics.products_create:
+                case webhookTopics.products_update: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Products, { _tag: "upsert", payload: payload.value, triggeredAt });
+                  break;
+                }
+                case webhookTopics.products_delete: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Products, {
+                    _tag: "delete",
+                    id: gid("Product", payload.value.id),
+                    version: triggeredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.carts_create:
+                case webhookTopics.carts_update: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Carts, { ...payload.value, topic });
+                  break;
+                }
+                case webhookTopics.customers_create:
+                case webhookTopics.customers_disable:
+                case webhookTopics.customers_enable:
+                case webhookTopics.customers_update: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Customers, {
+                    _tag: "refresh",
+                    id: payload.value.admin_graphql_api_id,
+                    version: payload.value.updated_at,
+                  });
+                  break;
+                }
+                case webhookTopics.customers_purchasing_summary: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Customers, {
+                    _tag: "refresh",
+                    id: payload.value.customerId,
+                    version: payload.value.occurredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.customers_email_marketing_consent_update: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Customers, {
+                    _tag: "refresh",
+                    id: gid("Customer", payload.value.customer_id),
+                    version: triggeredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.customers_marketing_consent_update: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Customers, {
+                    _tag: "refresh",
+                    id: gid("Customer", payload.value.id),
+                    version: triggeredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.customer_tags_added:
+                case webhookTopics.customer_tags_removed: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Customers, {
+                    _tag: "refresh",
+                    id: payload.value.customerId,
+                    version: payload.value.occurredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.customers_delete: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Customers, {
+                    _tag: "delete",
+                    id: gid("Customer", payload.value.id),
+                    version: triggeredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.orders_create:
+                case webhookTopics.orders_updated: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Orders, { _tag: "upsert", payload: payload.value });
+                  break;
+                }
+                case webhookTopics.orders_delete: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Orders, {
+                    _tag: "delete",
+                    id: gid("Order", payload.value.id),
+                    version: triggeredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.refunds_create: {
+                  const payload = decode(webhookPayloads[topic]);
+                  if (Option.isNone(payload)) return invalid;
+                  yield* to(Refunds, payload.value);
+                  break;
+                }
+                default:
+                  yield* Effect.logWarning("Ignoring unknown Shopify webhook topic").pipe(
+                    Effect.annotateLogs({ topic }),
+                  );
+              }
+
+              return HttpServerResponse.jsonUnsafe({ ok: true });
+            }),
+        }),
+      ]),
+  };
+});
+
+export const resources = build.pipe(Effect.map(({ connector }) => connector.resources));
+
+export const webhooks = (config: ShopifyWebhookConfig) =>
+  build.pipe(Effect.flatMap((built) => built.webhooks(config)));
+
+export const make = Effect.fnUntraced(function* (config: ShopifyConfig) {
+  const built = yield* build;
+  const webhooks = yield* built.webhooks(config);
+
+  return Connector.define({ ...built.connector, webhooks });
 });
 
 export type ShopifyConnectorRuntime = Effect.Success<ReturnType<typeof make>>;

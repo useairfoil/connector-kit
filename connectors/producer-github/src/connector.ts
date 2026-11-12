@@ -1,7 +1,7 @@
 import { Connector, type ResourceDefinition } from "@useairfoil/connector-kit";
 import { Config, Context, Effect, Layer, Redacted } from "effect";
 
-import type { GitHubConfig } from "./manifest";
+import type { GitHubConfig, GitHubWebhookConfig } from "./manifest";
 
 import * as GitHubClient from "./client/client";
 import { makeCheckRuns } from "./resources/check-runs";
@@ -18,11 +18,12 @@ import { makeRepositories } from "./resources/repositories";
 import { cachedRepositoryRefs } from "./resources/shared";
 import { makeWorkflowJobs } from "./resources/workflow-jobs";
 import { makeWorkflowRuns } from "./resources/workflow-runs";
+import { webhookEvents } from "./webhook/events";
 import { makeWebhookRoute } from "./webhook/route";
 export { GitHubConfigDef, manifest } from "./manifest";
-export type { GitHubConfig } from "./manifest";
+export type { GitHubConfig, GitHubWebhookConfig } from "./manifest";
 
-export const make = Effect.fnUntraced(function* (config: GitHubConfig) {
+const build = Effect.gen(function* () {
   const client = yield* GitHubClient.GitHubClient;
   // The backfills of the per-repository resources share this list.
   const repositories = yield* cachedRepositoryRefs(client);
@@ -41,7 +42,7 @@ export const make = Effect.fnUntraced(function* (config: GitHubConfig) {
   const WorkflowJobs = makeWorkflowJobs(client, repositories);
   const Releases = makeReleases(client, repositories);
 
-  return Connector.define({
+  const connector = Connector.define({
     name: "producer-github",
     title: "GitHub",
     resources: [
@@ -59,27 +60,44 @@ export const make = Effect.fnUntraced(function* (config: GitHubConfig) {
       WorkflowJobs,
       Releases,
     ],
-    webhooks: [
-      makeWebhookRoute({
-        secret: Redacted.value(config.webhookSecret),
-        installationId: config.installationId,
-        targets: new Map<string, ReadonlyArray<ResourceDefinition>>([
-          ["repository", [Repositories]],
-          ["issues", [Issues]],
-          ["pull_request", [PullRequests, PullRequestCommits]],
-          ["issue_comment", [IssueComments]],
-          ["pull_request_review", [PullRequestReviews]],
-          ["pull_request_review_comment", [PullRequestReviewComments]],
-          ["push", [Commits]],
-          ["check_run", [CheckRuns]],
-          ["status", [CommitStatuses]],
-          ["workflow_run", [WorkflowRuns]],
-          ["workflow_job", [WorkflowJobs]],
-          ["release", [Releases]],
-        ]),
-      }),
-    ],
   });
+
+  return {
+    connector,
+    webhooks: (config: GitHubWebhookConfig) =>
+      Effect.succeed([
+        makeWebhookRoute({
+          secret: Redacted.value(config.webhookSecret),
+          installationId: config.installationId,
+          targets: new Map<string, ReadonlyArray<ResourceDefinition>>([
+            [webhookEvents.repository, [Repositories]],
+            [webhookEvents.issues, [Issues]],
+            [webhookEvents.pull_request, [PullRequests, PullRequestCommits]],
+            [webhookEvents.issue_comment, [IssueComments]],
+            [webhookEvents.pull_request_review, [PullRequestReviews]],
+            [webhookEvents.pull_request_review_comment, [PullRequestReviewComments]],
+            [webhookEvents.push, [Commits]],
+            [webhookEvents.check_run, [CheckRuns]],
+            [webhookEvents.status, [CommitStatuses]],
+            [webhookEvents.workflow_run, [WorkflowRuns]],
+            [webhookEvents.workflow_job, [WorkflowJobs]],
+            [webhookEvents.release, [Releases]],
+          ]),
+        }),
+      ]),
+  };
+});
+
+export const resources = build.pipe(Effect.map(({ connector }) => connector.resources));
+
+export const webhooks = (config: GitHubWebhookConfig) =>
+  build.pipe(Effect.flatMap((built) => built.webhooks(config)));
+
+export const make = Effect.fnUntraced(function* (config: GitHubConfig) {
+  const built = yield* build;
+  const webhooks = yield* built.webhooks(config);
+
+  return Connector.define({ ...built.connector, webhooks });
 });
 
 export type GitHubConnectorRuntime = Effect.Success<ReturnType<typeof make>>;

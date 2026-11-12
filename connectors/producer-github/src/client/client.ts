@@ -2,7 +2,7 @@ import { ConnectorError, Metrics, Telemetry } from "@useairfoil/connector-kit";
 import { Config, Context, Duration, Effect, Layer, Option, Schedule, Schema } from "effect";
 import { HttpClient, HttpClientError, HttpClientRequest, HttpClientResponse } from "effect/http";
 
-import { type GitHubConfig, manifest } from "../manifest";
+import { type GitHubConnectionConfig, manifest } from "../manifest";
 import * as GitHubAuth from "./auth";
 import { GITHUB_API_VERSION, baseUrl } from "./constants";
 
@@ -182,11 +182,11 @@ export const make = Effect.fnUntraced(function* () {
 });
 
 export const layer = (
-  config: GitHubConfig,
+  config: GitHubConnectionConfig,
 ): Layer.Layer<GitHubClient, never, HttpClient.HttpClient> =>
   Layer.effect(GitHubClient)(make()).pipe(Layer.provide(GitHubAuth.layer(config)));
 
 export const layerConfig = (
-  config: Config.Wrap<GitHubConfig>,
+  config: Config.Wrap<GitHubConnectionConfig>,
 ): Layer.Layer<GitHubClient, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.unwrap(Config.unwrap(config).pipe(Effect.map(layer)));

@@ -7,13 +7,14 @@ import packageJson from "../package.json";
 import { createTableCommand, setupCommand } from "./create-table";
 import { demoCommand } from "./demo";
 import { sandboxCommand } from "./sandbox";
-import { startCommand } from "./start";
+import { checkCommand, startCommand } from "./start";
 
 const BootstrapLayer = Layer.mergeAll(FetchHttpClient.layer, NodeServices.layer);
 
 const program = Command.make("producer-template", {}, () => Effect.void).pipe(
   Command.withSubcommands([
     setupCommand,
+    checkCommand,
     startCommand,
     sandboxCommand,
     createTableCommand,

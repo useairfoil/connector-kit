@@ -3,7 +3,7 @@ import { Config, Context, DateTime, Duration, Effect, Layer, Option, Schema } fr
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { RateLimiter } from "effect/persistence";
 
-import { manifest, type StripeConfig } from "../manifest";
+import { manifest, type StripeConnectionConfig } from "../manifest";
 
 // Keep this version aligned with the resource schemas.
 export const STRIPE_API_VERSION = "2026-09-30.endive";
@@ -76,7 +76,7 @@ const statusError = (response: HttpClientResponse.HttpClientResponse, path: stri
     Effect.tapError((error) => Telemetry.annotateError("api_status", error)),
   );
 
-export const make = Effect.fnUntraced(function* (config: StripeConfig) {
+export const make = Effect.fnUntraced(function* (config: StripeConnectionConfig) {
   const limiter = yield* RateLimiter.RateLimiter;
   const retrySchedule = Metrics.retrySchedule({
     connector: manifest.name,
@@ -179,12 +179,12 @@ export const make = Effect.fnUntraced(function* (config: StripeConfig) {
 const RateLimiterLive = RateLimiter.layer.pipe(Layer.provide(RateLimiter.layerStoreMemory));
 
 export const layer = (
-  config: StripeConfig,
+  config: StripeConnectionConfig,
 ): Layer.Layer<StripeClient, never, HttpClient.HttpClient> =>
   Layer.effect(StripeClient)(make(config)).pipe(Layer.provide(RateLimiterLive));
 
 export const layerConfig = (
-  config: Config.Wrap<StripeConfig>,
+  config: Config.Wrap<StripeConnectionConfig>,
 ): Layer.Layer<StripeClient, Config.ConfigError, HttpClient.HttpClient> =>
   Layer.effect(StripeClient)(Config.unwrap(config).pipe(Effect.flatMap(make))).pipe(
     Layer.provide(RateLimiterLive),

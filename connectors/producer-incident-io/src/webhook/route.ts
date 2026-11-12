@@ -2,10 +2,11 @@ import { ConnectorError, type ResourceDefinition, Webhook } from "@useairfoil/co
 import { Effect, Option, Result, Schema } from "effect";
 import { HttpServerResponse } from "effect/http";
 
+import { manifest } from "../manifest";
 import { Optional, Ref } from "../schemas/shared";
 import { verifySignature } from "./signature";
 
-export const webhookPath = "/webhooks/incident-io";
+export const webhookPath = manifest.webhook.path;
 
 // The body sits under a key named after the event type.
 const EventSchema = Schema.Record(Schema.String, Schema.Unknown);
@@ -52,6 +53,22 @@ export const makeWebhookRoute = (options: {
   Webhook.route({
     path: webhookPath,
     ackMode: "after-enqueue",
+    verify: ({ request, rawBody, payload }) =>
+      Effect.gen(function* () {
+        yield* verifySignature({ rawBody, headers: request.headers, secret: options.secret });
+        const { event_type: event } = yield* Schema.decodeUnknownEffect(EventTypeSchema)(
+          payload,
+        ).pipe(Effect.mapError(decodeError));
+        if (!options.targets.has(event.replace(/^(public|private)_/, ""))) return false;
+
+        const id = yield* readEventId(payload, event);
+        if (Option.isNone(id))
+          return yield* new ConnectorError({ message: "Invalid incident.io webhook payload" });
+        yield* Schema.decodeUnknownEffect(TimestampSchema)(
+          request.headers["webhook-timestamp"],
+        ).pipe(Effect.mapError(decodeError));
+        return true;
+      }),
     schema: EventSchema,
     handler: ({ request, rawBody, payload, to }) =>
       Effect.gen(function* () {
