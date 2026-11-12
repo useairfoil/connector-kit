@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/producer-linear",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",
