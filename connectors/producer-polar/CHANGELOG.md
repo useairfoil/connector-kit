@@ -4,6 +4,14 @@
 
 <!-- Start content -->
 
+## 0.3.3
+
+### Patch Changes
+
+- fbbee5b: Add connector setup metadata, connection checks, and verification-only webhook commands.
+- Updated dependencies [fbbee5b]
+  - @useairfoil/connector-kit@0.8.0
+
 ## 0.3.2
 
 ### Patch Changes

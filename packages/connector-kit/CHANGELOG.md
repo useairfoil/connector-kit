@@ -4,6 +4,12 @@
 
 <!-- Start content -->
 
+## 0.8.0
+
+### Minor Changes
+
+- fbbee5b: Add connector setup metadata, connection checks, and verification-only webhook commands.
+
 ## 0.7.0
 
 ### Minor Changes
