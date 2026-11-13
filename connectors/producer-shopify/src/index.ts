@@ -1,6 +1,10 @@
 import { fromCartWebhook } from "./resources/carts/webhook";
 import { fromProductWebhook } from "./resources/products/webhook";
 
+declare const __COMMIT_SHA__: string | undefined;
+
+export const commitSha = typeof __COMMIT_SHA__ === "undefined" ? undefined : __COMMIT_SHA__;
+
 export * as ShopifyApiClient from "./api/client";
 export * as ShopifyConnector from "./connector";
 export { manifest } from "./manifest";

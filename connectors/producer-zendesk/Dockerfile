@@ -14,6 +14,7 @@ RUN pnpm fetch --frozen-lockfile
 
 COPY . .
 RUN pnpm install --offline --frozen-lockfile
+ARG GIT_COMMIT
 RUN pnpm nx run @useairfoil/producer-zendesk:build
 RUN pnpm --config.inject-workspace-packages=true \
   --filter @useairfoil/producer-zendesk deploy --prod /connector

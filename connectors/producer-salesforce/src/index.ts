@@ -1,3 +1,7 @@
+declare const __COMMIT_SHA__: string | undefined;
+
+export const commitSha = typeof __COMMIT_SHA__ === "undefined" ? undefined : __COMMIT_SHA__;
+
 export * as SalesforceClient from "./client/client";
 export * as SalesforceConnector from "./connector";
 export { manifest, objects } from "./manifest";
