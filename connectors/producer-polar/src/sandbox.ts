@@ -16,7 +16,7 @@ const SandboxConfig = Config.unwrap<PolarConnector.PolarConfig>({
 });
 
 const SandboxConnectorLayer = PolarConnector.layerConfig(SandboxConfig);
-const TelemetryLayer = Layer.mergeAll(Telemetry.layerOtlp(), Telemetry.layerMetricsConsoleDump());
+const TelemetryLayer = Telemetry.layerOtlp();
 
 export const sandboxCommand = Command.make("sandbox", {}, () =>
   Effect.gen(function* () {
@@ -31,9 +31,9 @@ export const sandboxCommand = Command.make("sandbox", {}, () =>
         StateStore.layerMemory,
         Ingestor.layerConsole,
         SandboxConnectorLayer,
-        Logger.layer([Logger.consolePretty()]),
         TelemetryLayer,
       ),
     ),
+    Effect.provide(Logger.layer([Logger.consoleLogFmt])),
   ),
 ).pipe(Command.withDescription("Run the connector locally and log ingested data"));

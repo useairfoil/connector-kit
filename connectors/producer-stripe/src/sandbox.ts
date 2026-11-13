@@ -12,7 +12,7 @@ import { StripeConnector } from "./index";
 
 const ConnectorLayer = StripeConnector.layerConfig(StripeConnector.StripeConfigDef.config);
 
-const TelemetryLayer = Layer.mergeAll(Telemetry.layerOtlp(), Telemetry.layerMetricsConsoleDump());
+const TelemetryLayer = Telemetry.layerOtlp();
 
 export const sandboxCommand = Command.make("sandbox", {}, () =>
   Effect.gen(function* () {
@@ -23,13 +23,8 @@ export const sandboxCommand = Command.make("sandbox", {}, () =>
   }).pipe(
     Effect.annotateLogs({ component: "stripe" }),
     Effect.provide(
-      Layer.mergeAll(
-        StateStore.layerMemory,
-        Ingestor.layerConsole,
-        ConnectorLayer,
-        Logger.layer([Logger.consolePretty()]),
-        TelemetryLayer,
-      ),
+      Layer.mergeAll(StateStore.layerMemory, Ingestor.layerConsole, ConnectorLayer, TelemetryLayer),
     ),
+    Effect.provide(Logger.layer([Logger.consoleLogFmt])),
   ),
 ).pipe(Command.withDescription("Run the connector locally and log ingested data"));
