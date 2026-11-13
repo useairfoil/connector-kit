@@ -1,4 +1,4 @@
-import { Cause, Context, Effect, Queue, Schema } from "effect";
+import { Cause, Context, DateTime, Effect, Queue, Ref, Schema } from "effect";
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/http";
 
 import type {
@@ -7,6 +7,7 @@ import type {
   WebhookRoute,
   WebhookRouteContext,
 } from "../core/types";
+import type { WebhookStatus } from "../status/types";
 
 import { ConnectorError } from "../errors";
 import { ingestBatch } from "../ingestor/instrumented";
@@ -105,10 +106,19 @@ type RouterOptions = {
   readonly connectorName: string;
   /** Events for other resources are skipped. */
   readonly resourceNames: ReadonlyArray<string>;
+  readonly webhooks?: Ref.Ref<ReadonlyArray<WebhookStatus>>;
 };
 
 const makeHandler = (route: WebhookRoute, options: RouterOptions) =>
   Effect.gen(function* () {
+    if (options.webhooks) {
+      const lastReceivedAt = yield* DateTime.now.pipe(Effect.map(DateTime.formatIso));
+      yield* Ref.update(options.webhooks, (webhooks) =>
+        webhooks.map((webhook) =>
+          webhook.path === route.path ? { ...webhook, lastReceivedAt } : webhook,
+        ),
+      );
+    }
     const request = yield* HttpServerRequest.HttpServerRequest;
     const collected: Array<QueuedWebhookBatch> = [];
 
@@ -224,6 +234,25 @@ const makeHandler = (route: WebhookRoute, options: RouterOptions) =>
           ),
         ),
       ),
+    ),
+    Effect.tap((response) =>
+      Effect.gen(function* () {
+        if (!options.webhooks) return;
+        const lastError =
+          response.status >= 400
+            ? {
+                at: yield* DateTime.now.pipe(Effect.map(DateTime.formatIso)),
+                message: `Webhook request failed with HTTP ${response.status}`,
+              }
+            : null;
+        yield* Ref.update(options.webhooks, (webhooks) =>
+          webhooks.map((webhook) =>
+            webhook.path === route.path
+              ? { ...webhook, status: lastError ? "error" : "ok", lastError }
+              : webhook,
+          ),
+        );
+      }),
     ),
   );
 

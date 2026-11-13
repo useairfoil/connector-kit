@@ -1,4 +1,4 @@
-import { Array as Arr, DateTime, Effect, Layer, Order, Queue } from "effect";
+import { Array as Arr, DateTime, Effect, Layer, Order, Queue, Ref } from "effect";
 import { HttpRouter, type HttpServer, HttpServerResponse } from "effect/http";
 import * as Observability from "effect/observability";
 
@@ -11,6 +11,7 @@ import type {
   WebhookRoute,
 } from "../core/types";
 import type { StateOperation, StateSource } from "../state-store/schema";
+import type { WebhookStatus } from "../status/types";
 
 import { ConnectorError } from "../errors";
 import { ingestBatch } from "../ingestor/instrumented";
@@ -157,21 +158,36 @@ const makeWebhookServerLayer = (
   const healthPath: HttpRouter.PathInput = options.healthPath ?? "/health";
   const metricsPath = options.metricsPath === undefined ? "/metrics" : options.metricsPath;
   const statusPath = options.statusPath === undefined ? "/status" : options.statusPath;
-  const app = Layer.mergeAll(
-    router(options.routes, {
-      connectorName: connector.name,
-      resourceNames: connector.resources.map((resource) => resource.name),
-    }),
-    HttpRouter.add("GET", healthPath, Effect.succeed(HttpServerResponse.text("ok"))),
-    ...(metricsPath === false
-      ? []
-      : [Observability.PrometheusMetrics.layerHttp({ path: metricsPath })]),
-    ...(statusPath === false ? [] : [statusRoute(connector, statusPath)]),
-  );
 
-  return HttpRouter.serve(app, {
-    disableLogger: options.disableHttpLogger ?? true,
-  });
+  return Layer.unwrap(
+    Effect.gen(function* () {
+      const webhooks = yield* Ref.make<ReadonlyArray<WebhookStatus>>(
+        options.routes.map((route) => ({
+          path: String(route.path),
+          ackMode: route.ackMode,
+          status: null,
+          lastError: null,
+          lastReceivedAt: null,
+        })),
+      );
+      const app = Layer.mergeAll(
+        router(options.routes, {
+          connectorName: connector.name,
+          resourceNames: connector.resources.map((resource) => resource.name),
+          webhooks,
+        }),
+        HttpRouter.add("GET", healthPath, Effect.succeed(HttpServerResponse.text("ok"))),
+        ...(metricsPath === false
+          ? []
+          : [Observability.PrometheusMetrics.layerHttp({ path: metricsPath })]),
+        ...(statusPath === false ? [] : [statusRoute(connector, statusPath, webhooks)]),
+      );
+
+      return HttpRouter.serve(app, {
+        disableLogger: options.disableHttpLogger ?? true,
+      });
+    }),
+  );
 };
 
 const runIngestion = (

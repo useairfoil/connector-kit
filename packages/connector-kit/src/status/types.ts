@@ -19,9 +19,19 @@ export const ResourceStatusSchema = Schema.Struct({
 });
 export type ResourceStatus = Schema.Schema.Type<typeof ResourceStatusSchema>;
 
+export const WebhookStatusSchema = Schema.Struct({
+  path: Schema.String,
+  ackMode: Schema.Literals(["after-enqueue", "after-ingest"]),
+  status: Schema.NullOr(Schema.Literals(["ok", "error"])),
+  lastError: Schema.NullOr(Schema.Struct({ at: Schema.String, message: Schema.String })),
+  lastReceivedAt: Schema.NullOr(Schema.String),
+});
+export type WebhookStatus = Schema.Schema.Type<typeof WebhookStatusSchema>;
+
 export const StatusResponseSchema = Schema.Struct({
   connector: Schema.String,
   resources: Schema.Array(ResourceStatusSchema),
+  webhooks: Schema.Array(WebhookStatusSchema),
 });
 export type StatusResponse = Schema.Schema.Type<typeof StatusResponseSchema>;
 
