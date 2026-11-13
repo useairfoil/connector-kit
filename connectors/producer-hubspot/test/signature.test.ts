@@ -64,14 +64,14 @@ describe("verifySignature", () => {
       yield* TestClock.setTime(timestamp);
       const signature = sign({
         method: "POST",
-        url: "https://hooks.example.com/webhooks/hubspot?a=b:c",
+        url: "https://hooks.example.com/webhook?a=b:c",
         body: "[]",
         timestamp,
         secret: example.secret,
       });
       expect(
         yield* verify({
-          url: "https://hooks.example.com/webhooks/hubspot?a=b%3Ac",
+          url: "https://hooks.example.com/webhook?a=b%3Ac",
           body: "[]",
           timestamp,
           signature,

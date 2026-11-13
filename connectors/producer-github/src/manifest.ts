@@ -42,7 +42,7 @@ export const manifest = Manifest.define({
   name: "producer-github",
   title: "GitHub",
   webhook: {
-    path: "/webhooks/github",
+    path: "/webhook",
     requirement: "required",
     events: webhookSubscriptions,
     configFields: ["webhookSecret"],

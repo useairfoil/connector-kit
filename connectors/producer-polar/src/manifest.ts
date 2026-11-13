@@ -49,7 +49,7 @@ export const manifest = Manifest.define({
   name: "producer-polar",
   title: "Polar",
   webhook: {
-    path: "/webhooks/polar",
+    path: "/webhook",
     requirement: "required",
     events: [
       { resource: "checkouts", types: checkoutEventTypes },

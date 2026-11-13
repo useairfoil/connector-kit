@@ -75,7 +75,7 @@ const post = (
       const rawBody = JSON.stringify({ event_type: event, [event]: body });
       const http = yield* HttpClient.HttpClient;
       const response = yield* http.execute(
-        HttpClientRequest.post(webhookPath).pipe(
+        HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders(options.headers ?? signedHeaders(rawBody)),
           HttpClientRequest.bodyText(rawBody, "application/json"),
         ),

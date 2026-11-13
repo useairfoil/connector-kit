@@ -59,7 +59,7 @@ export const make = Effect.fnUntraced(function* (config: TemplateConfig) {
   });
 
   const webhookRoute = Webhook.route({
-    path: "/webhooks/template",
+    path: "/webhook",
     ackMode: "after-ingest",
     schema: WebhookPayloadSchema,
     handler: ({ request, rawBody, payload, to }) =>

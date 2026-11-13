@@ -63,7 +63,7 @@ const post = (
       const rawBody = JSON.stringify({ ...body, webhookTimestamp: now });
       const http = yield* HttpClient.HttpClient;
       const response = yield* http.execute(
-        HttpClientRequest.post(webhookPath).pipe(
+        HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeader(
             "linear-signature",
             options.signature ?? signPayload(rawBody),

@@ -87,7 +87,7 @@ const post = (
         options.signature ?? sign({ method: "POST", url, body: rawBody, timestamp: now });
       const http = yield* HttpClient.HttpClient;
       const response = yield* http.execute(
-        HttpClientRequest.post(webhookPath).pipe(
+        HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders({
             "x-forwarded-host": host,
             "x-forwarded-proto": "https",

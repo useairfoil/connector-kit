@@ -39,7 +39,7 @@ export const manifest = Manifest.define({
   name: "producer-shopify",
   title: "Shopify",
   webhook: {
-    path: "/webhooks/shopify",
+    path: "/webhook",
     requirement: "required",
     events: webhookSubscriptions,
     configFields: ["webhookSecret"],

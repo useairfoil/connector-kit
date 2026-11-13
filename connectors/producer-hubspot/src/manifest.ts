@@ -71,7 +71,7 @@ export const manifest = Manifest.define({
   name: "producer-hubspot",
   title: "HubSpot",
   webhook: {
-    path: "/webhooks/hubspot",
+    path: "/webhook",
     requirement: "optional",
     events: resources
       .filter((resource) => resource.capabilities.some((capability) => capability === "webhook"))

@@ -34,7 +34,7 @@ export const manifest = Manifest.define({
   name: "producer-linear",
   title: "Linear",
   webhook: {
-    path: "/webhooks/linear",
+    path: "/webhook",
     requirement: "required",
     events: webhookSubscriptions,
     configFields: ["webhookSecret"],

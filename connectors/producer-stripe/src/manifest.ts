@@ -38,7 +38,7 @@ export const manifest = Manifest.define({
   name: "producer-stripe",
   title: "Stripe",
   webhook: {
-    path: "/webhooks/stripe",
+    path: "/webhook",
     requirement: "required",
     events: Object.entries(webhookEvents).map(([resource, types]) => ({ resource, types })),
     configFields: ["webhookSecret"],
