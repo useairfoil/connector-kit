@@ -4,6 +4,13 @@
 
 <!-- Start content -->
 
+## 0.1.0
+
+### Minor Changes
+
+- 95a25a4: Export `commitSha` from every connector with `GIT_COMMIT` embedded at build time,
+  or `undefined` when it is not set.
+
 ## 0.0.4
 
 ### Patch Changes
