@@ -4,6 +4,17 @@
 
 <!-- Start content -->
 
+## 0.10.0
+
+### Minor Changes
+
+- e3886f7: Log `batch ingested` with source, resource, row count, and cursor after every successful batch, regardless of the ingestor. Replace `Ingestor.layerConsole` with a silent `Ingestor.layerNoop` for sandbox runs.
+- 65daf45: Add per-route webhook status to the status endpoint, including the path,
+  acknowledgement mode, latest HTTP outcome, timestamped safe error summary, and last request
+  time. Observations reset on restart and are null before the first request. A
+  successful request clears the previous error. With after-enqueue acknowledgement,
+  success means the request was accepted and queued, not that ingestion finished.
+
 ## 0.9.0
 
 ### Minor Changes

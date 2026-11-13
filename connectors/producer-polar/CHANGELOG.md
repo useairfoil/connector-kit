@@ -4,6 +4,25 @@
 
 <!-- Start content -->
 
+## 0.5.0
+
+### Minor Changes
+
+- 8bb1fc3: Normalize all connector webhook endpoints to `POST /webhook`. Update provider
+  webhook URLs from `/webhooks/<provider>` to `/webhook` when upgrading; the old
+  paths are no longer served.
+
+### Patch Changes
+
+- e3886f7: Log `batch ingested` with source, resource, row count, and cursor after every successful batch, regardless of the ingestor. Replace `Ingestor.layerConsole` with a silent `Ingestor.layerNoop` for sandbox runs.
+- bcab8e9: Stop dumping metrics to stdout in sandbox mode. Keep normal logs, the metrics endpoint, and OTLP export.
+
+  Use single-line logfmt output in sandbox and hosted runs so log attributes stay on the same line as the message.
+
+- Updated dependencies [e3886f7]
+- Updated dependencies [65daf45]
+  - @useairfoil/connector-kit@0.10.0
+
 ## 0.4.1
 
 ### Patch Changes
