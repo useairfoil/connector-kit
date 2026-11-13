@@ -65,6 +65,7 @@ const httpNotifier = (url: URL) =>
 
 export const notifierFlag = Flag.String("notifier").pipe(
   Flag.withSchema(Schema.URLFromString),
+  Flag.withFallbackConfig(Config.URL(PlatformRuntimeKey.notifierUrl)),
   Flag.optional,
 );
 
