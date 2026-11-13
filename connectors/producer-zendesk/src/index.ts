@@ -1,3 +1,7 @@
+declare const __COMMIT_SHA__: string | undefined;
+
+export const commitSha = typeof __COMMIT_SHA__ === "undefined" ? undefined : __COMMIT_SHA__;
+
 export * as ZendeskClient from "./client/client";
 export * as ZendeskConnector from "./connector";
 export { manifest } from "./manifest";

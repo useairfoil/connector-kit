@@ -1,3 +1,7 @@
+declare const __COMMIT_SHA__: string | undefined;
+
+export const commitSha = typeof __COMMIT_SHA__ === "undefined" ? undefined : __COMMIT_SHA__;
+
 export * as LinearClient from "./client/client";
 export * as LinearConnector from "./connector";
 export { manifest } from "./manifest";

@@ -1,3 +1,7 @@
+declare const __COMMIT_SHA__: string | undefined;
+
+export const commitSha = typeof __COMMIT_SHA__ === "undefined" ? undefined : __COMMIT_SHA__;
+
 export * as HubSpotClient from "./client/client";
 export * as HubSpotConnector from "./connector";
 export { manifest } from "./manifest";

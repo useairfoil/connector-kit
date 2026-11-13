@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "docker:build": "docker build --load --file Dockerfile --tag airfoil/producer-template:local ../..",
+    "docker:build": "docker build --load --file Dockerfile --build-arg GIT_COMMIT=\"${GIT_COMMIT:-$(git rev-parse HEAD)}\" --tag airfoil/producer-template:local ../..",
     "start": "tsx --env-file=.env src/main.ts start",
     "sandbox": "tsx --env-file=.env src/main.ts sandbox",
     "demo": "tsx src/main.ts demo",

@@ -48,6 +48,8 @@ jobs:
           jq -e 'all(.releases[]; .type != "major")' "$RUNNER_TEMP/changeset-status.json"
       - name: Version or publish packages
         uses: changesets/action@v2.1.2
+        env:
+          GIT_COMMIT: ${{ github.sha }}
         with:
           # A PAT lets the release PR trigger the normal CI checks.
           github-token: ${{ secrets.GIT_TOKEN }}
