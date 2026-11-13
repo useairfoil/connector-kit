@@ -36,7 +36,7 @@ export const manifest = Manifest.define({
   name: "producer-incident-io",
   title: "incident.io",
   webhook: {
-    path: "/webhooks/incident-io",
+    path: "/webhook",
     requirement: "required",
     events: webhookSubscriptions,
     configFields: ["webhookSecret"],

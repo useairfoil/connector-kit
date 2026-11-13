@@ -51,7 +51,7 @@ const post = (
           : options.signature;
       const http = yield* HttpClient.HttpClient;
       const response = yield* http.execute(
-        HttpClientRequest.post(webhookPath).pipe(
+        HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders(signature === null ? {} : { "stripe-signature": signature }),
           HttpClientRequest.bodyText(rawBody, "application/json"),
         ),

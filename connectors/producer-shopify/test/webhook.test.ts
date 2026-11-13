@@ -220,7 +220,7 @@ const sendWebhooks = (
       const statuses = yield* Effect.forEach(requests, (request) =>
         client
           .execute(
-            HttpClientRequest.post("/webhooks/shopify").pipe(
+            HttpClientRequest.post("/webhook").pipe(
               HttpClientRequest.setHeader("x-shopify-topic", request.topic),
               HttpClientRequest.setHeader("x-shopify-hmac-sha256", signPayload(request.body)),
               HttpClientRequest.setHeader(
@@ -272,7 +272,7 @@ const expectProductWebhookRefetch = (
         const signature = signPayload(rawBody);
 
         const client = yield* HttpClient.HttpClient;
-        const request = HttpClientRequest.post("/webhooks/shopify").pipe(
+        const request = HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeader("x-shopify-topic", "products/update"),
           HttpClientRequest.setHeader("x-shopify-triggered-at", refetchTriggeredAt),
           HttpClientRequest.setHeader("x-shopify-hmac-sha256", signature),
@@ -318,7 +318,7 @@ describe("producer-shopify webhook", () => {
         const body = JSON.stringify(payload);
         return verify({
           request: HttpServerRequest.fromWeb(
-            new Request("https://hooks.example.test/webhooks/shopify", {
+            new Request("https://hooks.example.test/webhook", {
               method: "POST",
               headers: {
                 "x-shopify-topic": topic,
@@ -363,7 +363,7 @@ describe("producer-shopify webhook", () => {
         const signature = signPayload(rawBody);
 
         const client = yield* HttpClient.HttpClient;
-        const request = HttpClientRequest.post("/webhooks/shopify").pipe(
+        const request = HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeader("x-shopify-topic", "products/create"),
           HttpClientRequest.setHeader("x-shopify-hmac-sha256", signature),
           HttpClientRequest.setHeader("x-shopify-triggered-at", "2026-07-23T10:00:00.000Z"),
@@ -701,7 +701,7 @@ describe("producer-shopify webhook", () => {
         const invalidSignature = signPayload(`${rawBody}-invalid`);
 
         const client = yield* HttpClient.HttpClient;
-        const request = HttpClientRequest.post("/webhooks/shopify").pipe(
+        const request = HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeader("x-shopify-topic", "products/create"),
           HttpClientRequest.setHeader("x-shopify-hmac-sha256", invalidSignature),
           HttpClientRequest.bodyText(rawBody, "application/json"),

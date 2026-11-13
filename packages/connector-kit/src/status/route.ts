@@ -1,8 +1,8 @@
-import { Cause, Effect } from "effect";
+import { Cause, Effect, Ref } from "effect";
 import { HttpRouter, HttpServerResponse } from "effect/http";
 
 import type { ConnectorDefinition } from "../core/types";
-import type { ResourceStatus, StatusUnavailableResponse } from "./types";
+import type { ResourceStatus, StatusUnavailableResponse, WebhookStatus } from "./types";
 
 import { StateStore } from "../state-store";
 import { deriveSyncState, normalizeCursor } from "../state-store/state";
@@ -10,6 +10,7 @@ import { deriveSyncState, normalizeCursor } from "../state-store/state";
 export const statusRoute = (
   connector: ConnectorDefinition,
   path: HttpRouter.PathInput = "/status",
+  webhooks?: Ref.Ref<ReadonlyArray<WebhookStatus>>,
 ) =>
   HttpRouter.add(
     "GET",
@@ -56,7 +57,11 @@ export const statusRoute = (
         { concurrency: "unbounded" },
       );
 
-      return HttpServerResponse.jsonUnsafe({ connector: connector.name, resources });
+      return HttpServerResponse.jsonUnsafe({
+        connector: connector.name,
+        resources,
+        webhooks: webhooks ? yield* Ref.get(webhooks) : [],
+      });
     }).pipe(
       Effect.catchCause((cause) =>
         Effect.logWarning(`Status route failed: ${Cause.pretty(cause)}`).pipe(

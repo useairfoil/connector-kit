@@ -3,7 +3,7 @@
   "type": "webhooks",
   "config": {
     "settings": {
-      "targetUrl": "https://connector.example.com/webhooks/hubspot",
+      "targetUrl": "https://connector.example.com/webhook",
       "maxConcurrentRequests": 10
     },
     "subscriptions": {

@@ -5,7 +5,7 @@ import { DateTime, Deferred, Effect, Layer, Option, Ref } from "effect";
 import { HttpClient, HttpClientRequest } from "effect/http";
 import { TestClock } from "effect/testing";
 
-import { GitHubConnector, webhookPath } from "../src/index";
+import { GitHubConnector } from "../src/index";
 import {
   checkRun,
   commit,
@@ -66,7 +66,7 @@ const post = (
       const signature = options.signature === undefined ? signPayload(rawBody) : options.signature;
       const http = yield* HttpClient.HttpClient;
       const response = yield* http.execute(
-        HttpClientRequest.post(webhookPath).pipe(
+        HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders({
             "x-github-event": eventName,
             ...(signature === null ? {} : { "x-hub-signature-256": signature }),

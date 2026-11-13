@@ -36,15 +36,9 @@ export const startCommand = Command.make("start", {}, () =>
     );
   }).pipe(
     Effect.annotateLogs({ component: "linear" }),
-    Effect.provide(
-      Layer.mergeAll(
-        StateStoreLayer,
-        ConnectorLayer,
-        Logger.layer([Logger.consolePretty()]),
-        TelemetryLayer,
-      ),
-    ),
+    Effect.provide(Layer.mergeAll(StateStoreLayer, ConnectorLayer, TelemetryLayer)),
     Effect.provide(RuntimeConfig.layerHosted()),
+    Effect.provide(Logger.layer([Logger.consoleLogFmt])),
   ),
 ).pipe(Command.withDescription("Run the connector"));
 

@@ -55,7 +55,7 @@ describe("producer-template webhook", () => {
         );
 
         const client = yield* HttpClient.HttpClient;
-        const request = HttpClientRequest.post("/webhooks/template").pipe(
+        const request = HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.bodyJsonUnsafe(postWebhookPayload),
         );
         const response = yield* client.execute(request);

@@ -91,7 +91,7 @@ const postSignedWebhook = (payload: unknown) =>
 
       const rawBody = JSON.stringify(payload);
       const client = yield* HttpClient.HttpClient;
-      const request = HttpClientRequest.post("/webhooks/polar").pipe(
+      const request = HttpClientRequest.post("/webhook").pipe(
         HttpClientRequest.setHeaders(signPayload(rawBody)),
         HttpClientRequest.bodyText(rawBody, "application/json"),
       );
@@ -127,7 +127,7 @@ describe("producer-polar webhook", () => {
         const rawBody = JSON.stringify(customerWebhookPayload);
         const headers = signPayload(rawBody);
         const client = yield* HttpClient.HttpClient;
-        const request = HttpClientRequest.post("/webhooks/polar").pipe(
+        const request = HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders(headers),
           HttpClientRequest.bodyText(rawBody, "application/json"),
         );
@@ -190,7 +190,7 @@ describe("producer-polar webhook", () => {
         const rawBody = JSON.stringify(customerWebhookPayload);
         const headers = signPayload(`${rawBody}-invalid`);
         const client = yield* HttpClient.HttpClient;
-        const request = HttpClientRequest.post("/webhooks/polar").pipe(
+        const request = HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders(headers),
           HttpClientRequest.bodyText(rawBody, "application/json"),
         );
@@ -307,7 +307,7 @@ it.effect("verifies setup requests without starting ingestion", () =>
     const rawBody = JSON.stringify(customerWebhookPayload);
     const send = (headers: Record<string, string>) =>
       HttpClient.execute(
-        HttpClientRequest.post("/webhooks/polar").pipe(
+        HttpClientRequest.post("/webhook").pipe(
           HttpClientRequest.setHeaders(headers),
           HttpClientRequest.bodyText(rawBody, "application/json"),
         ),

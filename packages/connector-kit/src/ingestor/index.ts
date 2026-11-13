@@ -1,4 +1,4 @@
-export { layerConsole } from "./console";
+export { layerNoop } from "./noop";
 export {
   Ingestor,
   type IngestOptions,

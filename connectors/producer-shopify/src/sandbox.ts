@@ -12,10 +12,7 @@ import { ShopifyConnector } from "./index";
 
 const ConnectorLayer = ShopifyConnector.layerConfig(ShopifyConnector.ShopifyConfigDef.config);
 
-const TelemetryLayer = Layer.mergeAll(
-  Telemetry.layerOtlp({ redactedHeaders: ["x-shopify-access-token"] }),
-  Telemetry.layerMetricsConsoleDump(),
-);
+const TelemetryLayer = Telemetry.layerOtlp({ redactedHeaders: ["x-shopify-access-token"] });
 
 export const sandboxCommand = Command.make("sandbox", {}, () =>
   Effect.gen(function* () {
@@ -26,13 +23,8 @@ export const sandboxCommand = Command.make("sandbox", {}, () =>
   }).pipe(
     Effect.annotateLogs({ component: "producer-shopify" }),
     Effect.provide(
-      Layer.mergeAll(
-        StateStore.layerMemory,
-        Ingestor.layerConsole,
-        ConnectorLayer,
-        Logger.layer([Logger.consolePretty()]),
-        TelemetryLayer,
-      ),
+      Layer.mergeAll(StateStore.layerMemory, Ingestor.layerNoop, ConnectorLayer, TelemetryLayer),
     ),
+    Effect.provide(Logger.layer([Logger.consoleLogFmt])),
   ),
 ).pipe(Command.withDescription("Run the connector locally and log ingested data"));

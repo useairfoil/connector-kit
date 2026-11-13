@@ -221,6 +221,7 @@ describe("webhook server", () => {
                 "state": "live",
               },
             ],
+            "webhooks": [],
           }
         `);
       }).pipe(

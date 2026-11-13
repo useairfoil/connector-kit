@@ -101,7 +101,7 @@ If the target service supports restoring records, the connector must send
 When testing locally, you can run the connector in memory:
 
 - `StateStore.layerMemory`: stores the connector's state in memory.
-- `Ingestor.layerConsole`: outputs new batches to console.
+- `Ingestor.layerNoop`: always returns success, but does nothing.
 
 For a durable run:
 
