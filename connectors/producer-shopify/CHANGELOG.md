@@ -4,6 +4,13 @@
 
 <!-- Start content -->
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [921dd17]
+  - @useairfoil/connector-kit@0.9.0
+
 ## 0.3.0
 
 ### Minor Changes

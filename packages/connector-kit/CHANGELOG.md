@@ -4,6 +4,13 @@
 
 <!-- Start content -->
 
+## 0.9.0
+
+### Minor Changes
+
+- 921dd17: Read the `check` and `webhook` notifier URL from `AIRFOIL_NOTIFIER_URL` when
+  `--notifier` is not passed.
+
 ## 0.8.0
 
 ### Minor Changes
