@@ -97,11 +97,12 @@ describe("connector onboarding", () => {
 
       const result = yield* Command.runWith(makeCheckCommand(Effect.succeed([resource])), {
         version: "test",
-      })(["--notifier", notifierUrl]).pipe(
+      })([]).pipe(
         Effect.provideService(HttpClient.HttpClient, client),
         Effect.provide(
           ConfigProvider.layer(
             ConfigProvider.fromUnknown({
+              AIRFOIL_NOTIFIER_URL: notifierUrl,
               AIRFOIL_CONFIG_PATH: configPath,
               AIRFOIL_TABLE_BINDINGS: JSON.stringify({
                 selected: { namespace: ["test"], name: "selected" },

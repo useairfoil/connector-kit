@@ -4,6 +4,7 @@ import { HashSet } from "effect";
 export const PlatformRuntimeKey = {
   webhookUrl: "AIRFOIL_WEBHOOK_URL",
   notificationAttempt: "AIRFOIL_NOTIFICATION_ATTEMPT",
+  notifierUrl: "AIRFOIL_NOTIFIER_URL",
   configPath: "AIRFOIL_CONFIG_PATH",
   httpPort: "AIRFOIL_HTTP_PORT",
   tableBindings: "AIRFOIL_TABLE_BINDINGS",
