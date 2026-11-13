@@ -29,7 +29,7 @@ export const sandboxCommand = Command.make("sandbox", {}, () =>
     Effect.provide(
       Layer.mergeAll(
         StateStore.layerMemory,
-        Ingestor.layerConsole,
+        Ingestor.layerNoop,
         SandboxConnectorLayer,
         TelemetryLayer,
       ),

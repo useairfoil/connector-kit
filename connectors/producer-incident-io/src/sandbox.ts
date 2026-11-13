@@ -25,7 +25,7 @@ export const sandboxCommand = Command.make("sandbox", {}, () =>
   }).pipe(
     Effect.annotateLogs({ component: "incident-io" }),
     Effect.provide(
-      Layer.mergeAll(StateStore.layerMemory, Ingestor.layerConsole, ConnectorLayer, TelemetryLayer),
+      Layer.mergeAll(StateStore.layerMemory, Ingestor.layerNoop, ConnectorLayer, TelemetryLayer),
     ),
     Effect.provide(Logger.layer([Logger.consoleLogFmt])),
   ),

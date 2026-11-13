@@ -41,6 +41,15 @@ export const ingestBatch = Effect.fnUntraced(function* (options: {
     Effect.onError(() => Metric.update(batchOutcome("error"), 1)),
   );
 
+  yield* Effect.logInfo("batch ingested").pipe(
+    Effect.annotateLogs({
+      source: options.source,
+      resource: options.resource,
+      rows: options.batch.rows.length,
+      cursor: options.batch.cursor,
+    }),
+  );
+
   yield* Metric.update(batchOutcome("success"), 1);
   yield* Metric.update(
     Metric.withAttributes(Metrics.rowsIngested, metricAttributes),
