@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/producer-facebook-ads",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",
