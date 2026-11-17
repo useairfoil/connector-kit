@@ -72,6 +72,7 @@ export const make = Effect.fnUntraced(function* (config: PolarConnectionConfig) 
     HttpClient.mapRequest(HttpClientRequest.bearerToken(config.accessToken)),
     HttpClient.mapRequest(HttpClientRequest.acceptJson),
     HttpClient.mapRequest(HttpClientRequest.setHeader("Polar-Version", POLAR_API_VERSION)),
+    HttpClient.transform((effect) => Effect.timeout(effect, requestTimeout)),
     HttpClient.withRateLimiter({
       limiter,
       key: "polar",
@@ -92,10 +93,17 @@ export const make = Effect.fnUntraced(function* (config: PolarConnectionConfig) 
     params: Record<string, string> = {},
   ): Effect.Effect<A, ConnectorError> =>
     client.execute(HttpClientRequest.get(path).pipe(HttpClientRequest.setUrlParams(params))).pipe(
-      Effect.tapError((error) => Telemetry.annotateError("api_http", error)),
-      Effect.mapError(
-        (error) =>
-          new ConnectorError({ message: `Polar API request failed for ${path}`, cause: error }),
+      Effect.catchTag(["HttpClientError", "RateLimiterError", "TimeoutError"], (error) =>
+        Telemetry.annotateError("api_http", error).pipe(
+          Effect.andThen(
+            Effect.fail(
+              new ConnectorError({
+                message: `Polar API request ${error._tag === "TimeoutError" ? "timed out" : "failed"} for ${path}`,
+                cause: error,
+              }),
+            ),
+          ),
+        ),
       ),
       Effect.flatMap((response) =>
         HttpClientResponse.matchStatus(response, {
@@ -115,11 +123,6 @@ export const make = Effect.fnUntraced(function* (config: PolarConnectionConfig) 
           orElse: (other) => statusError(other, path),
         }),
       ),
-      Effect.timeoutOrElse({
-        duration: requestTimeout,
-        orElse: () =>
-          Effect.fail(new ConnectorError({ message: `Polar API request timed out for ${path}` })),
-      }),
       Effect.withSpan(Telemetry.SpanName.apiFetch, {
         kind: "client",
         attributes: {
