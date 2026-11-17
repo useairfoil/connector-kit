@@ -10,8 +10,11 @@ import type { HubSpotConfig, HubSpotWebhookConfig } from "./manifest";
 
 import * as HubSpotClient from "./client/client";
 import { customObjectTypes, makeCustomObjects } from "./resources/custom-objects";
-import { makeLists } from "./resources/lists";
-import { makeCrmResources } from "./resources/objects";
+import { makeDealPropertyHistory } from "./resources/deal-history";
+import { makeCommerceLinks, makePeerLinks } from "./resources/links";
+import { makeLists, makeSegmentMemberships } from "./resources/lists";
+import { makeMarketingEvents, makeMarketingParticipations } from "./resources/marketing-events";
+import { makeAdditionalCrmResources, makeCrmResources } from "./resources/objects";
 import { makeOwners } from "./resources/owners";
 import { makePipelines } from "./resources/pipelines";
 import { makeProperties } from "./resources/properties";
@@ -27,6 +30,7 @@ const pipelineObjects = new Set(["deals", "tickets", "leads", "orders"]);
 const build = Effect.gen(function* () {
   const client = yield* HubSpotClient.HubSpotClient;
   const crm = yield* makeCrmResources(client);
+  const additionalCrm = yield* makeAdditionalCrmResources(client);
   const customTypes = yield* customObjectTypes(client);
   const customObjects = yield* makeCustomObjects(client, customTypes);
   // Without the custom objects scope, these skip custom types and
@@ -35,7 +39,7 @@ const build = Effect.gen(function* () {
     Effect.map((types) => types.map((type) => type.objectTypeId)),
     Effect.orElseSucceed(() => []),
   );
-  const crmTypes = Object.values(crm).map((resource) => resource.name);
+  const crmTypes = [...Object.values(crm), ...additionalCrm].map((resource) => resource.name);
   const propertyTypes = customTypeIds.pipe(Effect.map((ids) => [...crmTypes, ...ids]));
   const pipelineTypes = customTypeIds.pipe(
     Effect.map((ids) => [...crmTypes.filter((name) => pipelineObjects.has(name)), ...ids]),
@@ -58,6 +62,13 @@ const build = Effect.gen(function* () {
       makeProperties(client, propertyTypes),
       makeTeams(client),
       makeLists(client),
+      ...additionalCrm,
+      makeCommerceLinks(client),
+      makePeerLinks(client),
+      makeSegmentMemberships(client),
+      makeMarketingEvents(client),
+      makeMarketingParticipations(client),
+      makeDealPropertyHistory(client),
     ],
   });
 

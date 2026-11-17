@@ -19,6 +19,7 @@ export type PolarApiClientService = {
       readonly page: number;
       readonly limit: number;
       readonly sorting: string;
+      readonly params?: Record<string, string>;
     },
   ) => Effect.Effect<ListResponse<A>, ConnectorError>;
 };
@@ -135,9 +136,11 @@ export const make = Effect.fnUntraced(function* (config: PolarConnectionConfig) 
       readonly page: number;
       readonly limit: number;
       readonly sorting: string;
+      readonly params?: Record<string, string>;
     },
   ): Effect.Effect<ListResponse<A>, ConnectorError> =>
     fetchJson(makeListResponseSchema(schema), path, {
+      ...options.params,
       page: String(options.page),
       limit: String(options.limit),
       sorting: options.sorting,

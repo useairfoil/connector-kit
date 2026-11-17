@@ -62,3 +62,9 @@ export const TicketEventSchema = Schema.Struct({
 });
 
 export type TicketEvent = Schema.Schema.Type<typeof TicketEventSchema>;
+
+export const TicketEventPageSchema = Schema.Struct({
+  ticket_events: Schema.Array(TicketEventSchema),
+  end_time: Schema.NullOr(Schema.Number),
+  end_of_stream: Schema.Boolean,
+});

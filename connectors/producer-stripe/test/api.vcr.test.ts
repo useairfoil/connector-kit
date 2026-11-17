@@ -182,22 +182,34 @@ describe.skipIf(!canRun)("Stripe API (vcr)", () => {
       );
       const feed = yield* Effect.fromOption(Option.fromNullishOr(connector.changes));
 
+      const selected = new Set([
+        "customers",
+        "products",
+        "prices",
+        "subscriptions",
+        "invoices",
+        "charges",
+        "invoice_payments",
+        "refunds",
+      ]);
       const result = yield* feed.fetch({
         cursor: "2026-10-03T15:00:00.000Z",
-        selected: new Set(feed.resources.map((resource) => resource.name)),
+        selected,
       });
 
       expect({
         cursor: result.cursor,
         hasMore: result.hasMore,
         rows: Object.fromEntries(
-          Object.entries(result.rows).map(([name, rows]) => [
-            name,
-            {
-              rows: rows?.length ?? 0,
-              deleted: rows?.filter((row) => row._deleted === true).length ?? 0,
-            },
-          ]),
+          Object.entries(result.rows)
+            .filter(([name]) => selected.has(name))
+            .map(([name, rows]) => [
+              name,
+              {
+                rows: rows?.length ?? 0,
+                deleted: rows?.filter((row) => row._deleted === true).length ?? 0,
+              },
+            ]),
         ),
       }).toMatchInlineSnapshot(`
         {

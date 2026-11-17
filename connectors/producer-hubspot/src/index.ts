@@ -6,14 +6,17 @@ export * as HubSpotClient from "./client/client";
 export * as HubSpotConnector from "./connector";
 export { manifest } from "./manifest";
 export type {
+  Appointment,
   Call,
   Cart,
   CommercePayment,
   Communication,
   Company,
   Contact,
+  Course,
   CustomObject,
   Deal,
+  DealPropertyHistory,
   DealSplit,
   Discount,
   Email,
@@ -23,12 +26,15 @@ export type {
   Invoice,
   Lead,
   LineItem,
+  Listing,
   Meeting,
   Note,
   Order,
   PostalMail,
   Product,
+  Project,
   Quote,
+  Service,
   Subscription,
   Task,
   Tax,
@@ -36,13 +42,16 @@ export type {
   User,
 } from "./schemas/crm";
 export {
+  AppointmentSchema,
   CallSchema,
   CartSchema,
   CommercePaymentSchema,
   CommunicationSchema,
   CompanySchema,
   ContactSchema,
+  CourseSchema,
   CustomObjectSchema,
+  DealPropertyHistorySchema,
   DealSchema,
   DealSplitSchema,
   DiscountSchema,
@@ -53,20 +62,27 @@ export {
   InvoiceSchema,
   LeadSchema,
   LineItemSchema,
+  ListingSchema,
   MeetingSchema,
   NoteSchema,
   OrderSchema,
   PostalMailSchema,
   ProductSchema,
+  ProjectSchema,
   QuoteSchema,
+  ServiceSchema,
   SubscriptionSchema,
   TaskSchema,
   TaxSchema,
   TicketSchema,
   UserSchema,
 } from "./schemas/crm";
-export type { List } from "./schemas/lists";
-export { ListSchema } from "./schemas/lists";
+export type { CommerceLink, PeerLink } from "./schemas/links";
+export { CommerceLinkSchema, PeerLinkSchema } from "./schemas/links";
+export type { List, SegmentMembership } from "./schemas/lists";
+export { ListSchema, SegmentMembershipSchema } from "./schemas/lists";
+export type { MarketingEvent, MarketingParticipation } from "./schemas/marketing";
+export { MarketingEventSchema, MarketingParticipationSchema } from "./schemas/marketing";
 export type { Owner } from "./schemas/owners";
 export { OwnerSchema } from "./schemas/owners";
 export type { Pipeline } from "./schemas/pipelines";

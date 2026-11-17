@@ -143,8 +143,8 @@ describe("GitHub demo", () => {
         {
           "assignees": [
             {
-              "id": 50000004n,
-              "login": "tbrennan",
+              "id": 50000002n,
+              "login": "jin-park",
               "type": "User",
             },
           ],
@@ -152,29 +152,29 @@ describe("GitHub demo", () => {
           "base": {
             "label": "acme-labs:main",
             "ref": "main",
-            "sha": "b96d368ab4bd1d31efb62f92a0e5e6bc4fbedde1",
+            "sha": "dbbca4f60e3eee80e9ffc68c63cefc2df3bdaff7",
           },
           "body": "Fixes #1.
 
-        If we program the application, we can get to the COM program through the solid state CSS interface!",
-          "closed_at": 2026-08-27T20:24:13.320Z,
-          "created_at": 2026-08-27T12:37:06.761Z,
-          "draft": false,
+        Use the online SDD matrix, then you can generate the virtual application!",
+          "closed_at": null,
+          "created_at": 2025-10-27T08:38:34.218Z,
+          "draft": true,
           "head": {
-            "label": "acme-labs:tbrennan/online-bandwidth",
-            "ref": "tbrennan/online-bandwidth",
-            "sha": "785c76b3b1fa40bfaa172cd7167aeda2facaab90",
+            "label": "acme-labs:jin/open-source-protocol",
+            "ref": "jin/open-source-protocol",
+            "sha": "0fcf8335cfe6facd957a0210cfa2aa398dd08dbc",
           },
           "html_url": "https://github.com/acme-labs/api/pull/2",
           "id": 1500000000n,
           "labels": [
             {
-              "id": 6100000001n,
-              "name": "bug",
+              "id": 6100000003n,
+              "name": "documentation",
             },
           ],
           "locked": false,
-          "merged_at": 2026-08-27T20:24:13.320Z,
+          "merged_at": null,
           "milestone": {
             "id": 6200000001n,
             "number": 1n,
@@ -183,15 +183,28 @@ describe("GitHub demo", () => {
           "node_id": "PR_kwDO59682F00",
           "number": 2n,
           "repository_id": 700000000n,
-          "requested_reviewers": [],
-          "state": "closed",
-          "title": "Refactor online bandwidth handling",
+          "requested_reviewers": [
+            {
+              "id": 50000004n,
+              "login": "tbrennan",
+              "type": "User",
+            },
+          ],
+          "requested_teams": [
+            {
+              "id": 605001n,
+              "name": "Platform",
+              "slug": "platform",
+            },
+          ],
+          "state": "open",
+          "title": "Refactor open-source protocol handling",
           "user": {
-            "id": 50000004n,
-            "login": "tbrennan",
+            "id": 50000002n,
+            "login": "jin-park",
             "type": "User",
           },
-          "version": 2026-08-28T03:43:08.613Z,
+          "version": 2025-10-29T13:09:02.659Z,
         }
       `);
     }),

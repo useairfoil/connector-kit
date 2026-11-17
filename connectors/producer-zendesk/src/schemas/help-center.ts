@@ -112,11 +112,45 @@ export const CommunityTopicSchema = Schema.Struct({
   .annotate({ description: "Topics in the Zendesk community." })
   .pipe(Iceberg.identifier("id"));
 
+export const ArticleTranslationSchema = Schema.Struct({
+  ...common("Translation"),
+  source_id: Long.pipe(Schema.annotateKey({ description: "Article the translation is of." })),
+  locale: Schema.String.pipe(Schema.annotateKey({ description: "Locale, such as fr." })),
+  title: Schema.String.pipe(Schema.annotateKey({ description: "Translated title." })),
+  body: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "Translated body, as HTML." }),
+  ),
+  draft: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the translation is a draft." }),
+  ),
+  outdated: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the source article changed since." }),
+  ),
+})
+  .annotate({ description: "Translations of Zendesk Help Center articles, one row per locale." })
+  .pipe(Iceberg.identifier("id"));
+
+export const CommunityCommentSchema = Schema.Struct({
+  ...common("Comment"),
+  post_id: Long.pipe(Schema.annotateKey({ description: "Post the comment is on." })),
+  author_id: Long.pipe(Schema.annotateKey({ description: "User who wrote the comment." })),
+  body: Schema.String.pipe(Schema.annotateKey({ description: "Comment text, as HTML." })),
+  official: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the comment is an official answer." }),
+  ),
+  vote_sum: Long.pipe(Schema.annotateKey({ description: "Up votes minus down votes." })),
+  vote_count: Long.pipe(Schema.annotateKey({ description: "Number of votes." })),
+})
+  .annotate({ description: "Comments on posts in the Zendesk community." })
+  .pipe(Iceberg.identifier("id"));
+
 export type Article = Schema.Schema.Type<typeof ArticleSchema>;
 export type Section = Schema.Schema.Type<typeof SectionSchema>;
 export type Category = Schema.Schema.Type<typeof CategorySchema>;
 export type CommunityPost = Schema.Schema.Type<typeof CommunityPostSchema>;
 export type CommunityTopic = Schema.Schema.Type<typeof CommunityTopicSchema>;
+export type ArticleTranslation = Schema.Schema.Type<typeof ArticleTranslationSchema>;
+export type CommunityComment = Schema.Schema.Type<typeof CommunityCommentSchema>;
 
 const objectOf = <F extends Schema.Struct.Fields>(schema: Schema.Struct<F>) =>
   schema.mapFields((fields) => Struct.omit(fields, ["version"]));
@@ -126,3 +160,5 @@ export const SectionObjectSchema = objectOf(SectionSchema);
 export const CategoryObjectSchema = objectOf(CategorySchema);
 export const CommunityPostObjectSchema = objectOf(CommunityPostSchema);
 export const CommunityTopicObjectSchema = objectOf(CommunityTopicSchema);
+export const ArticleTranslationObjectSchema = objectOf(ArticleTranslationSchema);
+export const CommunityCommentObjectSchema = objectOf(CommunityCommentSchema);

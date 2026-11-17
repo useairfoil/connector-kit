@@ -292,6 +292,37 @@ describe("resources", () => {
     }),
   );
 
+  it.effect("pages project teams when the embedded list is full", () =>
+    Effect.gen(function* () {
+      const teams = Array.from({ length: 50 }, (_, index) => ({ id: `team-${index}` }));
+      const { backfill, requests } = yield* getResource("projects", ({ operation, variables }) =>
+        operation === "Projects"
+          ? page("projects", [{ ...project, team_ids: { nodes: teams } }])
+          : {
+              parent: {
+                nested: variables?.after
+                  ? {
+                      nodes: [{ id: "team-last" }],
+                      pageInfo: { hasNextPage: false, endCursor: null },
+                    }
+                  : { nodes: teams, pageInfo: { hasNextPage: true, endCursor: "next" } },
+              },
+            },
+      );
+      const result = yield* backfill.fetch({ cutoff });
+      expect(pick(result.rows, ["team_ids"])).toEqual([
+        { team_ids: [...teams.map(({ id }) => id), "team-last"] },
+      ]);
+      expect(yield* requests).toMatchInlineSnapshot(`
+        [
+          "Projects {"first":50,"after":null,"orderBy":"createdAt"}",
+          "ProjectTeams {"id":"71940c03-dd21-4877-9c97-f793e61615fc","after":null}",
+          "ProjectTeams {"id":"71940c03-dd21-4877-9c97-f793e61615fc","after":"next"}",
+        ]
+      `);
+    }),
+  );
+
   it.effect("reads release note content and release links", () =>
     Effect.gen(function* () {
       const note = {

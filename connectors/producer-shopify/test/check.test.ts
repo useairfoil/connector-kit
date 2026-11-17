@@ -20,12 +20,14 @@ describe("producer-shopify configuration checks", () => {
         checkProductsAccess: Ref.update(productCheckRuns, (runs) => runs + 1),
         checkOrdersAccess: Ref.update(orderCheckRuns, (runs) => runs + 1),
         checkCustomersAccess: Ref.update(customerCheckRuns, (runs) => runs + 1),
+        followConnection: (first) => Effect.succeed(first.nodes),
         fetchGraphQL: () => Effect.fail(new ConnectorError({ message: "Unexpected fetchGraphQL" })),
         fetchProducts: () =>
           Effect.fail(new ConnectorError({ message: "Unexpected fetchProducts" })),
         fetchProductById: () =>
           Effect.fail(new ConnectorError({ message: "Unexpected fetchProductById" })),
         fetchOrders: () => Effect.fail(new ConnectorError({ message: "Unexpected fetchOrders" })),
+        fetchRefundsForOrder: () => Effect.succeed([]),
         fetchRefunds: () => Effect.fail(new ConnectorError({ message: "Unexpected fetchRefunds" })),
         fetchCustomers: () =>
           Effect.fail(new ConnectorError({ message: "Unexpected fetchCustomers" })),

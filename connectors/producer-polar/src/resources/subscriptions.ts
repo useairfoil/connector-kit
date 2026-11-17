@@ -89,6 +89,40 @@ const SubscriptionInputSchema = Schema.Struct({
   custom_field_data: Schema.optional(CustomFieldDataJsonSchema).pipe(
     Schema.annotateKey({ description: "Subscription custom fields stored as JSON." }),
   ),
+  pending_update: Schema.optional(
+    Schema.NullOr(
+      Schema.Struct({
+        id: Schema.String.pipe(Schema.annotateKey({ description: "Scheduled update ID." })),
+        applies_at: date("Time when the update takes effect."),
+        product_id: Schema.NullOr(Schema.String).pipe(
+          Schema.annotateKey({ description: "New product ID." }),
+        ),
+        seats: Schema.NullOr(Schema.Int).pipe(
+          Schema.annotateKey({ description: "New seat count, if changing." }),
+        ),
+        units: Schema.NullOr(Schema.Int).pipe(
+          Schema.annotateKey({ description: "New unit count, if changing." }),
+        ),
+      }),
+    ),
+  ).pipe(Schema.annotateKey({ description: "Scheduled change to this subscription." })),
+  meters: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        id: Schema.String.pipe(Schema.annotateKey({ description: "Subscription meter ID." })),
+        meter_id: Schema.String.pipe(Schema.annotateKey({ description: "Meter definition ID." })),
+        consumed_units: Schema.Finite.pipe(
+          Schema.annotateKey({ description: "Units consumed in the current period." }),
+        ),
+        credited_units: Schema.Int.pipe(
+          Schema.annotateKey({ description: "Units credited in the current period." }),
+        ),
+        amount: Schema.Int.pipe(
+          Schema.annotateKey({ description: "Current amount in the smallest currency unit." }),
+        ),
+      }),
+    ),
+  ).pipe(Schema.annotateKey({ description: "Usage charges and credits by meter." })),
   prices: Schema.optionalKey(
     Schema.Array(
       Schema.Struct({
@@ -113,7 +147,12 @@ const subscriptionWithVersion = SubscriptionInputSchema.pipe(
 export const SubscriptionSchema = subscriptionWithVersion
   .pipe(
     Schema.decodeTo(
-      subscriptionWithVersion.to.mapFields(({ prices, ...fields }) => ({ ...fields, prices })),
+      subscriptionWithVersion.to.mapFields(({ prices, pending_update, meters, ...fields }) => ({
+        ...fields,
+        prices,
+        pending_update,
+        meters,
+      })),
     ),
   )
   .annotate({

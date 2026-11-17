@@ -3,6 +3,11 @@ import type { Demo } from "@useairfoil/connector-kit";
 import { Duration } from "effect";
 
 import type {
+  Appointment,
+  Project,
+  Course,
+  Listing,
+  Service,
   Call,
   Cart,
   CommercePayment,
@@ -104,6 +109,12 @@ export const record = (
 });
 
 export type Rows = {
+  readonly projects: Array<Project>;
+  readonly appointments: Array<Appointment>;
+  readonly courses: Array<Course>;
+  readonly listings: Array<Listing>;
+  readonly services: Array<Service>;
+
   readonly companies: Array<Company>;
   readonly contacts: Array<Contact>;
   readonly deals: Array<Deal>;

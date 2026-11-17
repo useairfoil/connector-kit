@@ -73,7 +73,8 @@ export const cursorExport = <
   };
 };
 
-// Zendesk's end_time is the next start_time. Rows at the page edge can repeat.
+// end_time is the next start_time, and edge rows can repeat. Stop when it
+// doesn't move, or Talk loops on its last row.
 export const timeExport = <
   Page extends { readonly end_time: number | null; readonly end_of_stream: boolean },
   Row extends object,
@@ -92,12 +93,14 @@ export const timeExport = <
     backfill: Fetch.page({
       pageCursor: Cursor.string(),
       cutoff: Cursor.isoDateTime(),
-      fetch: ({ pageCursor, cutoff }) =>
-        read(pageCursor === undefined ? "0" : String(pageCursor)).pipe(
+      fetch: ({ pageCursor, cutoff }) => {
+        const startTime = pageCursor === undefined ? "0" : String(pageCursor);
+        return read(startTime).pipe(
           Effect.map(({ page, rows }) => {
             const hasMore =
               !page.end_of_stream &&
               page.end_time !== null &&
+              String(page.end_time) !== startTime &&
               page.end_time * 1000 < millis(String(cutoff));
             return {
               rows,
@@ -105,7 +108,8 @@ export const timeExport = <
               ...(hasMore ? { nextPageCursor: String(page.end_time) } : {}),
             };
           }),
-        ),
+        );
+      },
     }),
     changes: Fetch.changes({
       cursor: Cursor.string(),
@@ -117,7 +121,7 @@ export const timeExport = <
           Effect.map(({ page, rows }) => ({
             rows,
             cursor: page.end_time === null ? startTime : String(page.end_time),
-            hasMore: !page.end_of_stream,
+            hasMore: !page.end_of_stream && String(page.end_time) !== startTime,
           })),
         );
       },

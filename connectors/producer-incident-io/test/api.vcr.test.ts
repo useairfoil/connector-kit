@@ -65,14 +65,29 @@ describe.skipIf(!canRun)("incident.io API (vcr)", () => {
         const connector = yield* IncidentIoConnector.IncidentIoConnector.pipe(
           Effect.provide(built),
         );
+        const recordedResources = connector.resources.filter(
+          ({ name }) =>
+            ![
+              "alert_tags",
+              "postmortem_contents",
+              "call_routes",
+              "incident_templates",
+              "pay_configs",
+              "pay_reports",
+              "incident_call_transcripts",
+              "status_page_groups",
+              "status_page_availability",
+              "status_page_incident_links",
+            ].includes(name),
+        );
         const check = yield* ConnectorApp.check(IncidentIoConnector.IncidentIoConnector, built, {
-          resources: connector.resources.map((resource) => resource.name),
+          resources: recordedResources.map((resource) => resource.name),
         });
         // A resource without its role fails its check, and doesn't run.
         const failedChecks = Object.entries(check).flatMap(([name, result]) =>
           result._tag === "ok" ? [] : [name],
         );
-        const resources = connector.resources.filter(
+        const resources = recordedResources.filter(
           (resource) => !failedChecks.includes(resource.name),
         );
         const feed = yield* Effect.fromOption(Option.fromNullishOr(connector.changes));

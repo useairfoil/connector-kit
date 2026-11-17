@@ -50,6 +50,7 @@ export const incidentRows = (index: number, context: Demo.DemoContext): Rows => 
     incident_call_sessions: [],
     incident_participant_workloads: [],
     postmortem_documents: [],
+    postmortem_contents: [],
     follow_ups: [],
     actions: [],
     alerts: [],

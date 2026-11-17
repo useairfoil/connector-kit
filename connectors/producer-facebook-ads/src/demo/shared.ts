@@ -1,5 +1,6 @@
 import { Duration } from "effect";
 
+import type { NativeInsights } from "../schemas/insights";
 import type {
   AdInsights,
   AdInsightsAgeGender,
@@ -93,6 +94,12 @@ export const runs = (now: Date): Campaigns =>
   );
 
 export type Rows = {
+  readonly account_insights_daily: Array<NativeInsights>;
+  readonly account_insights_monthly: Array<NativeInsights>;
+  readonly campaign_insights_daily: Array<NativeInsights>;
+  readonly campaign_insights_monthly: Array<NativeInsights>;
+  readonly ad_set_insights_daily: Array<NativeInsights>;
+  readonly ad_set_insights_monthly: Array<NativeInsights>;
   readonly ads_insights: Array<AdInsights>;
   readonly ads_insights_age_gender: Array<AdInsightsAgeGender>;
   readonly ads_insights_country: Array<AdInsightsCountry>;

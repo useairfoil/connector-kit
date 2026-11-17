@@ -14,6 +14,8 @@ export const MetadataJsonSchema = Schema.flip(Schema.fromJsonString(MetadataSche
 
 export const CustomFieldDataJsonSchema = Schema.flip(Schema.fromJsonString(CustomFieldDataSchema));
 
+export const JsonSchema = Schema.flip(Schema.fromJsonString(Schema.Json));
+
 export const DiscountAmountsJsonSchema = Schema.flip(
   Schema.fromJsonString(Schema.Record(Schema.String, Schema.Int)),
 );
@@ -61,6 +63,12 @@ export const OrderItemSchema = Schema.Struct({
   ),
   product_price_id: Schema.NullOr(Schema.String).pipe(
     Schema.annotateKey({ description: "Product price linked to the item." }),
+  ),
+  start_timestamp: Schema.optional(Schema.NullOr(Schema.DateFromString)).pipe(
+    Schema.annotateKey({ description: "Start of the billed service period." }),
+  ),
+  end_timestamp: Schema.optional(Schema.NullOr(Schema.DateFromString)).pipe(
+    Schema.annotateKey({ description: "End of the billed service period." }),
   ),
 });
 

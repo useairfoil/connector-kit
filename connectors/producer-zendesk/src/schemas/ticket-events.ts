@@ -51,10 +51,62 @@ export const FieldChangeEventSchema = Schema.StructWithRest(
 
 export type FieldChangeEvent = Schema.Schema.Type<typeof FieldChangeEventSchema>;
 
-export const TicketAuditSchema = TicketEventSchema.mapFields((fields) => ({
+export const ExportAuditSchema = TicketEventSchema.mapFields((fields) => ({
   ...fields,
+  id: Long,
   updater_id: Long,
 }));
+
+/** Any child event of an export audit. A field change names its field by its one extra key. */
+export const ExportEventSchema = Schema.StructWithRest(
+  Schema.Struct({
+    id: Long,
+    event_type: Schema.String,
+    previous_value: Schema.optional(TextOrJson),
+    comment_public: Schema.optional(Schema.Boolean),
+  }),
+  [Schema.Record(Schema.String, Schema.Unknown)],
+);
+
+export type ExportAudit = Schema.Schema.Type<typeof ExportAuditSchema>;
+
+export const TicketAuditSchema = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "Audit ID." })),
+  version: Schema.Date.pipe(Schema.annotateKey({ description: "Time of the ticket update." })),
+  ticket_id: Long.pipe(Schema.annotateKey({ description: "Ticket that changed." })),
+  author_id: Long.pipe(
+    Schema.annotateKey({ description: "User who made the update. -1 for Zendesk itself." }),
+  ),
+  created_at: Timestamp.pipe(Schema.annotateKey({ description: "Time of the ticket update." })),
+  events: Schema.Array(
+    Schema.Struct({
+      id: Long.pipe(Schema.annotateKey({ description: "Event ID." })),
+      type: Schema.String.pipe(
+        Schema.annotateKey({
+          description: "Event type, such as Change, Comment, or Notification.",
+        }),
+      ),
+      field_name: Schema.optional(Schema.String).pipe(
+        Schema.annotateKey({ description: "Field that changed, for Create and Change." }),
+      ),
+      value: Schema.optional(TextOrJson).pipe(
+        Schema.annotateKey({ description: "New value. Lists are JSON." }),
+      ),
+      previous_value: Schema.optional(TextOrJson).pipe(
+        Schema.annotateKey({ description: "Value before the change." }),
+      ),
+      public: Schema.optional(Schema.Boolean).pipe(
+        Schema.annotateKey({ description: "Whether a comment is public." }),
+      ),
+    }),
+  ).pipe(
+    Schema.annotateKey({
+      description: "What the update did. Comment text is in `ticket_comments`.",
+    }),
+  ),
+})
+  .annotate({ description: "Every update to a Zendesk ticket, with all its events." })
+  .pipe(Iceberg.identifier("id"));
 
 export type TicketAudit = Schema.Schema.Type<typeof TicketAuditSchema>;
 

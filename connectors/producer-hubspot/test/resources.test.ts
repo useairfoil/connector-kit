@@ -133,7 +133,11 @@ describe("resources", () => {
 
   it.effect("checks every resource with read-only calls", () =>
     Effect.gen(function* () {
-      const { client, requests } = yield* makeFakeClient(() => ({ results: [] }));
+      const { client, requests } = yield* makeFakeClient(({ path }) =>
+        path === "/crm/lists/2026-09/search"
+          ? { lists: [], offset: 0, hasMore: false }
+          : { results: [] },
+      );
 
       const result = yield* ConnectorApp.check(
         HubSpotConnector.HubSpotConnector,
@@ -146,15 +150,7 @@ describe("resources", () => {
         requests: (yield* Ref.get(requests)).map(describeRequest),
       }).toMatchInlineSnapshot(`
         {
-          "failed": [
-            [
-              "lists",
-              {
-                "_tag": "error",
-                "message": "Fixture for /crm/lists/2026-09/search does not decode",
-              },
-            ],
-          ],
+          "failed": [],
           "requests": [
             "GET /crm/objects/2026-09/contacts limit=1",
             "GET /crm/properties/2026-09/contacts",
@@ -217,6 +213,27 @@ describe("resources", () => {
             "GET /crm/properties/2026-09/contacts",
             "GET /settings/teams/2026-09 limit=1",
             "POST /crm/lists/2026-09/search {"offset":0,"count":1,"processingTypes":[],"listIds":[],"additionalProperties":["hs_list_size"]}",
+            "GET /crm/objects/2026-09/projects limit=1",
+            "GET /crm/properties/2026-09/projects",
+            "GET /crm/objects/2026-09/appointments limit=1",
+            "GET /crm/properties/2026-09/appointments",
+            "GET /crm/objects/2026-09/courses limit=1",
+            "GET /crm/properties/2026-09/courses",
+            "GET /crm/objects/2026-09/listings limit=1",
+            "GET /crm/properties/2026-09/listings",
+            "GET /crm/objects/2026-09/services limit=1",
+            "GET /crm/properties/2026-09/services",
+            "GET /crm/objects/2026-09/quotes limit=1",
+            "GET /crm/objects/2026-09/orders limit=1",
+            "GET /crm/objects/2026-09/invoices limit=1",
+            "GET /crm/objects/2026-09/subscriptions limit=1",
+            "GET /crm/objects/2026-09/commerce_payments limit=1",
+            "GET /crm/objects/2026-09/companies limit=1",
+            "GET /crm/objects/2026-09/contacts limit=1",
+            "POST /crm/lists/2026-09/search {"offset":0,"count":1,"processingTypes":[],"listIds":[],"additionalProperties":["hs_list_size"]}",
+            "GET /marketing/marketing-events/2026-09 limit=1",
+            "GET /marketing/marketing-events/2026-09 limit=1",
+            "GET /crm/objects/2026-09/deals limit=1&propertiesWithHistory=dealstage%2Chubspot_owner_id",
           ],
         }
       `);

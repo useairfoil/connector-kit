@@ -1,5 +1,6 @@
 import { ConnectorError, Cursor, Fetch } from "@useairfoil/connector-kit";
 import { DateTime, Duration, Effect, Option, Schema, Stream } from "effect";
+import { createHash } from "node:crypto";
 
 import type { FacebookAdsClientService } from "../client/client";
 
@@ -8,13 +9,21 @@ import {
   AdAccountApiSchema,
   type AdAccount,
   AdAccountSchema,
+  AdActivityApiSchema,
+  type AdActivity,
   type Ad,
   AdApiSchema,
+  AdCreativeApiSchema,
+  type AdCreative,
   type AdSet,
   AdSetApiSchema,
   type Campaign,
   CampaignApiSchema,
   CreativeSchema,
+  CustomAudienceApiSchema,
+  type CustomAudience,
+  CustomConversionApiSchema,
+  type CustomConversion,
 } from "../schemas/objects";
 
 const pageSize = 500;
@@ -43,25 +52,25 @@ const fieldsParam = (fields: Readonly<Record<string, unknown>>) =>
     )
     .join(",");
 
-type Item = { readonly id: string };
-
-type ListSpec<A extends Item, Row extends object> = {
+type ListSpec<A extends object, Row extends object> = {
   /** Resource name, such as `ads`. */
   readonly name: string;
   /** The list under the account, such as `ads`. */
   readonly edge: string;
   /** The object in filter fields, such as `ad` in `ad.effective_status`. */
-  readonly object: string;
+  readonly object?: string;
   readonly item: Schema.Decoder<A> & {
     readonly fields: Readonly<Record<string, unknown>>;
   };
-  readonly statuses: ReadonlyArray<string>;
+  readonly statuses?: ReadonlyArray<string>;
   /** Lists with `updated_since` read only changed objects. */
   readonly updatedSince: boolean;
-  readonly toRow: (item: A, version: Date) => Row;
+  /** Activities filter on `since` instead, and return nothing without it. */
+  readonly sinceParam?: "since";
+  readonly toRow: (item: A, version: Date, account: string) => Row;
 };
 
-const readPage = <A extends Item, Row extends object>(
+const readPage = <A extends object, Row extends object>(
   client: FacebookAdsClientService,
   spec: ListSpec<A, Row>,
   account: string,
@@ -74,16 +83,24 @@ const readPage = <A extends Item, Row extends object>(
   client
     .get(spec.name, PageSchema(spec.item), `/act_${account}/${spec.edge}`, {
       fields: fieldsParam(spec.item.fields),
-      filtering: JSON.stringify([
-        { field: `${spec.object}.effective_status`, operator: "IN", value: spec.statuses },
-      ]),
+      ...(spec.object && spec.statuses
+        ? {
+            filtering: JSON.stringify([
+              { field: `${spec.object}.effective_status`, operator: "IN", value: spec.statuses },
+            ]),
+          }
+        : {}),
       limit: String(options.limit ?? pageSize),
       ...(options.after === undefined ? {} : { after: options.after }),
-      ...(options.updatedSince === undefined
-        ? {}
-        : {
-            updated_since: String(Math.floor(DateTime.toEpochMillis(options.updatedSince) / 1000)),
-          }),
+      ...(options.updatedSince !== undefined
+        ? {
+            [spec.sinceParam ?? "updated_since"]: String(
+              DateTime.toEpochSeconds(options.updatedSince),
+            ),
+          }
+        : spec.sinceParam === undefined
+          ? {}
+          : { [spec.sinceParam]: "0" }),
     })
     .pipe(
       Effect.map((page) => ({
@@ -92,7 +109,7 @@ const readPage = <A extends Item, Row extends object>(
       })),
     );
 
-const readAll = <A extends Item, Row extends object>(
+const readAll = <A extends object, Row extends object>(
   client: FacebookAdsClientService,
   spec: ListSpec<A, Row>,
   accounts: ReadonlyArray<string>,
@@ -110,7 +127,12 @@ const readAll = <A extends Item, Row extends object>(
             onNone: () => ({}),
             onSome: (since) => ({ updatedSince: since }),
           }),
-        }).pipe(Effect.map(({ items, next }) => [items, Option.map(next, Option.some)] as const)),
+        }).pipe(
+          Effect.map(
+            ({ items, next }) =>
+              [items.map((item) => ({ item, account })), Option.map(next, Option.some)] as const,
+          ),
+        ),
       ),
     ),
     Stream.runCollect,
@@ -139,7 +161,7 @@ const cursorError = (cause: Schema.SchemaError) =>
  * Backfill reads every object, one page per fetch. Changes read objects
  * updated since the last run, or every object when the list can't filter.
  */
-export const listSources = <A extends Item, Row extends object>(
+export const listSources = <A extends object, Row extends object>(
   client: FacebookAdsClientService,
   accounts: ReadonlyArray<string>,
   spec: ListSpec<A, Row>,
@@ -168,7 +190,7 @@ export const listSources = <A extends Item, Row extends object>(
           at.after === undefined ? {} : { after: at.after },
         );
         const version = yield* DateTime.nowAsDate;
-        const rows = page.items.map((item) => spec.toRow(item, version));
+        const rows = page.items.map((item) => spec.toRow(item, version, at.account));
 
         const next = Option.match(page.next, {
           onSome: (after) => Option.some({ account: at.account, after }),
@@ -209,7 +231,7 @@ export const listSources = <A extends Item, Row extends object>(
 
         const version = DateTime.toDateUtc(now);
         return {
-          rows: items.map((item) => spec.toRow(item, version)),
+          rows: items.map(({ item, account }) => spec.toRow(item, version, account)),
           cursor: yield* Schema.encodeEffect(Schema.fromJsonString(ChangesCursorSchema))({
             since: now,
             accounts,
@@ -294,4 +316,45 @@ export const ads: ListSpec<typeof AdApiSchema.Type, Ad> = {
   statuses: adStatuses,
   updatedSince: true,
   toRow: (item, version) => ({ ...item, version }),
+};
+
+export const adCreatives: ListSpec<typeof AdCreativeApiSchema.Type, AdCreative> = {
+  name: "ad_creatives",
+  edge: "adcreatives",
+  item: AdCreativeApiSchema,
+  updatedSince: false,
+  toRow: (item, version) => ({ ...item, version }),
+};
+
+export const customAudiences: ListSpec<typeof CustomAudienceApiSchema.Type, CustomAudience> = {
+  name: "custom_audiences",
+  edge: "customaudiences",
+  item: CustomAudienceApiSchema,
+  updatedSince: false,
+  toRow: (item, version) => ({ ...item, version }),
+};
+
+export const customConversions: ListSpec<typeof CustomConversionApiSchema.Type, CustomConversion> =
+  {
+    name: "custom_conversions",
+    edge: "customconversions",
+    item: CustomConversionApiSchema,
+    updatedSince: false,
+    toRow: (item, version) => ({ ...item, version }),
+  };
+
+export const adActivities: ListSpec<typeof AdActivityApiSchema.Type, AdActivity> = {
+  name: "ad_activities",
+  edge: "activities",
+  item: AdActivityApiSchema,
+  updatedSince: true,
+  sinceParam: "since",
+  toRow: (item, version, account_id) => ({
+    ...item,
+    id: createHash("sha256")
+      .update(JSON.stringify([account_id, ...Object.values(item)]))
+      .digest("hex"),
+    account_id,
+    version,
+  }),
 };

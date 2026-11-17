@@ -64,3 +64,24 @@ export const AssociationBatchSchema = Schema.Struct({
 export type AssociationTarget = (typeof AssociationBatchSchema.Type.results)[number]["to"][number];
 
 export const AccountSchema = Schema.Struct({ portalId: Schema.Number });
+
+const PropertyChangeSchema = Schema.Struct({
+  value: Schema.NullOr(Schema.String),
+  timestamp: Timestamp,
+  sourceType: Schema.optional(Schema.String),
+  sourceId: Schema.optional(Schema.String),
+});
+
+export type PropertyChange = Schema.Schema.Type<typeof PropertyChangeSchema>;
+
+const PropertyChangesSchema = Schema.optional(Schema.Array(PropertyChangeSchema));
+
+export const DealHistoryPageSchema = listPage(
+  Schema.Struct({
+    id: Schema.String,
+    propertiesWithHistory: Schema.Struct({
+      dealstage: PropertyChangesSchema,
+      hubspot_owner_id: PropertyChangesSchema,
+    }),
+  }),
+);

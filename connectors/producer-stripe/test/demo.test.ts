@@ -3,11 +3,15 @@ import { Demo, Ingestor } from "@useairfoil/connector-kit";
 import { Effect, Layer, Ref, Schema } from "effect";
 
 import { demo } from "../src/demo";
+import { BalanceTransactionSchema } from "../src/schemas/balance-transactions";
 import { ChargeSchema } from "../src/schemas/charges";
 import { CustomerSchema } from "../src/schemas/customers";
 import { InvoiceSchema } from "../src/schemas/invoices";
+import { PaymentIntentSchema } from "../src/schemas/payment-intents";
+import { PayoutSchema } from "../src/schemas/payouts";
 import { PriceSchema } from "../src/schemas/prices";
 import { RefundSchema } from "../src/schemas/refunds";
+import { SubscriptionScheduleSchema } from "../src/schemas/subscription-schedules";
 import { SubscriptionSchema } from "../src/schemas/subscriptions";
 
 const now = new Date("2026-10-01T00:00:00.000Z");
@@ -59,6 +63,32 @@ describe("Stripe demo", () => {
       const invoices = rowsOf(written, "invoices", InvoiceSchema);
       const charges = rowsOf(written, "charges", ChargeSchema);
       const refunds = rowsOf(written, "refunds", RefundSchema);
+      const ledger = new Map(
+        rowsOf(written, "balance_transactions", BalanceTransactionSchema).map((row) => [
+          row.id,
+          row,
+        ]),
+      );
+      const intents = new Map(
+        rowsOf(written, "payment_intents", PaymentIntentSchema).map((row) => [row.id, row]),
+      );
+      const schedules = new Map(
+        rowsOf(written, "subscription_schedules", SubscriptionScheduleSchema).map((row) => [
+          row.id,
+          row,
+        ]),
+      );
+      const payouts = rowsOf(written, "payouts", PayoutSchema);
+      expect([...ledger.values()]).not.toHaveLength(0);
+      expect(payouts).not.toHaveLength(0);
+      for (const payout of payouts) {
+        const amount = payout.balance_transaction_ids?.reduce((sum, transactionId) => {
+          const transaction = ledger.get(transactionId);
+          expect(transaction?.currency).toBe(payout.currency);
+          return sum + (transaction?.net ?? 0n);
+        }, 0n);
+        expect(amount).toBe(payout.amount);
+      }
 
       const customerById = new Map(customers.map((row) => [row.id, row]));
       const subscriptionById = new Map(subscriptions.map((row) => [row.id, row]));
@@ -85,7 +115,10 @@ describe("Stripe demo", () => {
           expect(invoiceIds.has(subscription.latest_invoice)).toBe(true);
         }
 
-        expect([subscription.default_payment_method, subscription.schedule]).toEqual([null, null]);
+        expect(subscription.default_payment_method).toBeNull();
+        if (subscription.schedule !== null) {
+          expect(schedules.get(subscription.schedule)?.subscription).toBe(subscription.id);
+        }
       }
 
       for (const invoice of invoices) {
@@ -125,6 +158,12 @@ describe("Stripe demo", () => {
         expect(charge.amount_captured).toBe(charge.status === "succeeded" ? charge.amount : 0n);
         expect(charge.created <= now).toBe(true);
         expect(charge.payment_method).toBeNull();
+        expect(intents.get(charge.payment_intent ?? "")?.latest_charge).toBe(charge.id);
+        if (charge.balance_transaction !== null) {
+          const transaction = ledger.get(charge.balance_transaction);
+          expect(transaction?.source).toBe(charge.id);
+          expect(transaction && transaction.amount - transaction.fee).toBe(transaction?.net);
+        }
       }
 
       for (const refund of refunds) {
@@ -143,19 +182,19 @@ describe("Stripe demo", () => {
       }).toMatchInlineSnapshot(`
         {
           "charges": {
-            "failed": 1,
-            "succeeded": 190,
+            "failed": 4,
+            "succeeded": 259,
           },
           "invoices": {
-            "open": 1,
-            "paid": 190,
+            "open": 4,
+            "paid": 259,
           },
-          "refunds": 8,
+          "refunds": 18,
           "subscriptions": {
-            "active": 15,
-            "canceled": 4,
-            "past_due": 1,
-            "trialing": 3,
+            "active": 17,
+            "canceled": 5,
+            "past_due": 4,
+            "trialing": 2,
           },
         }
       `);

@@ -2,7 +2,17 @@ import { type ConnectorError, Cursor, Fetch, Resource } from "@useairfoil/connec
 import { DateTime, Duration, Effect, Option, Schema, Stream } from "effect";
 
 import { HUBSPOT_API_VERSION, type HubSpotClientService } from "../client/client";
-import { type List, type ListObject, ListObjectSchema, ListSchema } from "../schemas/lists";
+import { listPage } from "../schemas/api";
+import {
+  type List,
+  ListFiltersObjectSchema,
+  ListMemberObjectSchema,
+  type ListObject,
+  ListObjectSchema,
+  ListSchema,
+  type SegmentMembership,
+  SegmentMembershipSchema,
+} from "../schemas/lists";
 
 const searchPath = `/crm/lists/${HUBSPOT_API_VERSION}/search`;
 const pageSize = 500;
@@ -71,6 +81,101 @@ export const makeLists = (client: HubSpotClientService) =>
       fetch: () =>
         Effect.all([listAll(client), DateTime.now]).pipe(
           Effect.map(([rows, now]) => ({ rows, cursor: DateTime.formatIso(now) })),
+        ),
+    }),
+  });
+
+const listsPath = `/crm/lists/${HUBSPOT_API_VERSION}`;
+const MemberPageSchema = listPage(ListMemberObjectSchema);
+// Each list row holds every member, so a page reads few lists.
+const segmentPageSize = 5;
+
+const members = (client: HubSpotClientService, listId: string) =>
+  Stream.paginate(Option.none<string>(), (after) =>
+    client
+      .get(MemberPageSchema, `${listsPath}/${listId}/memberships`, {
+        limit: "100",
+        ...Option.match(after, { onNone: () => ({}), onSome: (value) => ({ after: value }) }),
+      })
+      .pipe(
+        Effect.map(
+          ({ body }) =>
+            [
+              body.results.map((member) => ({
+                record_id: member.recordId,
+                membership_timestamp: member.membershipTimestamp,
+              })),
+              Option.map(Option.fromNullishOr(body.paging?.next.after), Option.some),
+            ] as const,
+        ),
+      ),
+  ).pipe(Stream.runCollect);
+
+const readSegment = (client: HubSpotClientService, list: ListObject) =>
+  Effect.gen(function* () {
+    const { body, fetchedAt } = yield* client.get(
+      ListFiltersObjectSchema,
+      `${listsPath}/${list.listId}`,
+      { includeFilters: "true" },
+    );
+    return {
+      id: list.listId,
+      version: fetchedAt,
+      object_type_id: list.objectTypeId,
+      filter: body.list.filterBranch ?? null,
+      members: yield* members(client, list.listId),
+    } satisfies SegmentMembership;
+  });
+
+const readSegments = (client: HubSpotClientService, offset: number) =>
+  search(client, offset, segmentPageSize).pipe(
+    Effect.flatMap(({ body }) =>
+      Effect.forEach(body.lists, (list) => readSegment(client, list)).pipe(
+        Effect.map((rows) => ({ rows, next: body.hasMore ? body.offset : undefined })),
+      ),
+    ),
+  );
+
+export const makeSegmentMemberships = (client: HubSpotClientService) =>
+  Resource.entity({
+    name: "segment_memberships",
+    rowSchema: SegmentMembershipSchema,
+    version: "version",
+
+    check: search(client, 0, 1).pipe(
+      Effect.flatMap(({ body }) =>
+        Effect.forEach(body.lists, ({ listId }) =>
+          client.get(MemberPageSchema, `${listsPath}/${listId}/memberships`, { limit: "1" }),
+        ),
+      ),
+      Effect.asVoid,
+    ),
+    backfill: Fetch.page({
+      pageCursor: Cursor.string(),
+      cutoff: Cursor.isoDateTime(),
+      fetch: ({ pageCursor }) =>
+        readSegments(client, typeof pageCursor === "string" ? Number(pageCursor) : 0).pipe(
+          Effect.map(({ rows, next }) => ({
+            rows,
+            nextPageCursor: next === undefined ? undefined : String(next),
+            hasMore: next !== undefined,
+          })),
+        ),
+    }),
+    // The first cursor is the backfill cutoff.
+    changes: Fetch.changes({
+      cursor: Cursor.string(),
+      interval: Duration.days(1),
+      fetch: ({ cursor }) =>
+        readSegments(
+          client,
+          String(cursor).startsWith("offset:") ? Number(String(cursor).slice(7)) : 0,
+        ).pipe(
+          Effect.map(({ rows, next }) => ({
+            rows,
+            cursor: next === undefined ? "" : `offset:${next}`,
+            hasMore: next !== undefined,
+          })),
         ),
     }),
   });

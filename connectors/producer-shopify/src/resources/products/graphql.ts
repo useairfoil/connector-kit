@@ -17,6 +17,7 @@ const ProductVariantFields = `
   price
   compareAtPrice
   inventoryPolicy
+  inventoryItem { id }
   taxable
   createdAt
   updatedAt
@@ -68,6 +69,7 @@ export const GraphQLProductVariantNodeSchema = Schema.Struct({
   barcode: Schema.NullOr(Schema.String),
   price: Schema.String,
   compareAtPrice: Schema.NullOr(Schema.String),
+  inventoryItem: Schema.Struct({ id: Schema.String }),
   inventoryPolicy: ProductVariantInventoryPolicySchema,
   taxable: Schema.Boolean,
   createdAt: Schema.DateFromString,
@@ -138,5 +140,8 @@ export const normalizeProductNode = (
       ? null
       : { image: node.featuredMedia.image },
   options: node.options,
-  variants,
+  variants: variants.map(({ inventoryItem, ...variant }) => ({
+    ...variant,
+    inventoryItemId: inventoryItem.id,
+  })),
 });

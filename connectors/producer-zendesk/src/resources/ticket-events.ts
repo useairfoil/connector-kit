@@ -5,8 +5,10 @@ import type { ZendeskClientService } from "../client/client";
 
 import { asText } from "../schemas/shared";
 import {
-  type FieldChangeEvent,
   FieldChangeEventSchema,
+  type ExportAudit,
+  ExportAuditSchema,
+  ExportEventSchema,
   type TicketAudit,
   TicketAuditSchema,
   type TicketFieldChange,
@@ -20,7 +22,7 @@ import {
 import { timeExport } from "./exports";
 
 const TicketAuditPageSchema = Schema.Struct({
-  ticket_events: Schema.Array(TicketAuditSchema),
+  ticket_events: Schema.Array(ExportAuditSchema),
   end_time: Schema.NullOr(Schema.Number),
   end_of_stream: Schema.Boolean,
 });
@@ -47,7 +49,7 @@ const decodeChange = (value: unknown) =>
   );
 
 // Custom fields come as `custom_ticket_fields: { [fieldId]: value }`.
-const changedField = (event: FieldChangeEvent) =>
+const changedField = (event: object) =>
   Arr.findFirst(Object.entries(event), ([key]) => !eventKeys.has(key)).pipe(
     Option.flatMap(([key, value]) =>
       key === "custom_ticket_fields" && Predicate.isObject(value)
@@ -56,7 +58,7 @@ const changedField = (event: FieldChangeEvent) =>
     ),
   );
 
-const toChanges = (audit: TicketAudit) =>
+const toChanges = (audit: ExportAudit) =>
   Effect.forEach(audit.child_events.filter(isFieldChangeEvent), (child) =>
     decodeChange(child).pipe(
       Effect.map((event) =>
@@ -125,5 +127,51 @@ export const makeTicketMetricEvents = (client: ZendeskClientService) =>
       path: "/incremental/ticket_metric_events",
       schema: TicketMetricEventPageSchema,
       rows: (page) => Effect.succeed(page.ticket_metric_events.map(toMetricEvent)),
+    }),
+  });
+
+const decodeEvent = (value: unknown) =>
+  Schema.decodeUnknownEffect(ExportEventSchema)(value).pipe(
+    Effect.mapError(
+      (cause) => new ConnectorError({ message: "Zendesk ticket event does not decode", cause }),
+    ),
+  );
+
+const toAudit = (audit: ExportAudit) =>
+  Effect.forEach(audit.child_events, decodeEvent).pipe(
+    Effect.map(
+      (events): TicketAudit => ({
+        id: audit.id,
+        version: audit.created_at,
+        ticket_id: audit.ticket_id,
+        author_id: audit.updater_id,
+        created_at: audit.created_at,
+        events: events.map((event) => {
+          const field = isFieldChangeEvent(event)
+            ? Option.getOrUndefined(changedField(event))
+            : undefined;
+          return {
+            id: event.id,
+            type: event.event_type,
+            field_name: field?.[0],
+            value: field === undefined ? undefined : asText(field[1]),
+            previous_value: event.previous_value,
+            public: event.comment_public,
+          };
+        }),
+      }),
+    ),
+  );
+
+export const makeTicketAudits = (client: ZendeskClientService) =>
+  Resource.entity({
+    name: "ticket_audits",
+    rowSchema: TicketAuditSchema,
+    version: "version",
+    ...timeExport({
+      client,
+      path: "/incremental/ticket_events",
+      schema: TicketAuditPageSchema,
+      rows: (page) => Effect.forEach(page.ticket_events, toAudit),
     }),
   });

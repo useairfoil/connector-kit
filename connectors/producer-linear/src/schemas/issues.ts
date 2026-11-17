@@ -7,6 +7,7 @@ import {
   OptionalString,
   OptionalTimestamp,
   Ref,
+  Timestamp,
   common,
   deleted,
 } from "./shared";
@@ -97,6 +98,12 @@ export const IssueSchema = Schema.Struct({
   ),
   sla_breaches_at: OptionalTimestamp.pipe(
     Schema.annotateKey({ description: "Time the SLA breaches." }),
+  ),
+  sla_medium_risk_at: OptionalTimestamp.pipe(
+    Schema.annotateKey({ description: "Time the SLA reaches medium risk." }),
+  ),
+  sla_high_risk_at: OptionalTimestamp.pipe(
+    Schema.annotateKey({ description: "Time the SLA reaches high risk." }),
   ),
   customer_ticket_count: Long.pipe(Schema.annotateKey({ description: "Linked support tickets." })),
   integration_source_type: OptionalString.pipe(
@@ -194,6 +201,31 @@ export const IssueHistorySchema = Schema.Struct({
 export type IssueHistory = Schema.Schema.Type<typeof IssueHistorySchema>;
 
 export const IssueHistoryObjectSchema = IssueHistorySchema.mapFields((fields) =>
+  Struct.omit(fields, ["version", "issue_id"]),
+);
+
+export const IssueStateSpanSchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "State span ID." })),
+  version: Schema.Date.pipe(
+    Schema.annotateKey({ description: "Time Linear last changed the issue." }),
+  ),
+  issue_id: Schema.String.pipe(Schema.annotateKey({ description: "Issue." })),
+  state_id: Schema.String.pipe(Schema.annotateKey({ description: "Workflow state." })),
+  started_at: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time the issue entered the state." }),
+  ),
+  ended_at: OptionalTimestamp.pipe(
+    Schema.annotateKey({
+      description: "Time the issue left the state. Null while it's still there.",
+    }),
+  ),
+})
+  .annotate({ description: "Linear issue state history. One row per time in a state." })
+  .pipe(Iceberg.identifier("id"));
+
+export type IssueStateSpan = Schema.Schema.Type<typeof IssueStateSpanSchema>;
+
+export const IssueStateSpanObjectSchema = IssueStateSpanSchema.mapFields((fields) =>
   Struct.omit(fields, ["version", "issue_id"]),
 );
 

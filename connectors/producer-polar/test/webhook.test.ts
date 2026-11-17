@@ -37,11 +37,10 @@ const customerWebhookPayload = {
   },
 };
 
-const signPayload = (rawBody: string) => {
+const signPayload = (rawBody: string, secret = Base64.encode(webhookSecret)) => {
   const now = new Date();
   const webhookId = "webhook_1";
-  const base64Secret = Base64.encode(webhookSecret);
-  const verifier = new StandardWebhook(base64Secret);
+  const verifier = new StandardWebhook(secret);
   return {
     "webhook-id": webhookId,
     "webhook-timestamp": String(Math.floor(now.getTime() / 1000)),
@@ -58,22 +57,25 @@ const makeApiStub = (): PolarApiClientService => ({
     }),
 });
 
-const connectorTestLayer = Layer.effect(PolarConnector.PolarConnector)(
-  PolarConnector.PolarConfigDef.config.pipe(Effect.flatMap(PolarConnector.make)),
-).pipe(
-  Layer.provide(Layer.succeed(PolarApiClient.PolarApiClient)(makeApiStub())),
-  Layer.provide(
-    ConfigProvider.layer(
-      ConfigProvider.fromUnknown({
-        POLAR_ACCESS_TOKEN: "test",
-        POLAR_API_BASE_URL: "https://sandbox-api.polar.sh/v1/",
-        POLAR_WEBHOOK_SECRET: webhookSecret,
-      }),
+const makeConnectorTestLayer = (secret: string) =>
+  Layer.effect(PolarConnector.PolarConnector)(
+    PolarConnector.PolarConfigDef.config.pipe(Effect.flatMap(PolarConnector.make)),
+  ).pipe(
+    Layer.provide(Layer.succeed(PolarApiClient.PolarApiClient)(makeApiStub())),
+    Layer.provide(
+      ConfigProvider.layer(
+        ConfigProvider.fromUnknown({
+          POLAR_ACCESS_TOKEN: "test",
+          POLAR_API_BASE_URL: "https://sandbox-api.polar.sh/v1/",
+          POLAR_WEBHOOK_SECRET: secret,
+        }),
+      ),
     ),
-  ),
-);
+  );
 
-const postSignedWebhook = (payload: unknown) =>
+const connectorTestLayer = makeConnectorTestLayer(webhookSecret);
+
+const postSignedWebhook = (payload: unknown, secret?: string) =>
   Effect.gen(function* () {
     const { ingestedRef, layer } = yield* makeTestIngestor(1);
     const connector = yield* PolarConnector.PolarConnector;
@@ -92,7 +94,7 @@ const postSignedWebhook = (payload: unknown) =>
       const rawBody = JSON.stringify(payload);
       const client = yield* HttpClient.HttpClient;
       const request = HttpClientRequest.post("/webhook").pipe(
-        HttpClientRequest.setHeaders(signPayload(rawBody)),
+        HttpClientRequest.setHeaders(signPayload(rawBody, secret)),
         HttpClientRequest.bodyText(rawBody, "application/json"),
       );
       const response = yield* client.execute(request);
@@ -152,6 +154,15 @@ describe("producer-polar webhook", () => {
       );
     }).pipe(Effect.provide(connectorTestLayer), Effect.scoped),
   );
+
+  it.effect("accepts a Polar-generated Standard Webhooks secret", () => {
+    const issuedSecret = `whsec_${Base64.encode("polar-generated-secret")}`;
+    return postSignedWebhook(customerWebhookPayload, issuedSecret).pipe(
+      Effect.map(({ status }) => expect(status).toBe(200)),
+      Effect.provide(makeConnectorTestLayer(issuedSecret)),
+      Effect.scoped,
+    );
+  });
 
   it.effect("turns customer.deleted into a soft delete", () =>
     Effect.gen(function* () {

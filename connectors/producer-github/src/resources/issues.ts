@@ -22,7 +22,15 @@ import {
 } from "./shared";
 
 const toRow = (
-  { updated_at, labels, assignees, pull_request: _pullRequest, ...rest }: IssueObject,
+  {
+    updated_at,
+    labels,
+    assignees,
+    pull_request: _pullRequest,
+    sub_issues_summary: _subIssues,
+    issue_dependencies_summary: _dependencies,
+    ...rest
+  }: IssueObject,
   repository_id: bigint,
 ): Issue => ({
   ...rest,

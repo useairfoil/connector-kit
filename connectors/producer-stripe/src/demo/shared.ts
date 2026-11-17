@@ -2,11 +2,19 @@ import type { Demo } from "@useairfoil/connector-kit";
 
 import { Duration } from "effect";
 
+import type { BalanceTransaction } from "../schemas/balance-transactions";
 import type { Charge } from "../schemas/charges";
+import type { CheckoutSession } from "../schemas/checkout-sessions";
+import type { CreditNote } from "../schemas/credit-notes";
 import type { Customer } from "../schemas/customers";
+import type { Dispute } from "../schemas/disputes";
 import type { InvoicePayment } from "../schemas/invoice-payments";
 import type { Invoice } from "../schemas/invoices";
+import type { MeterSummary } from "../schemas/meter-summaries";
+import type { PaymentIntent } from "../schemas/payment-intents";
+import type { Payout } from "../schemas/payouts";
 import type { Refund } from "../schemas/refunds";
+import type { SubscriptionSchedule } from "../schemas/subscription-schedules";
 import type { Subscription } from "../schemas/subscriptions";
 
 export const hour = Duration.toMillis(Duration.hours(1));
@@ -81,4 +89,12 @@ export type Rows = {
   readonly charges: Array<Charge>;
   readonly invoice_payments: Array<InvoicePayment>;
   readonly refunds: Array<Refund>;
+  readonly payment_intents: Array<PaymentIntent>;
+  readonly payouts: Array<Payout>;
+  readonly disputes: Array<Dispute>;
+  readonly credit_notes: Array<CreditNote>;
+  readonly checkout_sessions: Array<CheckoutSession>;
+  readonly subscription_schedules: Array<SubscriptionSchedule>;
+  readonly balance_transactions: Array<BalanceTransaction>;
+  readonly meter_summaries: Array<MeterSummary>;
 };

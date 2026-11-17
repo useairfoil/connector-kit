@@ -28,6 +28,7 @@ const apiToken = "test-token";
 const webhookSecret = "test-webhook-secret";
 
 const productVariant = (id: number) => ({
+  inventoryItem: { id: `gid://shopify/InventoryItem/${id}` },
   id: `gid://shopify/ProductVariant/${id}`,
   legacyResourceId: String(id),
   title: `Variant ${id}`,
@@ -480,7 +481,9 @@ describe("producer-shopify api (vcr)", () => {
         Schema.decodeUnknownSync(OrderWebhookPayloadSchema)(orderUpdatedWithoutCustomer),
       );
 
-      expect(items.find((item) => item.id === fromWebhook.id)).toEqual(fromWebhook);
+      expect(items.find((item) => item.id === fromWebhook.id)).toEqual({
+        ...fromWebhook,
+      });
     }).pipe(
       Effect.provide(
         ShopifyApiClient.layerConfig(ShopifyConnector.ShopifyConfigDef.config).pipe(

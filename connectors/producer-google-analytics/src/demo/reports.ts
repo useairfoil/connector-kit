@@ -119,7 +119,8 @@ export const dayRows = (index: number, { faker, now }: Demo.DemoContext): Rows =
       const part = bySource[s] ?? 0;
 
       return {
-        id: id(source, medium, campaign, channel),
+        id: id(source, medium, String(s), campaign, channel),
+        session_campaign_id: String(s),
         ...base,
         session_source: source,
         session_medium: medium,
@@ -138,7 +139,8 @@ export const dayRows = (index: number, { faker, now }: Demo.DemoContext): Rows =
       };
     }),
     user_acquisition: sources.map(([source, medium, campaign, channel], s) => ({
-      id: id(source, medium, campaign, channel),
+      id: id(source, medium, String(s), campaign, channel),
+      first_user_campaign_id: String(s),
       ...base,
       first_user_source: source,
       first_user_medium: medium,
@@ -229,6 +231,57 @@ export const dayRows = (index: number, { faker, now }: Demo.DemoContext): Rows =
         key_events: Math.round(purchases * share(part, sessions)),
       };
     }),
+    transactions: Array.from({ length: purchases }, (_, index) => {
+      const transaction_id = `order-${date}-${index + 1}`;
+      return {
+        ...base,
+        id: id(transaction_id),
+        transaction_id,
+        ecommerce_purchases: 1n,
+        purchase_revenue: money(revenue / purchases),
+        refund_amount: 0,
+        currency_code: currency,
+      };
+    }),
+    paid_campaigns: [
+      {
+        ...base,
+        id: id("83880125", "53201", "5320101"),
+        customer_id: "83880125",
+        campaign_id: "53201",
+        ad_group_id: "5320101",
+        sessions: BigInt(Math.floor(sessions / 5)),
+        advertiser_ad_cost: money(sessions * 0.12),
+        advertiser_ad_clicks: BigInt(Math.floor(sessions / 4)),
+        advertiser_ad_impressions: BigInt(sessions * 3),
+        currency_code: currency,
+      },
+    ],
+    stream_screens: [
+      {
+        ...base,
+        id: id("1717501", "Store", "web", "/"),
+        stream_id: "1717501",
+        stream_name: "Store",
+        platform: "web",
+        screen_class: "/",
+        screen_page_views: BigInt(Math.floor(views / 3)),
+        active_users: BigInt(Math.floor(sessions / 4)),
+      },
+    ],
+    cohort_retention: (
+      [
+        ["0000", 1],
+        ["0001", 0.28],
+        ["0007", 0.12],
+      ] as const
+    ).map(([day_offset, kept]) => ({
+      ...base,
+      id: id(day_offset),
+      day_offset,
+      active_users: BigInt(Math.round(newUsers * kept)),
+      total_users: BigInt(newUsers),
+    })),
     ecommerce_items: items.map(([itemId, name, category, price], i) => {
       const bought = itemUnits[i] ?? 0;
       const added = Math.round(bought * faker.number.float({ min: 3, max: 5 }));
@@ -243,6 +296,8 @@ export const dayRows = (index: number, { faker, now }: Demo.DemoContext): Rows =
         items_viewed: BigInt(Math.round(added * faker.number.float({ min: 6, max: 9 }))),
         items_added_to_cart: BigInt(added),
         items_purchased: BigInt(bought),
+        items_checked_out: BigInt(Math.max(bought, Math.round(added * 0.6))),
+        item_refund_amount: 0,
         item_revenue: money(bought * price),
         currency_code: currency,
       };

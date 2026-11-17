@@ -1,6 +1,7 @@
 import { Duration } from "effect";
 
 import type {
+  CohortRetention,
   DailyOverview,
   Device,
   EcommerceItem,
@@ -8,7 +9,10 @@ import type {
   LandingPage,
   Location,
   Page,
+  PaidCampaign,
+  StreamScreen,
   TrafficSource,
+  Transaction,
   UserAcquisition,
 } from "../schemas/reports";
 
@@ -95,4 +99,8 @@ export type Rows = {
   readonly locations: Array<Location>;
   readonly devices: Array<Device>;
   readonly ecommerce_items: Array<EcommerceItem>;
+  readonly transactions: Array<Transaction>;
+  readonly paid_campaigns: Array<PaidCampaign>;
+  readonly stream_screens: Array<StreamScreen>;
+  readonly cohort_retention: Array<CohortRetention>;
 };

@@ -46,7 +46,7 @@ export type CrmReader<Row extends object> = {
 };
 
 /** Each record's associations. A record with many follows its own `after`. */
-const readAssociations = (
+export const readAssociations = (
   client: HubSpotClientService,
   from: string,
   to: string,

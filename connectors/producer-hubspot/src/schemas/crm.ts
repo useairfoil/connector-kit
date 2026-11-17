@@ -25,6 +25,31 @@ const baseFields = (object: string) => ({
   _deleted: deleted(object),
 });
 
+export const ProjectSchema = Schema.Struct(baseFields("project"))
+  .annotate({ description: "HubSpot projects." })
+  .pipe(Iceberg.identifier("id"));
+export type Project = typeof ProjectSchema.Type;
+
+export const AppointmentSchema = Schema.Struct(baseFields("appointment"))
+  .annotate({ description: "HubSpot appointments." })
+  .pipe(Iceberg.identifier("id"));
+export type Appointment = typeof AppointmentSchema.Type;
+
+export const CourseSchema = Schema.Struct(baseFields("course"))
+  .annotate({ description: "HubSpot courses." })
+  .pipe(Iceberg.identifier("id"));
+export type Course = typeof CourseSchema.Type;
+
+export const ListingSchema = Schema.Struct(baseFields("listing"))
+  .annotate({ description: "HubSpot listings." })
+  .pipe(Iceberg.identifier("id"));
+export type Listing = typeof ListingSchema.Type;
+
+export const ServiceSchema = Schema.Struct(baseFields("service"))
+  .annotate({ description: "HubSpot services." })
+  .pipe(Iceberg.identifier("id"));
+export type Service = typeof ServiceSchema.Type;
+
 const ids = (object: string) =>
   Schema.Array(Schema.String).pipe(
     Schema.annotateKey({ description: `IDs of the associated ${object}.` }),
@@ -302,3 +327,29 @@ export const CustomObjectSchema = Schema.Struct({
   .annotate({ description: "Records of every custom object type in one table." })
   .pipe(Iceberg.identifier("key"));
 export type CustomObject = Schema.Schema.Type<typeof CustomObjectSchema>;
+
+const changes = (description: string) =>
+  Schema.Array(
+    Schema.Struct({
+      value: Schema.NullOr(Schema.String).pipe(
+        Schema.annotateKey({ description: "Value after the change." }),
+      ),
+      timestamp: Schema.Date.pipe(Schema.annotateKey({ description: "Time of the change." })),
+      source_type: Schema.optional(Schema.String).pipe(
+        Schema.annotateKey({ description: "What made the change, such as CRM_UI." }),
+      ),
+      source_id: Schema.optional(Schema.String).pipe(
+        Schema.annotateKey({ description: "ID of the user or app that made the change." }),
+      ),
+    }),
+  ).pipe(Schema.annotateKey({ description }));
+
+export const DealPropertyHistorySchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "HubSpot record ID of the deal." })),
+  version,
+  dealstage: changes("Deal stage changes."),
+  hubspot_owner_id: changes("Deal owner changes."),
+})
+  .annotate({ description: "Stage and owner history of HubSpot deals." })
+  .pipe(Iceberg.identifier("id"));
+export type DealPropertyHistory = Schema.Schema.Type<typeof DealPropertyHistorySchema>;

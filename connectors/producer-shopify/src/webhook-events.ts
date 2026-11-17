@@ -17,6 +17,7 @@ export const webhookTopics = {
   orders_create: "orders/create",
   orders_updated: "orders/updated",
   orders_delete: "orders/delete",
+  order_transactions_create: "order_transactions/create",
   refunds_create: "refunds/create",
 } as const;
 
@@ -49,5 +50,8 @@ export const webhookSubscriptions = [
     resource: "orders",
     types: [webhookTopics.orders_create, webhookTopics.orders_updated, webhookTopics.orders_delete],
   },
-  { resource: "refunds", types: [webhookTopics.refunds_create] },
+  {
+    resource: "refunds",
+    types: [webhookTopics.refunds_create, webhookTopics.order_transactions_create],
+  },
 ];

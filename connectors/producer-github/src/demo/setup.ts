@@ -6,6 +6,7 @@ import {
   labelsForRepository,
   milestoneForRepository,
   day,
+  demoProjectId,
   nodeId,
   org,
   owner,
@@ -60,5 +61,67 @@ export const setupRows = ({ now }: Demo.DemoContext) => {
     due_on: null,
     closed_at: null,
   }));
-  return { repositories: rows, labels, milestones };
+  const mainSha = "8edba364731ea0d819cd80e445696e62d06ed5dc";
+  const branches = rows.map((repo) => ({
+    key: `${repo.id}:main`,
+    version: now,
+    repository_id: repo.id,
+    name: "main",
+    commit: { sha: mainSha },
+    protected: true,
+  }));
+  const tags = rows.map((repo) => ({
+    key: `${repo.id}:v1.0.0`,
+    version: now,
+    repository_id: repo.id,
+    name: "v1.0.0",
+    commit: { sha: mainSha },
+  }));
+  const workflow_definitions = rows.map((repo, r) => ({
+    id: 60_000_000n + BigInt(r),
+    version: repo.created_at,
+    repository_id: repo.id,
+    name: "CI",
+    path: ".github/workflows/ci.yml",
+    state: "active",
+    created_at: repo.created_at,
+    updated_at: repo.created_at,
+  }));
+  const organization_projects = [
+    {
+      id: demoProjectId,
+      version: created,
+      organization: org,
+      number: 1n,
+      title: "Engineering backlog",
+      description: "Work across teams.",
+      public: false,
+      closed_at: null,
+      deleted_at: null,
+      created_at: created,
+      updated_at: created,
+    },
+  ];
+  const project_fields = [
+    {
+      id: demoProjectId + 1n,
+      version: created,
+      project_id: demoProjectId,
+      name: "Status",
+      data_type: "single_select",
+      options: '[{"id":"todo","name":"Todo"},{"id":"done","name":"Done"}]',
+      created_at: created,
+      updated_at: created,
+    },
+  ];
+  return {
+    repositories: rows,
+    labels,
+    milestones,
+    branches,
+    tags,
+    workflow_definitions,
+    organization_projects,
+    project_fields,
+  };
 };

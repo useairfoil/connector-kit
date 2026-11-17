@@ -2,6 +2,7 @@ import { ConnectorApp, Demo, RuntimeConfig } from "@useairfoil/connector-kit";
 import { Command } from "effect/cli";
 
 import {
+  CohortRetentionSchema,
   DailyOverviewSchema,
   DeviceSchema,
   EcommerceItemSchema,
@@ -9,7 +10,10 @@ import {
   LandingPageSchema,
   LocationSchema,
   PageSchema,
+  PaidCampaignSchema,
+  StreamScreenSchema,
   TrafficSourceSchema,
+  TransactionSchema,
   UserAcquisitionSchema,
 } from "../schemas/reports";
 import { dayRows } from "./reports";
@@ -32,6 +36,14 @@ export const demo = Demo.define({
       Demo.table({ name: "locations", rowSchema: LocationSchema, version: "version" }),
       Demo.table({ name: "devices", rowSchema: DeviceSchema, version: "version" }),
       Demo.table({ name: "ecommerce_items", rowSchema: EcommerceItemSchema, version: "version" }),
+      Demo.table({ name: "transactions", rowSchema: TransactionSchema, version: "version" }),
+      Demo.table({ name: "paid_campaigns", rowSchema: PaidCampaignSchema, version: "version" }),
+      Demo.table({
+        name: "cohort_retention",
+        rowSchema: CohortRetentionSchema,
+        version: "version",
+      }),
+      Demo.table({ name: "stream_screens", rowSchema: StreamScreenSchema, version: "version" }),
     ],
     rows: dayRows,
     // Two years of days, the same as the default GA_START_DATE.

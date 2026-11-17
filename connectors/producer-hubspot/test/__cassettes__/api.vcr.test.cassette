@@ -9739,6 +9739,234 @@
               "x-hubspot-ratelimit-secondly-remaining": "17"
             }
           }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\"},\"method\":\"GET\",\"url\":\"https://api.hubapi.com/crm/properties/2026-09/contracts\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.hubapi.com/crm/properties/2026-09/contracts",
+            "headers": {
+              "accept": "application/json"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"correlationId\":\"01a1e657-7f66-7a09-a415-aeb57f044ceb\",\"message\":\"You do not have permissions to view_schema object type ObjectTypeId{metaTypeId=0, innerId=721} in portal 247662950 (requires one of [contracts-read, contracts-access])\",\"status\":\"error\"}",
+            "headers": {
+              "access-control-allow-credentials": "false",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b6cfd9b6a3af-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json;charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:50:56 GMT",
+              "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+              "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=au2H3%2FtyMZBpW1PikV42oghrszHm221caj50DnuM2PFB3uLd3F8augJPI5iwykvY9ssXVgNqJ%2FAGTdXxjYNzTqtTL5BuupnvaCgWBjfodbNKIzYpeLLlF7RBBeJHlWmT\"}]}",
+              "server": "cloudflare",
+              "server-timing": "hcid;desc=\"01a1e657-7f66-7a09-a415-aeb57f044ceb\", cfr;desc=\"a5b9b6d15e8e795d-SEA\"",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+              "transfer-encoding": "chunked",
+              "vary": "origin",
+              "x-content-type-options": "nosniff",
+              "x-hubspot-correlation-id": "01a1e657-7f66-7a09-a415-aeb57f044ceb",
+              "x-hubspot-ratelimit-daily": "1000000",
+              "x-hubspot-ratelimit-daily-remaining": "999762",
+              "x-hubspot-ratelimit-interval-milliseconds": "10000",
+              "x-hubspot-ratelimit-max": "190",
+              "x-hubspot-ratelimit-remaining": "189",
+              "x-hubspot-ratelimit-secondly": "19",
+              "x-hubspot-ratelimit-secondly-remaining": "18"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\"},\"method\":\"GET\",\"url\":\"https://api.hubapi.com/crm/properties/2026-09/projects\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.hubapi.com/crm/properties/2026-09/projects",
+            "headers": {
+              "accept": "application/json"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"correlationId\":\"01a1e657-81c7-706e-8e06-1907b4487741\",\"message\":\"You do not have permissions to view_schema object type ObjectTypeId{metaTypeId=0, innerId=970} in portal 247662950 (requires one of [project-object-read, project-object-access])\",\"status\":\"error\"}",
+            "headers": {
+              "access-control-allow-credentials": "false",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b6d3ba83a3af-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json;charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:50:57 GMT",
+              "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+              "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Ynh94xMgqPBzOclSs57tm7MqWd2PllPPOkfAiyd2qISi0Rm7074yBZHGkOsLfPgAddjupvqScSpsqSsE5cvj5v%2BQ1655xI3FPqaix%2BqE8cKBjTPYE9dfYEMIAaJWRhAz\"}]}",
+              "server": "cloudflare",
+              "server-timing": "hcid;desc=\"01a1e657-81c7-706e-8e06-1907b4487741\", cfr;desc=\"a5b9b6d52ec1795d-SEA\"",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+              "transfer-encoding": "chunked",
+              "vary": "origin",
+              "x-content-type-options": "nosniff",
+              "x-hubspot-correlation-id": "01a1e657-81c7-706e-8e06-1907b4487741",
+              "x-hubspot-ratelimit-daily": "1000000",
+              "x-hubspot-ratelimit-daily-remaining": "999761",
+              "x-hubspot-ratelimit-interval-milliseconds": "10000",
+              "x-hubspot-ratelimit-max": "190",
+              "x-hubspot-ratelimit-remaining": "188",
+              "x-hubspot-ratelimit-secondly": "19",
+              "x-hubspot-ratelimit-secondly-remaining": "18"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\"},\"method\":\"GET\",\"url\":\"https://api.hubapi.com/crm/properties/2026-09/appointments\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.hubapi.com/crm/properties/2026-09/appointments",
+            "headers": {
+              "accept": "application/json"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"correlationId\":\"01a1e657-83fe-728f-b49b-7ced12447c74\",\"message\":\"You do not have permissions to view_schema object type ObjectTypeId{metaTypeId=0, innerId=421} in portal 247662950 (requires one of [appointments-read, appointments-access])\",\"status\":\"error\"}",
+            "headers": {
+              "access-control-allow-credentials": "false",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b6d76b5ba3af-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json;charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:50:57 GMT",
+              "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+              "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=dOOEUOA5neG6PKmIksiCHv1ORyrriU07OoEpUlflBHB6RpCt5hqxS1lODz%2F%2Fhp%2FRyIhkQq8TlQvzk1EDsfvNRjaekMuYJj3RJh78z%2FwigQaVGFXTPcFMPfbtamo3ylvg\"}]}",
+              "server": "cloudflare",
+              "server-timing": "hcid;desc=\"01a1e657-83fe-728f-b49b-7ced12447c74\", cfr;desc=\"a5b9b6d8cef9795d-SEA\"",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+              "transfer-encoding": "chunked",
+              "vary": "origin",
+              "x-content-type-options": "nosniff",
+              "x-hubspot-correlation-id": "01a1e657-83fe-728f-b49b-7ced12447c74",
+              "x-hubspot-ratelimit-daily": "1000000",
+              "x-hubspot-ratelimit-daily-remaining": "999760",
+              "x-hubspot-ratelimit-interval-milliseconds": "10000",
+              "x-hubspot-ratelimit-max": "190",
+              "x-hubspot-ratelimit-remaining": "187",
+              "x-hubspot-ratelimit-secondly": "19",
+              "x-hubspot-ratelimit-secondly-remaining": "18"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\"},\"method\":\"GET\",\"url\":\"https://api.hubapi.com/crm/properties/2026-09/courses\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.hubapi.com/crm/properties/2026-09/courses",
+            "headers": {
+              "accept": "application/json"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"correlationId\":\"01a1e657-860d-705c-8ff0-2e477c0def50\",\"message\":\"You do not have permissions to view_schema object type ObjectTypeId{metaTypeId=0, innerId=410} in portal 247662950 (requires one of [courses-read, courses-access])\",\"status\":\"error\"}",
+            "headers": {
+              "access-control-allow-credentials": "false",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b6dabc28a3af-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json;charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:50:58 GMT",
+              "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+              "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=hKKTrC3uLHVo6ZdJWssZzu3%2FI8hgBTGEdLGC%2FC8w1Y%2FPbV7ZLVhdghFfN0kqVgzIy8yhXp5066njHhxnTN8OWtE6StlORBK0tXf%2FIy2eVP31JNlJ0lopAmejikmksIP7\"}]}",
+              "server": "cloudflare",
+              "server-timing": "hcid;desc=\"01a1e657-860d-705c-8ff0-2e477c0def50\", cfr;desc=\"a5b9b6dc1f20795d-SEA\"",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+              "transfer-encoding": "chunked",
+              "vary": "origin",
+              "x-content-type-options": "nosniff",
+              "x-hubspot-correlation-id": "01a1e657-860d-705c-8ff0-2e477c0def50",
+              "x-hubspot-ratelimit-daily": "1000000",
+              "x-hubspot-ratelimit-daily-remaining": "999759",
+              "x-hubspot-ratelimit-interval-milliseconds": "10000",
+              "x-hubspot-ratelimit-max": "190",
+              "x-hubspot-ratelimit-remaining": "186",
+              "x-hubspot-ratelimit-secondly": "19",
+              "x-hubspot-ratelimit-secondly-remaining": "18"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\"},\"method\":\"GET\",\"url\":\"https://api.hubapi.com/crm/properties/2026-09/listings\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.hubapi.com/crm/properties/2026-09/listings",
+            "headers": {
+              "accept": "application/json"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"correlationId\":\"01a1e657-8854-74a6-a499-56c1db0e91d6\",\"message\":\"You do not have permissions to view_schema object type ObjectTypeId{metaTypeId=0, innerId=420} in portal 247662950 (requires one of [listings-read, listings-access])\",\"status\":\"error\"}",
+            "headers": {
+              "access-control-allow-credentials": "false",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b6de4d2ba3af-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json;charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:50:58 GMT",
+              "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+              "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=ieODJnGBlKYUBq8Zd0juoYsldINMbG5pwLnR6x3qfHfcK1ZuKfk6mzSlUbL0XkNrq3y4urNBKUWWN5oQMRH1cPKxjwknA0HQ5rqIxjRKl1lRK1bxW3b1cGtRXEPwpgsw\"}]}",
+              "server": "cloudflare",
+              "server-timing": "hcid;desc=\"01a1e657-8854-74a6-a499-56c1db0e91d6\", cfr;desc=\"a5b9b6dfaf60795d-SEA\"",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+              "transfer-encoding": "chunked",
+              "vary": "origin",
+              "x-content-type-options": "nosniff",
+              "x-hubspot-correlation-id": "01a1e657-8854-74a6-a499-56c1db0e91d6",
+              "x-hubspot-ratelimit-daily": "1000000",
+              "x-hubspot-ratelimit-daily-remaining": "999758",
+              "x-hubspot-ratelimit-interval-milliseconds": "10000",
+              "x-hubspot-ratelimit-max": "190",
+              "x-hubspot-ratelimit-remaining": "185",
+              "x-hubspot-ratelimit-secondly": "19",
+              "x-hubspot-ratelimit-secondly-remaining": "18"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\"},\"method\":\"GET\",\"url\":\"https://api.hubapi.com/crm/properties/2026-09/services\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.hubapi.com/crm/properties/2026-09/services",
+            "headers": {
+              "accept": "application/json"
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": "{\"correlationId\":\"01a1e657-8a6d-7315-9098-af0780c3f5f3\",\"message\":\"You do not have permissions to view_schema object type ObjectTypeId{legacyObjectType=SERVICE} in portal 247662950 (requires one of [services-object-read, services-object-access])\",\"status\":\"error\"}",
+            "headers": {
+              "access-control-allow-credentials": "false",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b6e1be21a3af-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json;charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:50:59 GMT",
+              "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+              "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=xjxINRU%2Bnx9o5qaHidYmwHq9GvxUOPLAc%2BcVzyikaVqA6Yxh5CJ5VAiOkTFr66KY1pg2lZw5VTvVj3UF22teVYmzHm42QUYvv5oNPwHEChZk3rw5W3OczIVd3NqR6Uci\"}]}",
+              "server": "cloudflare",
+              "server-timing": "hcid;desc=\"01a1e657-8a6d-7315-9098-af0780c3f5f3\", cfr;desc=\"a5b9b6e31f89795d-SEA\"",
+              "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+              "transfer-encoding": "chunked",
+              "vary": "origin",
+              "x-content-type-options": "nosniff",
+              "x-hubspot-correlation-id": "01a1e657-8a6d-7315-9098-af0780c3f5f3",
+              "x-hubspot-ratelimit-daily": "1000000",
+              "x-hubspot-ratelimit-daily-remaining": "999757",
+              "x-hubspot-ratelimit-interval-milliseconds": "10000",
+              "x-hubspot-ratelimit-max": "190",
+              "x-hubspot-ratelimit-remaining": "184",
+              "x-hubspot-ratelimit-secondly": "19",
+              "x-hubspot-ratelimit-secondly-remaining": "18"
+            }
+          }
         }
       }
     }

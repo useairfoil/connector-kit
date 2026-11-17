@@ -12,6 +12,7 @@ import {
   campaignId,
   campaigns,
   clock,
+  datetime,
   day,
   sfid,
   sobject,
@@ -73,6 +74,37 @@ export const accountRows = (index: number, context: Demo.DemoContext) => {
     custom,
   };
 
+  const documentId = sfid("069", index);
+  const versionId = sfid("068", index);
+  add(
+    "content_documents",
+    sobject(documentId, created, created, now, {
+      Title: "Account onboarding guide",
+      FileType: "PDF",
+      OwnerId: userId(owner),
+      LatestPublishedVersionId: versionId,
+    }),
+  );
+  add(
+    "content_versions",
+    sobject(versionId, created, created, now, {
+      ContentDocumentId: documentId,
+      Title: "Account onboarding guide",
+      FileExtension: "pdf",
+      VersionNumber: "1",
+      IsLatest: true,
+      FirstPublishLocationId: accountId,
+    }),
+  );
+  add(
+    "content_notes",
+    sobject(sfid("069", index, 1), created, created, now, {
+      Title: "Kickoff call notes",
+      TextPreview: "Schedule the rollout after the customer's reporting cutover.",
+      CreatedById: userId(owner),
+    }),
+  );
+
   const contacts = contactRows(account);
 
   const main = contacts[0];
@@ -128,6 +160,28 @@ export const accountRows = (index: number, context: Demo.DemoContext) => {
 
   const opportunities = opportunityRows(account, main, campaign);
 
+  const forecastItemId = sfid("0G3", index);
+  add(
+    "forecasting_items",
+    sobject(forecastItemId, created, created, now, {
+      OwnerId: userId(owner),
+      ForecastCategoryName: "Pipeline",
+      ForecastAmount: 24_000,
+    }),
+  );
+  const forecastOpportunity = opportunities[0];
+  if (forecastOpportunity) {
+    add(
+      "forecasting_facts",
+      sobject(sfid("0G4", index), created, created, now, {
+        ForecastingItemId: forecastItemId,
+        OpportunityId: forecastOpportunity.id,
+        OwnerId: userId(owner),
+        ForecastCategoryName: "Pipeline",
+      }),
+    );
+  }
+
   const won = opportunities.find((opportunity) => opportunity.stage === 5 && opportunity.closed);
 
   contractRows(account, main, opportunities, won);
@@ -161,5 +215,24 @@ export const accountRows = (index: number, context: Demo.DemoContext) => {
     }),
   );
 
-  return { ...rows, custom_objects: custom };
+  return {
+    ...rows,
+    custom_objects: custom,
+    content_document_links: [
+      {
+        id: documentId,
+        version: now,
+        links: [
+          {
+            Id: sfid("06A", index),
+            ContentDocumentId: documentId,
+            LinkedEntityId: accountId,
+            ShareType: "V",
+            Visibility: "AllUsers",
+            SystemModstamp: datetime(created),
+          },
+        ],
+      },
+    ],
+  };
 };

@@ -1,38 +1,33 @@
 # Shopify producer
 
-## Current scope
+- Webhooks: `POST /webhooks/shopify`, for products, customers, orders, refunds
+  and carts (webhook only). The rest is polled.
+- API version: in the GraphQL URL, `SHOPIFY_API_VERSION` in
+  `src/api/graphql.ts`. [Changelog](https://shopify.dev/changelog).
 
-- Backfill resources: `products`, `customers`, `orders`, `refunds`
-- Webhook-only resource: `carts`
-- Backfill: Shopify Admin GraphQL
-- Webhooks: `POST /webhooks/shopify`
+## Rules
 
-## Shopify rules
+- Handle GraphQL errors even when HTTP is OK. Respect `Retry-After` and
+  throttle data.
+- Customer webhooks leave fields out, so every customer topic reads the
+  customer again.
+- Product webhook can leave out variants or inventory links. Then read the
+  product again.
+- `refunds/create` comes before settlement. So a refund transaction webhook
+  reads the order's refunds again.
+- Without `read_all_orders`, only the last 60 days of orders. A missing order
+  gives no rows.
+- Order child tables read only orders updated since the last run. A child
+  change moves the order `updated_at`.
+- Keep values the same between GraphQL and webhooks. Skip `shipping_refund`
+  order adjustments, GraphQL shows them as refund shipping lines.
+- `shopifyPaymentsAccount` is null when the store doesn't use Shopify Payments.
 
-- The API version is part of the GraphQL URL.
-- Pagination uses `pageInfo.hasNextPage` and `endCursor`.
-- Handle GraphQL errors even when HTTP succeeds.
-- Respect `Retry-After` and Shopify throttle data.
-- Verify `X-Shopify-Hmac-SHA256` against the raw body.
+## Versions and deletes
 
-Keep nested variant pagination deterministic. Use provider timestamps for row
-versions. Emit product, customer, and order deletes as `_deleted: true`,
-versioned by `X-Shopify-Triggered-At`. Shopify deletes are permanent, so other
-rows leave `_deleted` out. An update sent with a delete can have a later time
-and must not undo it.
-
-Map order and refund webhooks directly. Do not refetch: without
-`read_all_orders`, a missing order may only be outside the 60-day window.
-Customer webhooks leave fields out, so every customer topic reads the customer
-again.
-Normalize values shared by GraphQL and webhooks. Skip `shipping_refund` order
-adjustments, which GraphQL shows as refund shipping lines.
-
-Refunds use `processedAt` for row versions.
-
-When adding a resource, check its Admin API scope, GraphQL cost, pagination,
-webhook topics, version field, and delete behavior. Add a read-only config
-check. Cover backfill and webhooks when both are supported.
-
-Check the [Shopify changelog](https://shopify.dev/changelog) before changing
-`SHOPIFY_API_VERSION` in `src/api/graphql.ts` or the schemas.
+- Use Shopify timestamps for versions where there is one.
+- Refunds: `processedAt` in backfill, webhook time otherwise.
+- Product, customer and order deletes send `_deleted: true`, versioned by
+  `X-Shopify-Triggered-At`. Shopify deletes are permanent, so other rows leave
+  `_deleted` out. An update sent with a delete can have a later time, it must
+  not undo the delete.

@@ -3,9 +3,15 @@ import { Effect, Option, Schema, Stream } from "effect";
 
 import type { LinearClientService } from "../client/client";
 
-import { type IssueHistory, IssueHistoryObjectSchema, IssueHistorySchema } from "../schemas/issues";
+import {
+  type IssueHistory,
+  IssueHistoryObjectSchema,
+  IssueHistorySchema,
+  IssueStateSpanObjectSchema,
+  IssueStateSpanSchema,
+} from "../schemas/issues";
 import { Timestamp } from "../schemas/shared";
-import { backfillList, changesList, checkList, listSpec } from "./pages";
+import { backfillList, changesList, checkList, listSpec, nestedSpec } from "./pages";
 
 const historyFields = `
   id created_at: createdAt updated_at: updatedAt archived_at: archivedAt actor_id: actorId
@@ -116,5 +122,26 @@ export const makeIssueHistory = (client: LinearClientService) => {
             ),
           ),
     },
+  });
+};
+
+/** Spans have no update time, so they use the issue's. */
+export const makeIssueStateSpans = (client: LinearClientService) => {
+  const spec = nestedSpec(client, {
+    parents: "issues",
+    parent: "issue",
+    connection: "stateHistory",
+    fields: "id state_id: stateId started_at: startedAt ended_at: endedAt",
+    item: IssueStateSpanObjectSchema,
+    row: (span, issue) => ({ ...span, issue_id: issue.id, version: issue.updated_at }),
+  });
+  return Resource.entity({
+    name: "issue_state_spans",
+    rowSchema: IssueStateSpanSchema,
+    version: "version",
+
+    check: checkList(client, spec),
+    backfill: backfillList(client, spec),
+    changes: changesList(client, spec),
   });
 };

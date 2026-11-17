@@ -5,6 +5,8 @@ import type { LinearClientService } from "../client/client";
 import {
   IssueToReleaseObjectSchema,
   IssueToReleaseSchema,
+  ReleaseHistoryObjectSchema,
+  ReleaseHistorySchema,
   ReleaseNoteObjectSchema,
   ReleaseNoteSchema,
   ReleaseObjectSchema,
@@ -14,7 +16,15 @@ import {
   ReleaseStageObjectSchema,
   ReleaseStageSchema,
 } from "../schemas/releases";
-import { backfillList, changesList, checkList, listSources, listSpec, rowsOf } from "./pages";
+import {
+  backfillList,
+  changesList,
+  checkList,
+  listSources,
+  listSpec,
+  nestedSpec,
+  rowsOf,
+} from "./pages";
 
 const releaseSpec = listSpec({
   connection: "releases",
@@ -112,3 +122,23 @@ export const makeIssueToReleases = (client: LinearClientService) =>
     backfill: backfillList(client, issueToReleaseSpec),
     changes: changesList(client, issueToReleaseSpec),
   });
+
+export const makeReleaseHistory = (client: LinearClientService) => {
+  const spec = nestedSpec(client, {
+    parents: "releases",
+    parent: "release",
+    connection: "history",
+    fields: "id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries",
+    item: ReleaseHistoryObjectSchema,
+    row: (entry, release) => ({ ...entry, release_id: release.id, version: entry.updated_at }),
+  });
+  return Resource.entity({
+    name: "release_history",
+    rowSchema: ReleaseHistorySchema,
+    version: "version",
+
+    check: checkList(client, spec),
+    backfill: backfillList(client, spec),
+    changes: changesList(client, spec),
+  });
+};

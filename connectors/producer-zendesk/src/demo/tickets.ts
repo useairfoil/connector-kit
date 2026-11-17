@@ -16,6 +16,7 @@ import {
   statusIds,
   subjects,
   surveyId,
+  talkLineId,
   vipGroup,
 } from "./shared";
 
@@ -153,24 +154,94 @@ export const ticketRows = (customer: CustomerGroup, n: number): Date => {
   if (closed) history.push([closed, "status", "closed", "solved"]);
 
   history.forEach(([time, field, value, previous], h) => {
+    const id = 41_000_000_000n + ticketId * 20n + BigInt(h);
+    // Zendesk itself closes solved tickets after four days.
+    const updater =
+      field === "status" && value === "closed"
+        ? -1n
+        : time === created
+          ? userId
+          : (assignee ?? userId);
+    const eventType = previous === null && time === created ? "Create" : "Change";
+
     rows.ticket_field_history.push({
-      id: 41_000_000_000n + ticketId * 20n + BigInt(h),
+      id,
       version: time,
       ticket_id: ticketId,
-      // Zendesk itself closes solved tickets after four days.
-      updater_id:
-        field === "status" && value === "closed"
-          ? -1n
-          : time === created
-            ? userId
-            : (assignee ?? userId),
-      event_type: previous === null && time === created ? "Create" : "Change",
+      updater_id: updater,
+      event_type: eventType,
       field_name: field,
       value,
       previous_value: previous,
       via: field === "status" && value === "closed" ? "Rule" : "Web form",
     });
+
+    // One audit per change keeps it simple. Zendesk groups changes made together.
+    rows.ticket_audits.push({
+      id: 43_000_000_000n + ticketId * 20n + BigInt(h),
+      version: time,
+      ticket_id: ticketId,
+      author_id: updater,
+      created_at: time,
+      events: [
+        {
+          id,
+          type: eventType,
+          field_name: field,
+          value,
+          previous_value: previous,
+        },
+      ],
+    });
   });
+
+  if (assignee && firstReply && channel === "api" && area === "login") {
+    const callId = 44_000_000_000n + ticketId;
+    const talkTime = BigInt(faker.number.int({ min: 60, max: 900 }));
+    const waitTime = BigInt(faker.number.int({ min: 5, max: 120 }));
+    const ended = new Date(firstReply.getTime() + Number(talkTime + waitTime) * 1000);
+    const times = { completion_status: "completed", created_at: firstReply, updated_at: ended };
+
+    rows.talk_calls.push({
+      id: callId,
+      version: ended,
+      ...times,
+      ticket_id: ticketId,
+      agent_id: assignee,
+      customer_id: userId,
+      line_id: talkLineId,
+      direction: "inbound",
+      duration: talkTime + waitTime,
+      talk_time: talkTime,
+      wait_time: waitTime,
+      voicemail: false,
+    });
+
+    rows.talk_legs.push(
+      {
+        id: 45_000_000_000n + ticketId * 2n,
+        version: ended,
+        ...times,
+        call_id: callId,
+        agent_id: null,
+        user_id: userId,
+        type: "customer",
+        duration: talkTime + waitTime,
+        talk_time: talkTime,
+      },
+      {
+        id: 45_000_000_000n + ticketId * 2n + 1n,
+        version: ended,
+        ...times,
+        call_id: callId,
+        agent_id: assignee,
+        user_id: assignee,
+        type: "agent",
+        duration: talkTime,
+        talk_time: talkTime,
+      },
+    );
+  }
 
   const metric = (m: number, name: string, type: string, time: Date, sla?: bigint) => {
     rows.ticket_metric_events.push({

@@ -70,6 +70,12 @@ const splitDay = <A>(
 export const dayRows = (index: number, { faker, now }: Demo.DemoContext): Rows => {
   const rows: Rows = {
     ads_insights: [],
+    account_insights_daily: [],
+    account_insights_monthly: [],
+    campaign_insights_daily: [],
+    campaign_insights_monthly: [],
+    ad_set_insights_daily: [],
+    ad_set_insights_monthly: [],
     ads_insights_age_gender: [],
     ads_insights_country: [],
     ads_insights_platform: [],
@@ -211,6 +217,65 @@ export const dayRows = (index: number, { faker, now }: Demo.DemoContext): Rows =
         }
       });
     });
+  }
+
+  const report = (level: "account" | "campaign" | "adset") =>
+    Object.entries(
+      Object.groupBy(
+        rows.ads_insights,
+        (row) =>
+          (level === "campaign"
+            ? row.campaign_id
+            : level === "adset"
+              ? row.adset_id
+              : row.account_id) ?? row.account_id,
+      ),
+    ).flatMap(([entity, group]) => {
+      const first = group?.[0];
+      if (!first) return [];
+      const impressions = group.reduce((total, row) => total + (row.impressions ?? 0n), 0n);
+      const reach = (impressions * 2n) / 3n;
+      return [
+        {
+          id: JSON.stringify([first.account_id, entity, date]),
+          version: now,
+          account_id: first.account_id,
+          account_currency: first.account_currency,
+          campaign_id: level === "account" ? undefined : first.campaign_id,
+          adset_id: level === "adset" ? first.adset_id : undefined,
+          date_start: date,
+          date_stop: date,
+          impressions,
+          reach,
+          frequency: reach > 0n ? Number(impressions) / Number(reach) : 0,
+          unique_clicks: (group.reduce((sum, row) => sum + (row.clicks ?? 0n), 0n) * 3n) / 4n,
+          spend: group.reduce((sum, row) => sum + (row.spend ?? 0), 0),
+        },
+      ];
+    });
+  rows.account_insights_daily.push(...report("account"));
+  rows.campaign_insights_daily.push(...report("campaign"));
+  rows.ad_set_insights_daily.push(...report("adset"));
+  if (index === 0) {
+    const month = date.slice(0, 7) + "-01";
+    const monthly = (level: "account" | "campaign" | "adset") =>
+      report(level).map((row) => ({
+        ...row,
+        id: JSON.stringify([
+          row.account_id,
+          row.adset_id ?? row.campaign_id ?? row.account_id,
+          month,
+        ]),
+        date_start: month,
+        impressions: row.impressions * 16n,
+        reach: row.reach * 12n,
+        frequency: (row.frequency * 4) / 3,
+        unique_clicks: row.unique_clicks * 12n,
+        spend: row.spend * 16,
+      }));
+    rows.account_insights_monthly.push(...monthly("account"));
+    rows.campaign_insights_monthly.push(...monthly("campaign"));
+    rows.ad_set_insights_monthly.push(...monthly("adset"));
   }
 
   return rows;

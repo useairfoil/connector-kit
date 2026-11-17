@@ -75,5 +75,13 @@ export const manifest = Manifest.define({
     { name: "release_pipelines", capabilities },
     { name: "release_stages", capabilities },
     { name: "issue_to_releases", capabilities },
+    { name: "issue_state_spans", capabilities },
+    { name: "project_history", capabilities },
+    { name: "project_external_links", capabilities },
+    { name: "initiative_history", capabilities },
+    { name: "release_history", capabilities },
+    { name: "templates", capabilities },
+    { name: "custom_views", capabilities },
+    { name: "team_sla_rules", capabilities },
   ],
 });

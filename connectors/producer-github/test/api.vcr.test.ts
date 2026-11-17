@@ -93,7 +93,24 @@ describe.skipIf(!canRun)("GitHub API (vcr)", () => {
     Effect.gen(function* () {
       const connector = yield* GitHubConnector.GitHubConnector;
       const resources = connector.resources.filter(
-        ({ name }) => name !== "labels" && name !== "milestones",
+        ({ name }) =>
+          ![
+            "labels",
+            "milestones",
+            "pull_request_files",
+            "issue_timeline",
+            "deployments",
+            "deployment_statuses",
+            "branches",
+            "tags",
+            "workflow_definitions",
+            "workflow_artifacts",
+            "workflow_attempts",
+            "issue_links",
+            "organization_projects",
+            "project_fields",
+            "project_items",
+          ].includes(name),
       );
       const check = yield* ConnectorApp.check(GitHubConnector.GitHubConnector, connectorLayer, {
         resources: resources.map((resource) => resource.name),
@@ -173,18 +190,18 @@ describe.skipIf(!canRun)("GitHub API (vcr)", () => {
           "results": {
             "check_runs": {
               "backfillPages": 1,
-              "backfillRows": 2,
-              "changedRows": 2,
+              "backfillRows": 3,
+              "changedRows": 3,
             },
             "commit_statuses": {
               "backfillPages": 1,
-              "backfillRows": 2,
-              "changedRows": 2,
+              "backfillRows": 3,
+              "changedRows": 3,
             },
             "commits": {
               "backfillPages": 1,
-              "backfillRows": 2,
-              "changedRows": 2,
+              "backfillRows": 3,
+              "changedRows": 3,
             },
             "issue_comments": {
               "backfillPages": 1,

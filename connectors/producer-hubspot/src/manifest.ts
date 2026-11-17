@@ -65,6 +65,17 @@ const resources = [
   { name: "properties", capabilities: ["backfill", "changes"] },
   { name: "teams", capabilities: ["backfill", "changes"] },
   { name: "lists", capabilities: ["backfill", "changes"] },
+  { name: "projects", capabilities: ["backfill", "changes"] },
+  { name: "appointments", capabilities: ["backfill", "changes"] },
+  { name: "courses", capabilities: ["backfill", "changes"] },
+  { name: "listings", capabilities: ["backfill", "changes"] },
+  { name: "services", capabilities: ["backfill", "changes"] },
+  { name: "commerce_links", capabilities: ["backfill", "changes"] },
+  { name: "peer_links", capabilities: ["backfill", "changes"] },
+  { name: "segment_memberships", capabilities: ["backfill", "changes"] },
+  { name: "marketing_events", capabilities: ["backfill", "changes"] },
+  { name: "marketing_event_participation", capabilities: ["backfill", "changes"] },
+  { name: "deal_property_history", capabilities: ["backfill", "changes"] },
 ] as const;
 
 export const manifest = Manifest.define({

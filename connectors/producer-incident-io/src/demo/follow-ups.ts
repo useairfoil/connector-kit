@@ -44,6 +44,12 @@ export const followUpRows = (
   if (resolved && severity < 2) {
     const docCreated = later(resolved, hour, day);
 
+    rows.postmortem_contents.push({
+      id: ulid("PMD", index),
+      version: docCreated,
+      incident_id: id,
+      markdown: `# ${name}\n\nThe team restored service and agreed on follow-ups.`,
+    });
     rows.postmortem_documents.push({
       id: ulid("PMD", index),
       version: later(docCreated, hour, 5 * day),

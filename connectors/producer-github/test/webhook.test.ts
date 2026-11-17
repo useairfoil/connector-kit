@@ -253,7 +253,7 @@ describe("webhook", () => {
                 "assignees": [],
                 "body": "",
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "labels": [],
                 "requested_reviewers": [],
                 "resource": "pull_requests",
@@ -337,7 +337,7 @@ describe("webhook", () => {
             "rows": [
               {
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "labels": [],
                 "requested_reviewers": [
                   {
@@ -591,7 +591,7 @@ describe("webhook", () => {
             "rows": [
               {
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "resource": "pull_requests",
                 "state": "closed",
                 "version": "2026-10-05T22:05:25.000Z",
@@ -610,7 +610,7 @@ describe("webhook", () => {
             "rows": [
               {
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "resource": "pull_requests",
                 "state": "closed",
                 "version": "2026-10-05T22:05:25.000Z",

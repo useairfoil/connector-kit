@@ -33,6 +33,14 @@ const dayIn = (zone: DateTime.TimeZone, time: DateTime.DateTime) =>
 const minDay = (a: string, b: string) => (a < b ? a : b);
 const maxDay = (a: string, b: string) => (a > b ? a : b);
 
+const monthStart = (day: string) =>
+  DateTime.formatIsoDateUtc(DateTime.startOf(DateTime.makeUnsafe(day), "month"));
+
+const periodEnd = (day: string, end: string, monthly: boolean | undefined) =>
+  monthly
+    ? minDay(DateTime.formatIsoDateUtc(DateTime.endOf(DateTime.makeUnsafe(day), "month")), end)
+    : day;
+
 /**
  * The first day to read. Meta keeps 37 months of insights, so older days
  * move up to the oldest one it allows.
@@ -93,12 +101,11 @@ const ChangesCursorCodec = Schema.Union([
   Schema.DateTimeUtcFromString,
 ]);
 
-/** The page after this one: more of the day, or the next day. */
-const nextInDay = (at: Position, next: Option.Option<string>, end: string) =>
+const nextInDay = (at: Position, next: Option.Option<string>, until: string, end: string) =>
   Option.match(next, {
     onSome: (after) => Option.some({ account: at.account, day: at.day, after }),
     onNone: () =>
-      at.day < end ? Option.some({ account: at.account, day: addDays(at.day, 1) }) : Option.none(),
+      until < end ? Option.some({ account: at.account, day: addDays(until, 1) }) : Option.none(),
   });
 
 export const insightsCheck = <A extends InsightsItem, Row extends object>(
@@ -156,11 +163,15 @@ export const insightsBackfill = <A extends InsightsItem, Row extends object>(
             ? { rows: [], next: yield* firstOf(0) }
             : yield* Effect.gen(function* () {
                 const end = yield* lastDay(position.account);
+                const until = periodEnd(position.day, end, spec.monthly);
                 const page =
                   position.day > end
                     ? { rows: [], next: Option.none<string>() }
-                    : yield* readDay(context.client, spec, position.account, position);
-                const inDay = nextInDay(position, page.next, end);
+                    : yield* readDay(context.client, spec, position.account, {
+                        ...position,
+                        until,
+                      });
+                const inDay = nextInDay(position, page.next, until, end);
 
                 return {
                   rows: page.rows,
@@ -222,10 +233,15 @@ export const insightsChanges = <A extends InsightsItem, Row extends object>(
             if (account === undefined) return Option.none<Window>();
 
             const end = yield* today(account);
-            const through =
-              state.through[account] ?? addDays(yield* startDay(context.config, end), -1);
+            const start = yield* startDay(context.config, end);
+            const through = state.through[account] ?? addDays(start, -1);
             const day = minDay(addDays(through, 1), addDays(end, 1 - context.config.lookbackDays));
-            return Option.some({ account, day, end });
+            // Monthly rows are keyed by their first day, so read whole months.
+            return Option.some({
+              account,
+              day: spec.monthly ? maxDay(monthStart(day), start) : day,
+              end,
+            });
           });
 
         // A run split on an account removed from the config starts over.
@@ -236,8 +252,9 @@ export const insightsChanges = <A extends InsightsItem, Row extends object>(
         if (pending === undefined) return { rows: [], cursor: String(cursor) };
         const account = pending.account;
 
-        const page = yield* readDay(context.client, spec, account, pending);
-        const inDay = nextInDay(pending, page.next, pending.end);
+        const until = periodEnd(pending.day, pending.end, spec.monthly);
+        const page = yield* readDay(context.client, spec, account, { ...pending, until });
+        const inDay = nextInDay(pending, page.next, until, pending.end);
         const next: ChangesCursor = Option.isSome(inDay)
           ? { through: state.through, pending: { ...inDay.value, end: pending.end } }
           : yield* Effect.gen(function* () {

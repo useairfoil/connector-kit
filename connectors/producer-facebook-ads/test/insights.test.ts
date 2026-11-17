@@ -48,6 +48,38 @@ const getResource = (
   });
 
 describe("insights", () => {
+  it.effect("requests native monthly campaign reach and keys it by the campaign", () =>
+    Effect.gen(function* () {
+      const { backfill } = yield* getResource(
+        "campaign_insights_monthly",
+        (_, params) => {
+          expect(params).toMatchObject({ level: "campaign", time_increment: "all_days" });
+          expect(params?.time_range).toBe('{"since":"2026-10-01","until":"2026-10-18"}');
+          return page([
+            {
+              account_id: "1234567890",
+              campaign_id: "campaign-one",
+              date_start: "2026-10-01",
+              date_stop: "2026-10-18",
+              reach: "100",
+              frequency: "2",
+              unique_clicks: "34",
+            },
+          ]);
+        },
+        { FACEBOOK_ADS_START_DATE: "2026-10-01" },
+      );
+      const result = yield* backfill.fetch({ cutoff });
+      expect(result.rows).toMatchObject([
+        {
+          id: JSON.stringify(["1234567890", "campaign-one", "2026-10-01"]),
+          reach: 100n,
+          frequency: 2,
+          unique_clicks: 34n,
+        },
+      ]);
+    }),
+  );
   it.effect("turns insights into rows keyed by account, ad, day, and breakdowns", () =>
     Effect.gen(function* () {
       const { backfill } = yield* getResource("ads_insights_age_gender", () =>

@@ -11,6 +11,9 @@ export const priceSpec: StripeResourceSpec<PriceObject, PriceObject> = {
   path: "prices",
   objectSchema: PriceObjectSchema,
   toRow: Effect.succeed,
+  // Stripe sends `tiers` only when expanded.
+  listParams: [["expand[]", "data.tiers"]],
+  retrieveParams: [["expand[]", "tiers"]],
   eventTypes: webhookEvents.prices,
   deleteEventTypes: ["price.deleted"],
 };

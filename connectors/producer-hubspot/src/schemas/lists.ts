@@ -51,3 +51,39 @@ export const ListObjectSchema = Schema.Struct({
 });
 
 export type ListObject = Schema.Schema.Type<typeof ListObjectSchema>;
+
+export const SegmentMembershipSchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "List ID." })),
+  version,
+  object_type_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Type of the records in the list, such as `0-1`." }),
+  ),
+  filter: Schema.NullOr(Schema.String).pipe(
+    Schema.annotateKey({ description: "List filter tree as JSON. Manual lists have none." }),
+  ),
+  members: Schema.Array(
+    Schema.Struct({
+      record_id: Schema.String.pipe(
+        Schema.annotateKey({ description: "ID of the member record." }),
+      ),
+      membership_timestamp: Schema.optional(Schema.Date).pipe(
+        Schema.annotateKey({ description: "Time the record joined the list." }),
+      ),
+    }),
+  ).pipe(Schema.annotateKey({ description: "Current members of the list." })),
+})
+  .annotate({ description: "List filters and current members." })
+  .pipe(Iceberg.identifier("id"));
+
+export type SegmentMembership = Schema.Schema.Type<typeof SegmentMembershipSchema>;
+
+export const ListFiltersObjectSchema = Schema.Struct({
+  list: Schema.Struct({
+    filterBranch: Schema.optional(Schema.NullOr(Schema.flip(Schema.fromJsonString(Schema.Json)))),
+  }),
+});
+
+export const ListMemberObjectSchema = Schema.Struct({
+  recordId: Schema.String,
+  membershipTimestamp: Schema.optional(Timestamp),
+});

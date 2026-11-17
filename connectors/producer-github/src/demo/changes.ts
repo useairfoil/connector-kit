@@ -31,17 +31,25 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
 
   const rows: Rows = {
     issues: [],
+    issue_timeline: [],
+    issue_links: [],
+    project_items: [],
     pull_requests: [],
     issue_comments: [],
     pull_request_reviews: [],
     pull_request_review_comments: [],
     pull_request_commits: [],
+    pull_request_files: [],
     commits: [],
     check_runs: [],
     commit_statuses: [],
     workflow_runs: [],
+    workflow_attempts: [],
+    workflow_artifacts: [],
     workflow_jobs: [],
     releases: [],
+    deployments: [],
+    deployment_statuses: [],
   };
 
   const r = index % repositories.length;
@@ -137,6 +145,50 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
 
   const prId = 1_500_000_000n + id;
 
+  if (mergedAt) {
+    const deploymentId = 2_400_000_000n + id;
+    const deployed = later(mergedAt, minute, 60 * minute);
+    rows.deployments.push({
+      id: deploymentId,
+      repository_id: repoId,
+      created_at: mergedAt,
+      updated_at: deployed,
+      version: deployed,
+      sha: headSha,
+      ref: "main",
+      environment: "production",
+      description: "Deploy merged changes",
+      task: "deploy",
+    });
+    rows.deployment_statuses.push({
+      id: 2_500_000_000n + id,
+      repository_id: repoId,
+      deployment_id: deploymentId,
+      created_at: deployed,
+      updated_at: deployed,
+      version: deployed,
+      description: "Production deployment finished",
+      state: "success",
+      environment: "production",
+    });
+  }
+
+  const filename = "src/request-handler.ts";
+  rows.pull_request_files.push({
+    key: `${repoId}:${prNumber}:${headSha}:${baseSha}:${filename}`,
+    version: prUpdated,
+    repository_id: repoId,
+    pull_request_number: prNumber,
+    head_sha: headSha,
+    base_sha: baseSha,
+    filename,
+    sha: headSha,
+    status: "modified",
+    additions: 34n,
+    deletions: 12n,
+    changes: 46n,
+    blob_url: `${urlOf(repo)}/blob/${headSha}/${filename}`,
+  });
   rows.pull_requests.push({
     id: prId,
     version: prUpdated,
@@ -153,6 +205,8 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
     labels: [label],
     assignees: [author],
     requested_reviewers: prState === "open" ? [reviewer] : [],
+    requested_teams:
+      prState === "open" ? [{ id: 605_001n, name: "Platform", slug: "platform" }] : [],
     milestone: round === 0 ? milestoneForRepository(r) : null,
     head: { ref: branch, sha: headSha, label: `${org}:${branch}` },
     base: { ref: "main", sha: baseSha, label: `${org}:main` },
@@ -365,6 +419,18 @@ export const changeRows = (index: number, context: Demo.DemoContext): Rows => {
   const issueClosed = fixed && mergedAt ? mergedAt : null;
   const issueId = 1_200_000_000n + id;
 
+  const issueTimelineId = issueId + 1_000_000_000n;
+  rows.issue_timeline.push({
+    key: `${repoId}:${issueNumber}:${issueTimelineId}`,
+    version: opened,
+    repository_id: repoId,
+    issue_number: issueNumber,
+    id: issueTimelineId,
+    event: "labeled",
+    created_at: opened,
+    actor: author,
+    label: { name: label.name },
+  });
   rows.issues.push({
     id: issueId,
     version: new Date(

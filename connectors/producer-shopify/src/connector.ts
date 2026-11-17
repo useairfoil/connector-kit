@@ -29,6 +29,17 @@ import {
   CustomerTagsPayloadSchema,
   CustomerWebhookPayloadSchema,
 } from "./resources/customers/webhook";
+import {
+  makeInventoryItems,
+  makeInventoryLevels,
+  makeInventoryShipments,
+  makeLocations,
+} from "./resources/inventory";
+import {
+  makeFulfillmentOrders,
+  makeFulfillments,
+  makeOrderTransactions,
+} from "./resources/order-children";
 import { OrderSchema } from "./resources/orders/row";
 import {
   fromOrderWebhook,
@@ -49,10 +60,17 @@ import {
   RefundEventSchema,
   RefundWebhookPayloadSchema,
 } from "./resources/refunds/webhook";
+import { makeReturns } from "./resources/returns";
 import { gid } from "./resources/shared";
+import { storefrontReads } from "./resources/storefront-reads";
 import { webhookTopics } from "./webhook-events";
 export { manifest, ShopifyConfigDef } from "./manifest";
 export type { ShopifyConfig } from "./manifest";
+
+const TransactionWebhook = Schema.Struct({
+  order_id: Schema.Number,
+  kind: Schema.String,
+});
 
 const webhookPayloads = {
   [webhookTopics.products_create]: ProductWebhookPayloadSchema,
@@ -73,6 +91,7 @@ const webhookPayloads = {
   [webhookTopics.orders_create]: OrderWebhookPayloadSchema,
   [webhookTopics.orders_updated]: OrderWebhookPayloadSchema,
   [webhookTopics.orders_delete]: OrderDeleteWebhookPayloadSchema,
+  [webhookTopics.order_transactions_create]: TransactionWebhook,
   [webhookTopics.refunds_create]: RefundWebhookPayloadSchema,
 };
 
@@ -139,11 +158,14 @@ const build = Effect.gen(function* () {
         }
 
         const product = payload.payload;
-        if (product.variants.length === product.variant_gids.length) {
+        if (
+          product.variants.length === product.variant_gids.length &&
+          product.variants.every((variant) => variant.inventory_item_id != null)
+        ) {
           return Effect.succeed([fromProductWebhook(product)]);
         }
 
-        // Refetch when Shopify cuts off variants.
+        // The webhook can omit variants or their inventory links.
         const triggeredAt = payload.triggeredAt;
         return Effect.gen(function* () {
           const refetched = yield* api.fetchProductById(product.admin_graphql_api_id);
@@ -199,15 +221,31 @@ const build = Effect.gen(function* () {
   const Refunds = Resource.entity({
     name: "refunds",
     rowSchema: RefundSchema,
-    // Refund webhooks have no updated_at. A later settlement with the same
-    // processedAt may not replace the first row.
-    version: "processedAt",
+    version: "version",
 
     check: api.checkOrdersAccess,
     backfill: backfillPages(api.fetchRefunds),
     webhook: {
-      schema: RefundEventSchema,
-      handler: ({ payload }) => Effect.succeed([fromRefundWebhook(payload)]),
+      schema: Schema.Union([
+        Schema.Struct({
+          action: Schema.Literal("create"),
+          refund: RefundEventSchema,
+          version: Schema.Date,
+        }),
+        Schema.Struct({
+          action: Schema.Literal("settled"),
+          orderId: Schema.String,
+          version: Schema.Date,
+        }),
+      ]),
+      handler: ({ payload }) =>
+        payload.action === "create"
+          ? Effect.succeed([{ ...fromRefundWebhook(payload.refund), version: payload.version }])
+          : api
+              .fetchRefundsForOrder(payload.orderId)
+              .pipe(
+                Effect.map((rows) => rows.map((row) => ({ ...row, version: payload.version }))),
+              ),
     },
   });
 
@@ -226,7 +264,22 @@ const build = Effect.gen(function* () {
   const connector = Connector.define({
     name: "producer-shopify",
     title: "Shopify",
-    resources: [Products, Carts, Customers, Orders, Refunds],
+    resources: [
+      Products,
+      Carts,
+      Customers,
+      Orders,
+      Refunds,
+      makeLocations(api),
+      makeInventoryItems(api),
+      makeInventoryLevels(api),
+      makeOrderTransactions(api),
+      makeFulfillments(api),
+      makeFulfillmentOrders(api),
+      ...storefrontReads(api),
+      makeInventoryShipments(api),
+      ...makeReturns(api),
+    ],
   });
 
   return {
@@ -392,7 +445,22 @@ const build = Effect.gen(function* () {
                 case webhookTopics.refunds_create: {
                   const payload = decode(webhookPayloads[topic]);
                   if (Option.isNone(payload)) return invalid;
-                  yield* to(Refunds, payload.value);
+                  yield* to(Refunds, {
+                    action: "create",
+                    refund: payload.value,
+                    version: triggeredAt,
+                  });
+                  break;
+                }
+                case webhookTopics.order_transactions_create: {
+                  const payload = decode(TransactionWebhook);
+                  if (Option.isNone(payload)) return invalid;
+                  if (payload.value.kind.toLowerCase() !== "refund") break;
+                  yield* to(Refunds, {
+                    action: "settled",
+                    orderId: gid("Order", payload.value.order_id),
+                    version: triggeredAt,
+                  });
                   break;
                 }
                 default:

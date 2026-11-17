@@ -7,6 +7,7 @@ export * as GoogleAnalyticsClient from "./client/client";
 export * as GoogleAnalyticsConnector from "./connector";
 export { manifest } from "./manifest";
 export type {
+  CohortRetention,
   DailyOverview,
   Device,
   EcommerceItem,
@@ -14,10 +15,14 @@ export type {
   LandingPage,
   Location,
   Page,
+  PaidCampaign,
+  StreamScreen,
   TrafficSource,
+  Transaction,
   UserAcquisition,
 } from "./schemas/reports";
 export {
+  CohortRetentionSchema,
   DailyOverviewSchema,
   DeviceSchema,
   EcommerceItemSchema,
@@ -25,6 +30,9 @@ export {
   LandingPageSchema,
   LocationSchema,
   PageSchema,
+  PaidCampaignSchema,
+  StreamScreenSchema,
   TrafficSourceSchema,
+  TransactionSchema,
   UserAcquisitionSchema,
 } from "./schemas/reports";

@@ -4,7 +4,13 @@ import { DateTime, Duration } from "effect";
 
 import type { Comment } from "../schemas/comments";
 import type { CustomerNeed } from "../schemas/customers";
-import type { Attachment, Issue, IssueHistory, IssueRelation } from "../schemas/issues";
+import type {
+  Attachment,
+  Issue,
+  IssueHistory,
+  IssueRelation,
+  IssueStateSpan,
+} from "../schemas/issues";
 import type { IssueToRelease } from "../schemas/releases";
 
 export const hour = Duration.toMillis(Duration.hours(1));
@@ -112,6 +118,7 @@ export const clock = ({ faker, now }: Demo.DemoContext) => {
 export type Rows = {
   readonly issues: Array<Issue>;
   readonly issue_history: Array<IssueHistory>;
+  readonly issue_state_spans: Array<IssueStateSpan>;
   readonly comments: Array<Comment>;
   readonly issue_relations: Array<IssueRelation>;
   readonly attachments: Array<Attachment>;

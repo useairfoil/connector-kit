@@ -10,6 +10,7 @@ import {
 } from "../schemas/customers";
 import { DocumentSchema } from "../schemas/documents";
 import {
+  InitiativeHistorySchema,
   InitiativeLabelSchema,
   InitiativeRelationSchema,
   InitiativeSchema,
@@ -22,8 +23,11 @@ import {
   IssueLabelSchema,
   IssueRelationSchema,
   IssueSchema,
+  IssueStateSpanSchema,
 } from "../schemas/issues";
 import {
+  ProjectExternalLinkSchema,
+  ProjectHistorySchema,
   ProjectLabelSchema,
   ProjectMilestoneSchema,
   ProjectRelationSchema,
@@ -33,16 +37,20 @@ import {
 } from "../schemas/projects";
 import {
   IssueToReleaseSchema,
+  ReleaseHistorySchema,
   ReleaseNoteSchema,
   ReleasePipelineSchema,
   ReleaseSchema,
   ReleaseStageSchema,
 } from "../schemas/releases";
 import {
+  CustomViewSchema,
   CycleSchema,
   ExternalUserSchema,
   TeamMembershipSchema,
   TeamSchema,
+  TeamSlaRulesSchema,
+  TemplateSchema,
   UserSchema,
   WorkflowStateSchema,
 } from "../schemas/teams";
@@ -111,6 +119,21 @@ export const demo = Demo.define({
       Demo.table({ name: "release_stages", rowSchema: ReleaseStageSchema, version: "version" }),
       Demo.table({ name: "releases", rowSchema: ReleaseSchema, version: "version" }),
       Demo.table({ name: "release_notes", rowSchema: ReleaseNoteSchema, version: "version" }),
+      Demo.table({
+        name: "project_external_links",
+        rowSchema: ProjectExternalLinkSchema,
+        version: "version",
+      }),
+      Demo.table({ name: "project_history", rowSchema: ProjectHistorySchema, version: "version" }),
+      Demo.table({
+        name: "initiative_history",
+        rowSchema: InitiativeHistorySchema,
+        version: "version",
+      }),
+      Demo.table({ name: "release_history", rowSchema: ReleaseHistorySchema, version: "version" }),
+      Demo.table({ name: "templates", rowSchema: TemplateSchema, version: "version" }),
+      Demo.table({ name: "team_sla_rules", rowSchema: TeamSlaRulesSchema, version: "version" }),
+      Demo.table({ name: "custom_views", rowSchema: CustomViewSchema, version: "version" }),
     ],
     rows: setupRows,
   },
@@ -118,6 +141,11 @@ export const demo = Demo.define({
     tables: [
       Demo.table({ name: "issues", rowSchema: IssueSchema, version: "version" }),
       Demo.table({ name: "issue_history", rowSchema: IssueHistorySchema, version: "version" }),
+      Demo.table({
+        name: "issue_state_spans",
+        rowSchema: IssueStateSpanSchema,
+        version: "version",
+      }),
       Demo.table({ name: "comments", rowSchema: CommentSchema, version: "version" }),
       Demo.table({ name: "issue_relations", rowSchema: IssueRelationSchema, version: "version" }),
       Demo.table({ name: "attachments", rowSchema: AttachmentSchema, version: "version" }),

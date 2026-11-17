@@ -2,7 +2,9 @@ import type { Demo } from "@useairfoil/connector-kit";
 
 import type {
   Article,
+  ArticleTranslation,
   Category,
+  CommunityComment,
   CommunityPost,
   CommunityTopic,
   Section,
@@ -111,11 +113,51 @@ export const helpCenterTables = ({ faker }: Demo.DemoContext, setup: Date) => {
     };
   });
 
+  const translations: Array<ArticleTranslation> = articles
+    .filter((article) => article.position === 0n)
+    .map((article) => ({
+      id: article.id + 1_000_000n,
+      version: article.updated_at,
+      created_at: article.created_at,
+      updated_at: article.updated_at,
+      html_url: article.html_url.replace("/en-us/", "/fr/"),
+      source_id: article.id,
+      locale: "fr",
+      title: `${article.title} (FR)`,
+      body: "<p>Cet article explique comment faire.</p>",
+      draft: false,
+      outdated: false,
+    }));
+
+  const comments: Array<CommunityComment> = posts.flatMap((post) =>
+    Array.from({ length: faker.number.int({ max: 3 }) }, (_, c) => {
+      const created = new Date(
+        post.created_at.getTime() + faker.number.int({ min: day, max: 30 * day }),
+      );
+
+      return {
+        id: post.id * 10n + BigInt(c),
+        version: created,
+        created_at: created,
+        updated_at: created,
+        html_url: `${post.html_url}#comment-${post.id * 10n + BigInt(c)}`,
+        post_id: post.id,
+        author_id: agentId((Number(post.id) + c + 1) % agentCount),
+        body: c === 0 ? "<p>Thanks, we're looking into this.</p>" : "<p>+1, we need this too.</p>",
+        official: c === 0,
+        vote_sum: BigInt(faker.number.int({ max: 10 })),
+        vote_count: BigInt(faker.number.int({ min: 10, max: 15 })),
+      };
+    }),
+  );
+
   return {
     categories: categoryRows,
     sections,
     articles,
+    article_translations: translations,
     community_topics: topics,
     community_posts: posts,
+    community_comments: comments,
   };
 };

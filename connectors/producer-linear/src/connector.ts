@@ -13,13 +13,14 @@ import {
 } from "./resources/customers";
 import { makeDocuments } from "./resources/documents";
 import {
+  makeInitiativeHistory,
   makeInitiativeLabels,
   makeInitiativeRelations,
   makeInitiativeToProjects,
   makeInitiativeUpdates,
   makeInitiatives,
 } from "./resources/initiatives";
-import { makeIssueHistory } from "./resources/issue-history";
+import { makeIssueHistory, makeIssueStateSpans } from "./resources/issue-history";
 import {
   makeAttachments,
   makeIssueLabels,
@@ -27,6 +28,8 @@ import {
   makeIssues,
 } from "./resources/issues";
 import {
+  makeProjectExternalLinks,
+  makeProjectHistory,
   makeProjectLabels,
   makeProjectMilestones,
   makeProjectRelations,
@@ -36,16 +39,20 @@ import {
 } from "./resources/projects";
 import {
   makeIssueToReleases,
+  makeReleaseHistory,
   makeReleaseNotes,
   makeReleasePipelines,
   makeReleaseStages,
   makeReleases,
 } from "./resources/releases";
 import {
+  makeCustomViews,
   makeCycles,
   makeExternalUsers,
   makeTeamMemberships,
+  makeTeamSlaRules,
   makeTeams,
+  makeTemplates,
   makeUsers,
   makeWorkflowStates,
 } from "./resources/teams";
@@ -110,6 +117,14 @@ const build = Effect.gen(function* () {
       makeReleasePipelines(client),
       makeReleaseStages(client),
       makeIssueToReleases(client),
+      makeIssueStateSpans(client),
+      makeProjectHistory(client),
+      makeProjectExternalLinks(client),
+      makeInitiativeHistory(client),
+      makeReleaseHistory(client),
+      makeTemplates(client),
+      makeCustomViews(client),
+      makeTeamSlaRules(client),
     ],
   });
 

@@ -37,7 +37,8 @@ const issueFields = `
   auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt
   added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt
   snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt
-  sla_breaches_at: slaBreachesAt customer_ticket_count: customerTicketCount
+  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt
+  customer_ticket_count: customerTicketCount
   integration_source_type: integrationSourceType trashed`;
 
 const issueSpec = listSpec({

@@ -47,11 +47,13 @@ import {
   type GraphQLRefundNode,
   GraphQLRefundShippingLinesSchema,
   GraphQLRefundTransactionsSchema,
+  GraphQLRefundsForOrderSchema,
   OrderRefundsQuery,
   RefundLineItemsQuery,
   RefundOrderAdjustmentsQuery,
   RefundShippingLinesQuery,
   RefundTransactionsQuery,
+  RefundsForOrderQuery,
   fromRefundNode,
 } from "../resources/refunds/graphql";
 import { type PageInfo, connection } from "../resources/shared";
@@ -66,6 +68,8 @@ export type ShopifyPage<A> = {
 
 type PageRequest = { readonly first: number; readonly after?: string };
 
+type Connection<A> = { readonly nodes: ReadonlyArray<A>; readonly pageInfo: PageInfo };
+
 export type ShopifyApiClientService = {
   readonly checkConnection: Effect.Effect<void, ConnectorError>;
   readonly checkProductsAccess: Effect.Effect<void, ConnectorError>;
@@ -77,6 +81,18 @@ export type ShopifyApiClientService = {
     readonly variables?: Record<string, unknown>;
     readonly schema: Schema.Decoder<A>;
   }) => Effect.Effect<A, ConnectorError>;
+  /** Reads the rest of a nested connection after its first page. */
+  readonly followConnection: <A>(
+    first: Connection<A>,
+    options: {
+      readonly id: string;
+      readonly operationName: string;
+      readonly query: string;
+      readonly schema: Schema.Decoder<{
+        readonly node: { readonly connection: Connection<A> } | null;
+      }>;
+    },
+  ) => Effect.Effect<ReadonlyArray<A>, ConnectorError>;
   readonly fetchProducts: (
     options: PageRequest,
   ) => Effect.Effect<ShopifyPage<Product>, ConnectorError>;
@@ -87,6 +103,9 @@ export type ShopifyApiClientService = {
   readonly fetchRefunds: (
     options: PageRequest,
   ) => Effect.Effect<ShopifyPage<Refund>, ConnectorError>;
+  readonly fetchRefundsForOrder: (
+    id: string,
+  ) => Effect.Effect<ReadonlyArray<Refund>, ConnectorError>;
   readonly fetchCustomers: (
     options: PageRequest,
   ) => Effect.Effect<ShopifyPage<Customer>, ConnectorError>;
@@ -164,7 +183,7 @@ const CustomersAccessSchema = Schema.Struct({
 });
 
 // Follow-up queries alias the parent as `node` and the list as `connection`.
-const nestedPageSchema = <S extends Schema.Top>(connection: S) =>
+export const nestedPageSchema = <S extends Schema.Top>(connection: S) =>
   Schema.Struct({ node: Schema.NullOr(Schema.Struct({ connection })) });
 
 export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig) {
@@ -189,19 +208,7 @@ export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig
       }),
     );
 
-  const followConnection = <A>(
-    first: { readonly nodes: ReadonlyArray<A>; readonly pageInfo: PageInfo },
-    options: {
-      readonly id: string;
-      readonly operationName: string;
-      readonly query: string;
-      readonly schema: Schema.Decoder<{
-        readonly node: {
-          readonly connection: { readonly nodes: ReadonlyArray<A>; readonly pageInfo: PageInfo };
-        } | null;
-      }>;
-    },
-  ): Effect.Effect<ReadonlyArray<A>, ConnectorError> =>
+  const followConnection: ShopifyApiClientService["followConnection"] = (first, options) =>
     Option.match(nextPageCursor(first.pageInfo), {
       onNone: () => Effect.succeed(first.nodes),
       onSome: (initialCursor) =>
@@ -350,6 +357,20 @@ export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig
       ),
     );
 
+  const fetchRefundsForOrder = (id: string) =>
+    fetchGraphQL({
+      operationName: "AirfoilRefundsForOrder",
+      query: RefundsForOrderQuery,
+      variables: { id },
+      schema: GraphQLRefundsForOrderSchema,
+    }).pipe(
+      Effect.flatMap(({ order }) =>
+        order === null
+          ? Effect.succeed([])
+          : Effect.forEach(order.refunds, (refund) => loadRefund(order.id, refund)),
+      ),
+    );
+
   const fetchCustomers = (options: PageRequest) =>
     fetchGraphQL({
       operationName: "AirfoilCustomers",
@@ -406,10 +427,12 @@ export const make = Effect.fnUntraced(function* (config: ShopifyConnectionConfig
     checkOrdersAccess,
     checkCustomersAccess,
     fetchGraphQL,
+    followConnection,
     fetchProducts,
     fetchProductById,
     fetchOrders,
     fetchRefunds,
+    fetchRefundsForOrder,
     fetchCustomers,
     fetchCustomerById,
   };

@@ -22,7 +22,10 @@ import { type FakeStripe, connectorLayer, makeFakeClient } from "./helpers";
 const now = Date.parse("2026-10-03T12:00:00.000Z");
 const cursor = "2026-10-03T11:00:00.000Z";
 
-type ResourceName = (typeof manifest.resources)[number]["name"];
+type ResourceName = Exclude<
+  (typeof manifest.resources)[number]["name"],
+  "balance_transactions" | "meter_summaries"
+>;
 
 const getResource = (name: ResourceName, fake: FakeStripe) =>
   Effect.gen(function* () {
@@ -74,6 +77,17 @@ describe("resources", () => {
           "charges",
           "invoice_payments",
           "refunds",
+          "payment_intents",
+          "payouts",
+          "disputes",
+          "credit_notes",
+          "checkout_sessions",
+          "subscription_schedules",
+          "coupons",
+          "promotion_codes",
+          "billing_meters",
+          "balance_transactions",
+          "meter_summaries",
         ]
       `);
       expect(Object.keys(tableSchemas)).toEqual(connector.resources.map((item) => item.name));
@@ -121,7 +135,7 @@ describe("resources", () => {
             "events?limit=1&types[]=customer.created",
             "products?limit=1",
             "events?limit=1&types[]=product.created",
-            "prices?limit=1",
+            "prices?limit=1&expand[]=data.tiers",
             "events?limit=1&types[]=price.created",
             "subscriptions?limit=1&status=all",
             "events?limit=1&types[]=customer.subscription.created",
@@ -133,12 +147,51 @@ describe("resources", () => {
             "events?limit=1&types[]=invoice_payment.paid",
             "refunds?limit=1",
             "events?limit=1&types[]=refund.created",
+            "payment_intents?limit=1",
+            "events?limit=1&types[]=payment_intent.created",
+            "payouts?limit=1",
+            "events?limit=1&types[]=payout.created",
+            "balance_transactions?limit=1",
+            "disputes?limit=1",
+            "events?limit=1&types[]=charge.dispute.created",
+            "credit_notes?limit=1",
+            "events?limit=1&types[]=credit_note.created",
+            "checkout/sessions?limit=1",
+            "events?limit=1&types[]=checkout.session.completed",
+            "subscription_schedules?limit=1",
+            "events?limit=1&types[]=subscription_schedule.created",
+            "coupons?limit=1",
+            "events?limit=1&types[]=coupon.created",
+            "promotion_codes?limit=1",
+            "events?limit=1&types[]=promotion_code.created",
+            "subscriptions?limit=1&status=all&created[lte]=0",
+            "billing/meters?limit=1",
+            "events?limit=1&types[]=billing.meter.created",
+            "balance_transactions?limit=1",
           ],
           "result": {
+            "balance_transactions": {
+              "_tag": "ok",
+            },
+            "billing_meters": {
+              "_tag": "ok",
+            },
             "charges": {
               "_tag": "ok",
             },
+            "checkout_sessions": {
+              "_tag": "ok",
+            },
+            "coupons": {
+              "_tag": "ok",
+            },
+            "credit_notes": {
+              "_tag": "ok",
+            },
             "customers": {
+              "_tag": "ok",
+            },
+            "disputes": {
               "_tag": "ok",
             },
             "invoice_payments": {
@@ -147,13 +200,28 @@ describe("resources", () => {
             "invoices": {
               "_tag": "ok",
             },
+            "meter_summaries": {
+              "_tag": "ok",
+            },
+            "payment_intents": {
+              "_tag": "ok",
+            },
+            "payouts": {
+              "_tag": "ok",
+            },
             "prices": {
               "_tag": "ok",
             },
             "products": {
               "_tag": "ok",
             },
+            "promotion_codes": {
+              "_tag": "ok",
+            },
             "refunds": {
+              "_tag": "ok",
+            },
+            "subscription_schedules": {
               "_tag": "ok",
             },
             "subscriptions": {

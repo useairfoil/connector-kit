@@ -33,9 +33,11 @@ const withRepositories =
   (url) =>
     url === repositoriesUrl
       ? { body: { total_count: repositories.length, repositories } }
-      : pages[url] === undefined
-        ? undefined
-        : { body: pages[url] };
+      : pages[url] !== undefined
+        ? { body: pages[url] }
+        : url === "/repos/octocat/hello-world/pulls/3"
+          ? { body: pullRequest }
+          : undefined;
 
 const getResource = (name: ResourceName, fake: FakeGitHub) =>
   Effect.gen(function* () {
@@ -124,6 +126,7 @@ describe("resources", () => {
       const repo = "/repos/octocat/hello-world";
       const pages: Readonly<Record<string, unknown>> = {
         [`${repo}/pulls?state=all&per_page=1`]: [pullRequest],
+        [`${repo}/issues?state=all&per_page=1`]: [issue],
         [`${repo}/commits?per_page=1`]: [commit],
         [`${repo}/actions/runs?per_page=1`]: { total_count: 1, workflow_runs: [workflowRun] },
         [`${repo}/commits/${commit.sha}/check-runs?filter=all&per_page=100`]: {
@@ -187,8 +190,39 @@ describe("resources", () => {
             "/repos/octocat/hello-world/labels?per_page=1",
             "/installation/repositories?per_page=100",
             "/repos/octocat/hello-world/milestones?state=all&per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/pulls?state=all&per_page=1",
+            "/repos/octocat/hello-world/pulls/3/files?per_page=100",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/issues?state=all&per_page=1",
+            "/repos/octocat/hello-world/issues/1/timeline?exclude=commented,committed,reviewed,line-commented,commit-commented&per_page=100",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/deployments?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/deployments?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/branches?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/tags?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/actions/workflows?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/actions/artifacts?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/actions/runs?per_page=1",
+            "/installation/repositories?per_page=100",
+            "/repos/octocat/hello-world/issues?state=all&per_page=1",
+            "/repos/octocat/hello-world/issues/1/sub_issues?per_page=100",
+            "/repos/octocat/hello-world/issues/1/dependencies/blocked_by?per_page=100",
+            "/repos/octocat/hello-world/issues/1/dependencies/blocking?per_page=100",
+            "/installation/repositories?per_page=1",
+            "/installation/repositories?per_page=1",
+            "/installation/repositories?per_page=1",
           ],
           "result": {
+            "branches": {
+              "_tag": "ok",
+            },
             "check_runs": {
               "_tag": "ok",
             },
@@ -198,7 +232,19 @@ describe("resources", () => {
             "commits": {
               "_tag": "ok",
             },
+            "deployment_statuses": {
+              "_tag": "ok",
+            },
+            "deployments": {
+              "_tag": "ok",
+            },
             "issue_comments": {
+              "_tag": "ok",
+            },
+            "issue_links": {
+              "_tag": "ok",
+            },
+            "issue_timeline": {
               "_tag": "ok",
             },
             "issues": {
@@ -210,7 +256,19 @@ describe("resources", () => {
             "milestones": {
               "_tag": "ok",
             },
+            "organization_projects": {
+              "_tag": "ok",
+            },
+            "project_fields": {
+              "_tag": "ok",
+            },
+            "project_items": {
+              "_tag": "ok",
+            },
             "pull_request_commits": {
+              "_tag": "ok",
+            },
+            "pull_request_files": {
               "_tag": "ok",
             },
             "pull_request_review_comments": {
@@ -227,6 +285,20 @@ describe("resources", () => {
             },
             "repositories": {
               "_tag": "ok",
+            },
+            "tags": {
+              "_tag": "ok",
+            },
+            "workflow_artifacts": {
+              "_tag": "error",
+              "message": "Fixture for /repos/octocat/hello-world/actions/artifacts?per_page=1 does not decode",
+            },
+            "workflow_attempts": {
+              "_tag": "ok",
+            },
+            "workflow_definitions": {
+              "_tag": "error",
+              "message": "Fixture for /repos/octocat/hello-world/actions/workflows?per_page=1 does not decode",
             },
             "workflow_jobs": {
               "_tag": "ok",
@@ -568,7 +640,9 @@ describe("resources", () => {
                 ],
                 next: "https://api.github.com/repositories/1406396726/pulls?page=2",
               }
-            : undefined,
+            : url === "/repos/octocat/hello-world/pulls/3"
+              ? { body: { ...pullRequest, updated_at: "2026-10-06T11:30:00Z" } }
+              : undefined,
       );
 
       const result = yield* changes.fetch({
@@ -617,6 +691,7 @@ describe("resources", () => {
               "number": "3n",
               "repository_id": "1406396726n",
               "requested_reviewers": [],
+              "requested_teams": [],
               "state": "closed",
               "title": "Update README.md",
               "user": {

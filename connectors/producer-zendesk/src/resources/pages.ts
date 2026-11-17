@@ -60,6 +60,7 @@ export const listAll = <A>(
 
 export const listSources = <Row extends object>(
   read: Effect.Effect<ReadonlyArray<Row>, ConnectorError>,
+  interval = hourly,
 ) => ({
   check: read.pipe(Effect.asVoid),
   backfill: Fetch.page({
@@ -69,7 +70,7 @@ export const listSources = <Row extends object>(
   }),
   changes: Fetch.changes({
     cursor: Cursor.string(),
-    interval: hourly,
+    interval,
     fetch: () =>
       Effect.all([read, DateTime.now]).pipe(
         Effect.map(([rows, now]) => ({ rows, cursor: DateTime.formatIso(now) })),

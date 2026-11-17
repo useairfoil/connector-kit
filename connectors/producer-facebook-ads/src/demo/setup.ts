@@ -111,5 +111,48 @@ export const setupRows = ({ faker, now }: Demo.DemoContext) => {
     });
   }
 
-  return { ad_accounts: adAccounts, campaigns: campaignRows, ad_sets: adSets, ads };
+  return {
+    ad_accounts: adAccounts,
+    campaigns: campaignRows,
+    ad_sets: adSets,
+    ads,
+    ad_activities: campaignRows.flatMap(({ id, account_id, name, created_time }) =>
+      account_id && created_time
+        ? [
+            {
+              id: `activity_${id}`,
+              account_id,
+              object_id: id,
+              object_type: "campaign",
+              object_name: name,
+              event_type: "create_campaign_group",
+              event_time: created_time,
+              version: now,
+            },
+          ]
+        : [],
+    ),
+    ad_creatives: ads.flatMap(({ creative, account_id }) =>
+      creative?.id ? [{ ...creative, id: creative.id, account_id, version: now }] : [],
+    ),
+    custom_audiences: adAccounts.map(({ id }) => ({
+      id: `audience_${id}`,
+      account_id: id,
+      name: "Recent purchasers",
+      subtype: "CUSTOM",
+      retention_days: 30n,
+      approximate_count_lower_bound: 500n,
+      approximate_count_upper_bound: 1000n,
+      version: now,
+    })),
+    custom_conversions: adAccounts.map(({ id }) => ({
+      id: `conversion_${id}`,
+      account_id: id,
+      name: "Store purchase",
+      custom_event_type: "PURCHASE",
+      event_source_type: "website",
+      is_archived: false,
+      version: now,
+    })),
+  };
 };

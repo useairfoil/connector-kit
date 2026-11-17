@@ -2,6 +2,7 @@ import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
 import {
+  JsonText,
   OptionalRef,
   OptionalString,
   OptionalTimestamp,
@@ -174,4 +175,98 @@ export type Cycle = Schema.Schema.Type<typeof CycleSchema>;
 
 export const CycleObjectSchema = CycleSchema.mapFields((fields) =>
   Struct.omit(fields, ["version", "_deleted"]),
+);
+
+export const SlaRuleSchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "SLA rule ID." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Rule name." })),
+  conditions: JsonText.pipe(
+    Schema.annotateKey({ description: "Conditions that apply the rule, as JSON." }),
+  ),
+  removes_sla: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the rule removes an SLA." }),
+  ),
+  sla: Schema.NullOr(Schema.Finite).pipe(
+    Schema.annotateKey({
+      description: "Milliseconds for calendar days, or a count of business days.",
+    }),
+  ),
+  sla_type: OptionalString.pipe(
+    Schema.annotateKey({ description: "How the SLA is counted: all or onlyBusinessDays." }),
+  ),
+  start_mode: OptionalString.pipe(Schema.annotateKey({ description: "When the SLA starts." })),
+});
+
+export const TeamSlaRulesSchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Team ID." })),
+  version: Schema.Date.pipe(Schema.annotateKey({ description: "Time the rules were read." })),
+  rules: Schema.Array(SlaRuleSchema).pipe(
+    Schema.annotateKey({ description: "Enabled SLA rules that may apply to the team, in order." }),
+  ),
+})
+  .annotate({ description: "Linear SLA rules for each team. Needs access to team settings." })
+  .pipe(Iceberg.identifier("id"));
+
+export type TeamSlaRules = Schema.Schema.Type<typeof TeamSlaRulesSchema>;
+
+export const TemplateSchema = Schema.Struct({
+  ...common("Template"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Template name." })),
+  description: OptionalString.pipe(Schema.annotateKey({ description: "Description." })),
+  type: Schema.String.pipe(
+    Schema.annotateKey({ description: "Type of item the template makes, such as issue." }),
+  ),
+  team_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Team, or null for the workspace." }),
+  ),
+  template_data: JsonText.pipe(
+    Schema.annotateKey({ description: "Full template setup, as JSON." }),
+  ),
+  content: OptionalString.pipe(Schema.annotateKey({ description: "Template body in markdown." })),
+  has_form_fields: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the template has form fields." }),
+  ),
+})
+  .annotate({ description: "Linear templates, including archived ones." })
+  .pipe(Iceberg.identifier("id"));
+
+export type Template = Schema.Schema.Type<typeof TemplateSchema>;
+
+export const TemplateObjectSchema = TemplateSchema.mapFields((fields) =>
+  Struct.omit(fields, ["version"]),
+);
+
+export const CustomViewSchema = Schema.Struct({
+  ...common("View"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "View name." })),
+  description: OptionalString.pipe(Schema.annotateKey({ description: "Description." })),
+  model_name: Schema.String.pipe(
+    Schema.annotateKey({ description: "Type of item the view lists, such as Issue." }),
+  ),
+  team_id: OptionalRef.pipe(
+    Schema.annotateKey({ description: "Team, or null for the workspace." }),
+  ),
+  owner_id: Ref.pipe(Schema.annotateKey({ description: "User who owns the view." })),
+  creator_id: Ref.pipe(Schema.annotateKey({ description: "User who made the view." })),
+  shared: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether the view is shared with the workspace." }),
+  ),
+  filter_data: JsonText.pipe(Schema.annotateKey({ description: "Issue filter, as JSON." })),
+  project_filter_data: Schema.NullOr(JsonText).pipe(
+    Schema.annotateKey({ description: "Project filter, as JSON." }),
+  ),
+  initiative_filter_data: Schema.NullOr(JsonText).pipe(
+    Schema.annotateKey({ description: "Initiative filter, as JSON." }),
+  ),
+  feed_item_filter_data: Schema.NullOr(JsonText).pipe(
+    Schema.annotateKey({ description: "Feed filter, as JSON." }),
+  ),
+})
+  .annotate({ description: "Linear saved views that the API key can see." })
+  .pipe(Iceberg.identifier("id"));
+
+export type CustomView = Schema.Schema.Type<typeof CustomViewSchema>;
+
+export const CustomViewObjectSchema = CustomViewSchema.mapFields((fields) =>
+  Struct.omit(fields, ["version"]),
 );

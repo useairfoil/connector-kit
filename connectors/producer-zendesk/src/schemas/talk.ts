@@ -1,7 +1,7 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Long, Timestamp } from "./shared";
+import { Long, Timestamp, version } from "./shared";
 
 export const TalkLineSchema = Schema.Struct({
   id: Long.pipe(Schema.annotateKey({ description: "Line ID." })),
@@ -59,3 +59,76 @@ export const TalkLineObjectSchema = TalkLineSchema.mapFields((fields) => ({
 }));
 
 export type TalkLineObject = Schema.Schema.Type<typeof TalkLineObjectSchema>;
+
+const callTimes = (object: string) => ({
+  completion_status: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+    Schema.annotateKey({ description: "How the call ended, such as completed or abandoned." }),
+  ),
+  duration: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: `Length of the ${object} in seconds.` }),
+  ),
+  created_at: Timestamp.pipe(Schema.annotateKey({ description: `Time the ${object} started.` })),
+  updated_at: Timestamp.pipe(
+    Schema.annotateKey({ description: `Time the ${object} was last updated.` }),
+  ),
+});
+
+export const TalkCallSchema = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "Call ID." })),
+  version: version("call"),
+  ticket_id: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Ticket made for the call." }),
+  ),
+  agent_id: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Agent who first took the call." }),
+  ),
+  customer_id: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Customer on the call." }),
+  ),
+  line_id: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Line in `talk_lines`." }),
+  ),
+  direction: Schema.String.pipe(Schema.annotateKey({ description: "inbound or outbound." })),
+  talk_time: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Seconds spent talking with an agent." }),
+  ),
+  wait_time: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Seconds spent waiting for an agent." }),
+  ),
+  voicemail: Schema.optional(Schema.NullOr(Schema.Boolean)).pipe(
+    Schema.annotateKey({ description: "Whether the call went to voicemail." }),
+  ),
+  ...callTimes("call"),
+})
+  .annotate({ description: "Zendesk Talk calls. Needs Talk export access." })
+  .pipe(Iceberg.identifier("id"));
+
+export const TalkLegSchema = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "Leg ID." })),
+  version: version("leg"),
+  call_id: Long.pipe(Schema.annotateKey({ description: "Call in `talk_calls`." })),
+  agent_id: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Agent on this leg." }),
+  ),
+  user_id: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "User on this leg." }),
+  ),
+  type: Schema.String.pipe(
+    Schema.annotateKey({ description: "customer, agent, external, supervisor, or ai_agent." }),
+  ),
+  talk_time: Schema.optional(Schema.NullOr(Long)).pipe(
+    Schema.annotateKey({ description: "Seconds spent talking on this leg." }),
+  ),
+  ...callTimes("leg"),
+})
+  .annotate({ description: "Parts of Zendesk Talk calls, one per person on the call." })
+  .pipe(Iceberg.identifier("id"));
+
+export type TalkCall = Schema.Schema.Type<typeof TalkCallSchema>;
+export type TalkLeg = Schema.Schema.Type<typeof TalkLegSchema>;
+
+const objectOf = <F extends Schema.Struct.Fields>(schema: Schema.Struct<F>) =>
+  schema.mapFields((fields) => Struct.omit(fields, ["version"]));
+
+export const TalkCallObjectSchema = objectOf(TalkCallSchema);
+export const TalkLegObjectSchema = objectOf(TalkLegSchema);

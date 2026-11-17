@@ -40,6 +40,7 @@ export const RefundSchema = Schema.Struct({
   createdAt: Schema.NullOr(Schema.Date).pipe(
     Schema.annotateKey({ description: "Time when the refund was created." }),
   ),
+  version: Schema.Date.pipe(Schema.annotateKey({ description: "Time of this refund update." })),
   processedAt: Schema.Date.pipe(
     Schema.annotateKey({ description: "Time when the refund was processed." }),
   ),

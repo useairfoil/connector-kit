@@ -30,6 +30,8 @@ export const OptionalTimestamp = Schema.NullOr(Timestamp);
 
 export const OptionalString = Schema.NullOr(Schema.String);
 
+export const JsonText = Schema.flip(Schema.fromJsonString(Schema.Json));
+
 const RefConnection = Schema.Struct({ nodes: Schema.Array(Schema.Struct({ id: Schema.String })) });
 
 /** Decodes connection nodes as IDs. The query must fetch any extra pages. */

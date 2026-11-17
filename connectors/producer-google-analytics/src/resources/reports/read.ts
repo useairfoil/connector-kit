@@ -55,7 +55,11 @@ export const readDay = <Row extends object>(
     const metrics = pairs(spec.metrics);
     const columns = [...dimensions, ...metrics];
     const response = yield* client.runReport(spec.name, {
-      dimensions: ["date", ...dimensions.map(([, name]) => name)],
+      dimensions: [
+        spec.cohortEndOffset === undefined ? "date" : "cohort",
+        ...dimensions.map(([, name]) => name),
+      ],
+      cohortEndOffset: spec.cohortEndOffset,
       metrics: metrics.map(([, name]) => name),
       startDate: options.day,
       endDate: options.day,
@@ -71,7 +75,8 @@ export const readDay = <Row extends object>(
         ...valuesByName(response.dimensionHeaders, row.dimensionValues),
         ...valuesByName(response.metricHeaders, row.metricValues),
       ]);
-      const date = values.get("date") ?? "";
+      // Cohort reports have no `date`. Their day is the cohort's first session day.
+      const date = values.get("date") ?? options.day.replaceAll("-", "");
       return decodeRow({
         id: JSON.stringify([
           propertyId,

@@ -134,7 +134,22 @@ describe("resources", () => {
         requests: (yield* Ref.get(requests)).map(describeRequest),
       }).toMatchInlineSnapshot(`
         {
-          "failed": [],
+          "failed": [
+            [
+              "talk_calls",
+              {
+                "_tag": "error",
+                "message": "Fixture for /channels/voice/stats/incremental/calls does not decode",
+              },
+            ],
+            [
+              "talk_legs",
+              {
+                "_tag": "error",
+                "message": "Fixture for /channels/voice/stats/incremental/legs does not decode",
+              },
+            ],
+          ],
           "requests": [
             "/incremental/tickets/cursor include=metric_sets&start_time=0&per_page=1",
             "/incremental/ticket_events include=comment_events&start_time=0&per_page=1",
@@ -149,6 +164,7 @@ describe("resources", () => {
             "/guide/en-us/surveys page%5Bsize%5D=50",
             "/incremental/ticket_events start_time=0&per_page=1",
             "/incremental/ticket_metric_events start_time=0&per_page=1",
+            "/incremental/ticket_events start_time=0&per_page=1",
             "/satisfaction_ratings page%5Bsize%5D=1",
             "/group_memberships page%5Bsize%5D=100",
             "/organization_memberships page%5Bsize%5D=100",
@@ -159,11 +175,18 @@ describe("resources", () => {
             "/business_hours/schedules",
             "/macros page%5Bsize%5D=100",
             "/help_center/incremental/articles start_time=0&per_page=1",
+            "/help_center/incremental/articles start_time=0&per_page=1",
             "/help_center/sections page%5Bsize%5D=100",
             "/help_center/categories page%5Bsize%5D=100",
             "/community/posts page%5Bsize%5D=100",
+            "/community/posts page%5Bsize%5D=1",
             "/community/topics page%5Bsize%5D=100",
             "/channels/voice/lines",
+            "/channels/voice/stats/incremental/calls start_time=0&per_page=1",
+            "/channels/voice/stats/incremental/legs start_time=0&per_page=1",
+            "/custom_objects",
+            "/custom_objects",
+            "/custom_objects",
           ],
         }
       `);

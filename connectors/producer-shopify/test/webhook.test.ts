@@ -25,6 +25,7 @@ import {
   ShopifyConnector,
   ShopifyNormalize,
 } from "../src/index";
+import { fromRefundWebhook, RefundWebhookPayloadSchema } from "../src/resources/refunds/webhook";
 import { customer, customerCreated } from "./customer-fixtures";
 import { makeTestIngestor } from "./helpers";
 import { orderUpdatedWithCustomer } from "./order-fixtures";
@@ -62,6 +63,7 @@ const productWebhookPayload = {
   variants: [
     {
       id: 1070325053,
+      inventory_item_id: 1070325054,
       title: "Default Title",
       price: "0.00",
       inventory_policy: "deny",
@@ -159,6 +161,7 @@ const refetchedProduct: Product = {
 const makeApiStub = (): ShopifyApiClientService => ({
   checkConnection: Effect.void,
   checkProductsAccess: Effect.void,
+  followConnection: (first) => Effect.succeed(first.nodes),
   fetchGraphQL: (_options) =>
     Effect.fail(new ConnectorError({ message: "Unexpected fetchGraphQL" })),
   fetchProducts: (_options) => Effect.succeed({ items: [], endCursor: null, hasMore: false }),
@@ -167,6 +170,7 @@ const makeApiStub = (): ShopifyApiClientService => ({
   checkOrdersAccess: Effect.void,
   checkCustomersAccess: Effect.void,
   fetchOrders: (_options) => Effect.succeed({ items: [], endCursor: null, hasMore: false }),
+  fetchRefundsForOrder: () => Effect.succeed([]),
   fetchRefunds: (_options) => Effect.succeed({ items: [], endCursor: null, hasMore: false }),
   fetchCustomers: (_options) => Effect.succeed({ items: [], endCursor: null, hasMore: false }),
   fetchCustomerById: (id) =>
@@ -480,6 +484,34 @@ describe("producer-shopify webhook", () => {
       expect(statuses).toEqual([200, 200]);
       expect(ids(rowsOf("orders"))).toEqual([orderUpdatedWithCustomer.admin_graphql_api_id]);
       expect(ids(rowsOf("refunds"))).toEqual([refundToStoreCredit.admin_graphql_api_id]);
+    }),
+  );
+
+  it.effect("refreshes the same refund row when a refund transaction settles", () =>
+    Effect.gen(function* () {
+      const refund = fromRefundWebhook(
+        Schema.decodeUnknownSync(RefundWebhookPayloadSchema)(refundToStoreCredit),
+      );
+      const triggeredAt = "2026-10-01T12:34:56.000Z";
+      const { statuses, rowsOf } = yield* sendWebhooks(
+        {
+          ...makeApiStub(),
+          fetchRefundsForOrder: (id) => {
+            expect(id).toBe(refund.orderId);
+            return Effect.succeed([refund]);
+          },
+        },
+        [
+          {
+            topic: "order_transactions/create",
+            body: JSON.stringify({ order_id: refundToStoreCredit.order_id, kind: "refund" }),
+            triggeredAt,
+          },
+        ],
+      );
+
+      expect(statuses).toEqual([200]);
+      expect(rowsOf("refunds")).toEqual([{ ...refund, version: new Date(triggeredAt) }]);
     }),
   );
 

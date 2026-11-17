@@ -31,6 +31,8 @@ export type StripeResourceSpec<Item extends HasId, Row extends HasId> = {
   /** Turns a Stripe object into a row without its version. */
   readonly toRow: (item: Item) => Effect.Effect<Row, ConnectorError>;
   readonly listParams?: StripeParams;
+  readonly retrieveParams?: StripeParams;
+  readonly createdFilter?: false;
   readonly eventTypes: readonly [string, ...Array<string>];
   /** Events for objects that can no longer be fetched. */
   readonly deleteEventTypes: ReadonlyArray<string>;
@@ -56,7 +58,10 @@ export const changesInterval = Duration.minutes(5);
 const toSeconds = (time: DateTime.DateTime): string =>
   String(DateTime.toEpochMillis(DateTime.startOf(time, "second")) / 1000);
 
-const parseTime = (value: string, label: string): Effect.Effect<DateTime.Utc, ConnectorError> =>
+export const parseTime = (
+  value: string,
+  label: string,
+): Effect.Effect<DateTime.Utc, ConnectorError> =>
   Option.match(DateTime.make(value), {
     onNone: () => Effect.fail(new ConnectorError({ message: `Invalid ${label}: ${value}` })),
     onSome: (time) => Effect.succeed(DateTime.toUtc(time)),
@@ -64,7 +69,7 @@ const parseTime = (value: string, label: string): Effect.Effect<DateTime.Utc, Co
 
 const withVersion = <Row>(row: Row, version: Date): Versioned<Row> => ({ ...row, version });
 
-const startingAfter = (after: Option.Option<string>): StripeParams =>
+export const startingAfter = (after: Option.Option<string>): StripeParams =>
   Option.match(after, { onNone: () => [], onSome: (id) => [["starting_after", id]] });
 
 const lastId = <A extends HasId>(page: StripeListPage<A>): Option.Option<string> =>
@@ -112,7 +117,9 @@ export const backfillPages = <Item extends HasId, Row extends HasId>(
         const cutoffTime = yield* parseTime(String(cutoff), "backfill cutoff");
         const page = yield* client.list(spec.objectSchema, spec.path, [
           ["limit", String(pageSize)],
-          ["created[lte]", toSeconds(cutoffTime)],
+          ...(spec.createdFilter === false
+            ? []
+            : [["created[lte]", toSeconds(cutoffTime)] as const]),
           ...(spec.listParams ?? []),
           ...startingAfter(Option.liftPredicate(pageCursor, Predicate.isString)),
         ]);
@@ -154,7 +161,7 @@ export const rowsForEvents = <Item extends HasId, Row extends HasId>(
     const fetched = yield* Effect.forEach(
       changedIds,
       (id) =>
-        client.retrieve(fetchSchema, `${spec.path}/${id}`).pipe(
+        client.retrieve(fetchSchema, `${spec.path}/${id}`, spec.retrieveParams).pipe(
           // A missing object is gone. Its own delete event writes the row.
           Effect.flatMap((found) =>
             Effect.transposeOption(

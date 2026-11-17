@@ -276,6 +276,7 @@ export const setupRows = (context: Demo.DemoContext) => {
   ];
 
   return {
+    alert_tags: [{ id: ulid("TAG", 0), name: "production", version: now }],
     users,
     teams: teamRows,
     catalog_types: catalogTypes,

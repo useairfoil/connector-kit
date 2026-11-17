@@ -1,7 +1,15 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema } from "effect";
 
-import { ActorSchema, ExternalIssueSchema, Optional, Ref, Timestamp, common } from "./shared";
+import {
+  ActorSchema,
+  ExternalIssueSchema,
+  Optional,
+  Ref,
+  Timestamp,
+  common,
+  fetched,
+} from "./shared";
 
 export const PostmortemDocumentSchema = Schema.Struct({
   ...common("Post-mortem document"),
@@ -19,7 +27,9 @@ export const PostmortemDocumentSchema = Schema.Struct({
     Schema.annotateKey({ description: "Users who edited it." }),
   ),
 })
-  .annotate({ description: "incident.io post-mortem documents, without their text." })
+  .annotate({
+    description: "incident.io post-mortem documents. In-app text is in postmortem_contents.",
+  })
   .pipe(Iceberg.identifier("id"));
 
 export type PostmortemDocument = Schema.Schema.Type<typeof PostmortemDocumentSchema>;
@@ -38,6 +48,16 @@ export const PostmortemDocumentObjectSchema = Schema.Struct({
 });
 
 export type PostmortemDocumentObject = Schema.Schema.Type<typeof PostmortemDocumentObjectSchema>;
+
+export const PostmortemContentSchema = Schema.Struct({
+  ...fetched("Post-mortem document"),
+  incident_id: Schema.String.pipe(Schema.annotateKey({ description: "Incident." })),
+  markdown: Schema.String.pipe(Schema.annotateKey({ description: "Document text, as Markdown." })),
+})
+  .annotate({ description: "incident.io text of in-app post-mortem documents." })
+  .pipe(Iceberg.identifier("id"));
+
+export type PostmortemContent = Schema.Schema.Type<typeof PostmortemContentSchema>;
 
 export const FollowUpSchema = Schema.Struct({
   ...common("Follow-up"),

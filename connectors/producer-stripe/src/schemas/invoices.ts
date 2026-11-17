@@ -67,6 +67,48 @@ export const InvoiceLineSchema = Schema.Struct({
   taxes: Schema.NullOr(Schema.Array(tax)).pipe(
     Schema.annotateKey({ description: "Taxes applied to this line." }),
   ),
+  parent: Schema.optional(
+    Schema.NullOr(
+      Schema.Struct({
+        type: Schema.String.pipe(
+          Schema.annotateKey({ description: "Type of object that created the line." }),
+        ),
+        invoice_item_details: Schema.optional(
+          Schema.NullOr(
+            Schema.Struct({
+              invoice_item: Schema.String.pipe(
+                Schema.annotateKey({ description: "Source invoice item ID." }),
+              ),
+              proration: Schema.Boolean.pipe(
+                Schema.annotateKey({ description: "Whether this is a proration." }),
+              ),
+              subscription: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+                Schema.annotateKey({ description: "Source subscription ID." }),
+              ),
+            }),
+          ),
+        ).pipe(Schema.annotateKey({ description: "Source invoice item details." })),
+        subscription_item_details: Schema.optional(
+          Schema.NullOr(
+            Schema.Struct({
+              invoice_item: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+                Schema.annotateKey({ description: "Invoice item ID, when present." }),
+              ),
+              subscription_item: Schema.String.pipe(
+                Schema.annotateKey({ description: "Source subscription item ID." }),
+              ),
+              proration: Schema.Boolean.pipe(
+                Schema.annotateKey({ description: "Whether this is a proration." }),
+              ),
+              subscription: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+                Schema.annotateKey({ description: "Source subscription ID." }),
+              ),
+            }),
+          ),
+        ).pipe(Schema.annotateKey({ description: "Source subscription item details." })),
+      }),
+    ),
+  ).pipe(Schema.annotateKey({ description: "Object that created the line." })),
 });
 
 export const InvoiceSchema = Schema.Struct({

@@ -185,6 +185,8 @@ describe("Linear demo", () => {
           "project_id": null,
           "project_milestone_id": null,
           "sla_breaches_at": null,
+          "sla_high_risk_at": null,
+          "sla_medium_risk_at": null,
           "sla_started_at": null,
           "sla_type": null,
           "snoozed_by_id": null,

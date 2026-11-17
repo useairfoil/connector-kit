@@ -137,7 +137,7 @@ export const make = Effect.fnUntraced(function* (config: Pick<ZendeskConfig, "su
   const clientFor = (path: string) =>
     path.startsWith("/incremental/users/")
       ? usersExportClient
-      : path.startsWith("/incremental/")
+      : path.startsWith("/incremental/") || path.startsWith("/channels/voice/stats/incremental/")
         ? exportClient
         : client;
 

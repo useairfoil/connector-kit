@@ -16,7 +16,7 @@ import type {
 } from "../schemas/incidents";
 import type { Alert, AlertNote, Escalation } from "../schemas/on-call";
 import type { PolicyFinding, StatusPageIncident, WorkflowRun } from "../schemas/settings";
-import type { Action, FollowUp, PostmortemDocument } from "../schemas/tasks";
+import type { Action, FollowUp, PostmortemContent, PostmortemDocument } from "../schemas/tasks";
 
 export const minute = Duration.toMillis(Duration.minutes(1));
 export const hour = Duration.toMillis(Duration.hours(1));
@@ -114,6 +114,7 @@ export type Rows = {
   readonly incident_alerts: Array<IncidentAlert>;
   readonly incident_call_sessions: Array<CallSession>;
   readonly incident_participant_workloads: Array<ParticipantWorkload>;
+  readonly postmortem_contents: Array<PostmortemContent>;
   readonly postmortem_documents: Array<PostmortemDocument>;
   readonly follow_ups: Array<FollowUp>;
   readonly actions: Array<Action>;

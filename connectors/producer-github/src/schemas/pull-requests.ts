@@ -11,6 +11,12 @@ const branch = Schema.Struct({
   ),
 });
 
+const Team = Schema.Struct({
+  id: Long.pipe(Schema.annotateKey({ description: "Review team ID." })),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Review team name." })),
+  slug: Schema.String.pipe(Schema.annotateKey({ description: "Review team slug." })),
+});
+
 export const PullRequestSchema = Schema.Struct({
   id: Long.pipe(
     Schema.annotateKey({ description: "Unique pull request ID. Not the ID of its issue." }),
@@ -55,6 +61,9 @@ export const PullRequestSchema = Schema.Struct({
   requested_reviewers: Schema.Array(user).pipe(
     Schema.annotateKey({ description: "Accounts asked to review that have not reviewed yet." }),
   ),
+  requested_teams: Schema.Array(Team).pipe(
+    Schema.annotateKey({ description: "Teams asked to review the pull request." }),
+  ),
   milestone: Schema.NullOr(milestone).pipe(
     Schema.annotateKey({ description: "Milestone of the pull request." }),
   ),
@@ -85,11 +94,13 @@ export const PullRequestObjectSchema = PullRequestSchema.mapFields((fields) => (
     "labels",
     "assignees",
     "requested_reviewers",
+    "requested_teams",
   ]),
   updated_at: Timestamp,
   labels: optionalList(label),
   assignees: optionalList(user),
   requested_reviewers: optionalList(user),
+  requested_teams: optionalList(Team),
 }));
 
 export type PullRequestObject = Schema.Schema.Type<typeof PullRequestObjectSchema>;

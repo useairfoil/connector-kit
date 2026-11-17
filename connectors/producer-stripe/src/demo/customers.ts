@@ -30,6 +30,14 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
     charges: [],
     invoice_payments: [],
     refunds: [],
+    payment_intents: [],
+    payouts: [],
+    disputes: [],
+    credit_notes: [],
+    checkout_sessions: [],
+    subscription_schedules: [],
+    balance_transactions: [],
+    meter_summaries: [],
   };
 
   const id = `cus_demo_${index}`;
@@ -238,6 +246,111 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
             ? total
             : total / 2n;
 
+      rows.payment_intents.push({
+        id: paymentIntent,
+        created: finalized,
+        version: now,
+        livemode: false,
+        status: unpaid ? "requires_payment_method" : "succeeded",
+        amount: total,
+        amount_received: unpaid ? 0n : total,
+        currency,
+        customer: id,
+        latest_charge: chargeId,
+      });
+
+      if (n === 0) {
+        rows.checkout_sessions.push({
+          id: `cs_demo_${index}_${s}`,
+          created: periodStart,
+          version: now,
+          mode: "subscription",
+          status: "complete",
+          payment_status: unpaid ? "unpaid" : "paid",
+          expires_at: at(periodStart.getTime() + day),
+          currency,
+          amount_subtotal: total,
+          amount_total: total,
+          customer: id,
+          subscription: subscriptionId,
+          invoice: invoiceId,
+          line_items: lines.map(({ item, quantity }, k) => {
+            const amount = unitAmount(item, currency, interval) * quantity;
+            return {
+              id: `li_demo_${index}_${s}_${k}`,
+              description: item.name,
+              currency,
+              quantity,
+              amount_subtotal: amount,
+              amount_total: amount,
+              amount_discount: 0n,
+              amount_tax: 0n,
+              price: { id: priceId(item, currency, interval), product: productId(item) },
+            };
+          }),
+        });
+      }
+
+      const balanceTransactionId = unpaid ? null : `txn_${chargeId}`;
+      if (balanceTransactionId !== null) {
+        const fee = (total * 29n) / 1000n + 30n;
+        const availableOn = at(finalized.getTime() + 2 * day);
+        if (availableOn < now && n === 0) {
+          rows.payouts.push({
+            id: `po_demo_${index}_${s}`,
+            version: now,
+            created: availableOn,
+            arrival_date: at(availableOn.getTime() + day),
+            amount: total - fee,
+            currency,
+            automatic: true,
+            status: "paid",
+            method: "standard",
+            type: "bank_account",
+            reconciliation_status: "completed",
+            balance_transaction_ids: [balanceTransactionId],
+          });
+        }
+        if (refund === null && n === 0 && index % 13 === 0) {
+          rows.disputes.push({
+            id: `dp_demo_${index}_${s}`,
+            version: now,
+            created: at(finalized.getTime() + day),
+            amount: total,
+            currency,
+            charge: chargeId,
+            payment_intent: paymentIntent,
+            reason: "product_not_received",
+            status: "needs_response",
+            is_charge_refundable: false,
+          });
+        }
+        rows.balance_transactions.push({
+          id: balanceTransactionId,
+          version: now,
+          created: finalized,
+          available_on: availableOn,
+          status: availableOn <= now ? "available" : "pending",
+          amount: total,
+          currency,
+          fee,
+          fee_details: [
+            {
+              amount: fee,
+              application: null,
+              currency,
+              description: "Stripe fee",
+              type: "stripe_fee",
+            },
+          ],
+          net: total - fee,
+          source: chargeId,
+          type: "charge",
+          reporting_category: "charge",
+          exchange_rate: null,
+          description: null,
+        });
+      }
       rows.charges.push({
         id: chargeId,
         version: now,
@@ -255,7 +368,7 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
         customer: id,
         payment_intent: paymentIntent,
         payment_method: null,
-        balance_transaction: null,
+        balance_transaction: balanceTransactionId,
         description: n === 0 ? "Subscription creation" : "Subscription update",
         failure_code: unpaid ? "card_declined" : null,
         failure_message: unpaid ? "Your card was declined." : null,
@@ -281,6 +394,33 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
       });
 
       if (refund !== null) {
+        rows.credit_notes.push({
+          id: `cn_demo_${index}_${s}_${n}`,
+          version: now,
+          created: at(finalized.getTime() + day),
+          invoice: invoiceId,
+          customer: id,
+          number: `${invoicePrefix}-CN-${n + 1}`,
+          status: "issued",
+          type: "post_payment",
+          currency,
+          amount: refund,
+          subtotal: refund,
+          total: refund,
+          pre_payment_amount: 0n,
+          post_payment_amount: refund,
+          lines: [
+            {
+              id: `cnli_demo_${index}_${s}_${n}`,
+              type: "custom_line_item",
+              amount: refund,
+              discount_amount: 0n,
+              description: "Subscription credit",
+              quantity: 1n,
+              unit_amount: refund,
+            },
+          ],
+        });
         rows.refunds.push({
           id: `re_demo_${index}_${s}_${n}`,
           version: now,
@@ -301,6 +441,25 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
       }
     });
 
+    const scheduleId = index % 7 === 0 && !canceled ? `sub_sched_demo_${index}_${s}` : null;
+    if (scheduleId !== null) {
+      rows.subscription_schedules.push({
+        id: scheduleId,
+        version: now,
+        created,
+        customer: id,
+        subscription: subscriptionId,
+        status: "active",
+        end_behavior: "release",
+        phases: [
+          {
+            start_date: currentStart,
+            end_date: currentEnd,
+            items: items.map(({ price, quantity }) => ({ price: price.id, quantity })),
+          },
+        ],
+      });
+    }
     rows.subscriptions.push({
       id: subscriptionId,
       version: now,
@@ -325,7 +484,7 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
       days_until_due: null,
       default_payment_method: null,
       latest_invoice: billed.length > 0 ? `in_demo_${index}_${s}_${billed.length - 1}` : null,
-      schedule: null,
+      schedule: scheduleId,
       description: null,
       cancellation_details: endedAt
         ? {
@@ -365,6 +524,19 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
     metadata: new Map(),
     test_clock: null,
     shipping: null,
+  });
+
+  const today = Math.floor(now.getTime() / day) * day;
+  rows.meter_summaries.push({
+    key: `mtr_demo_api_calls:${id}:mtrusg_demo_${index}`,
+    id: `mtrusg_demo_${index}`,
+    version: now,
+    meter: "mtr_demo_api_calls",
+    customer: id,
+    start_time: new Date(today - day),
+    end_time: new Date(today),
+    aggregated_value: faker.number.int({ min: 0, max: 5_000 }),
+    livemode: false,
   });
 
   return rows;

@@ -86,6 +86,16 @@ const adSetFields = {
   daily_budget: count("Daily budget in minor units, when the ad set holds it."),
   lifetime_budget: count("Lifetime budget in minor units, when the ad set holds it."),
   budget_remaining: count("Budget left in minor units."),
+  targeting: Schema.optional(Schema.flip(Schema.fromJsonString(Schema.Json))).pipe(
+    Schema.annotateKey({ description: "Audience targeting settings as JSON." }),
+  ),
+  attribution_spec: Schema.optional(Schema.flip(Schema.fromJsonString(Schema.Json))).pipe(
+    Schema.annotateKey({ description: "Attribution events and conversion windows as JSON." }),
+  ),
+  attribution_count_type: text("How conversions are counted for attribution."),
+  is_incremental_attribution_enabled: Schema.optional(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether incremental attribution is enabled." }),
+  ),
   destination_type: text("Where the ads send people, such as WEBSITE."),
   start_time: time("Start time."),
   end_time: time("End time."),
@@ -147,3 +157,111 @@ export const AdSchema = Schema.Struct({
   .pipe(Iceberg.identifier("id"));
 
 export type Ad = Schema.Schema.Type<typeof AdSchema>;
+
+const adCreativeFields = {
+  ...CreativeSchema.fields,
+  account_id: text("Ad account ID."),
+  video_id: text("Video used in the creative."),
+  image_hash: text("Hash of the image used in the creative."),
+  status: text("Creative status."),
+};
+
+export const AdCreativeApiSchema = Schema.Struct({ ...adCreativeFields, id: Schema.String });
+
+export const AdCreativeSchema = Schema.Struct({
+  ...adCreativeFields,
+  id: objectId("Creative"),
+  version,
+})
+  .annotate({ description: "Creatives saved in a Meta ad account." })
+  .pipe(Iceberg.identifier("id"));
+
+export type AdCreative = Schema.Schema.Type<typeof AdCreativeSchema>;
+
+const customAudienceFields = {
+  account_id: text("Ad account ID."),
+  name: text("Audience name."),
+  description: text("Audience description."),
+  subtype: text("How the audience was built."),
+  retention_days: long("Days a person can remain in the audience."),
+  approximate_count_lower_bound: long("Lower estimate of audience size."),
+  approximate_count_upper_bound: long("Upper estimate of audience size."),
+  pixel_id: text("Pixel linked to the audience."),
+};
+
+export const CustomAudienceApiSchema = Schema.Struct({
+  id: Schema.String,
+  ...customAudienceFields,
+});
+
+export const CustomAudienceSchema = Schema.Struct({
+  id: objectId("Custom audience"),
+  ...customAudienceFields,
+  version,
+})
+  .annotate({ description: "Custom audience definitions and size estimates." })
+  .pipe(Iceberg.identifier("id"));
+
+export type CustomAudience = Schema.Schema.Type<typeof CustomAudienceSchema>;
+
+const customConversionFields = {
+  account_id: text("Ad account ID."),
+  name: text("Conversion name."),
+  description: text("Conversion description."),
+  creation_time: time("Time the conversion was created."),
+  custom_event_type: text("Event category, such as PURCHASE."),
+  event_source_type: text("Source of the event, such as website."),
+  is_archived: Schema.optional(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the conversion is archived." }),
+  ),
+  is_unavailable: Schema.optional(Schema.Boolean).pipe(
+    Schema.annotateKey({ description: "Whether the conversion is unavailable." }),
+  ),
+  first_fired_time: time("Time the conversion first fired."),
+  last_fired_time: time("Time the conversion last fired."),
+};
+
+export const CustomConversionApiSchema = Schema.Struct({
+  id: Schema.String,
+  ...customConversionFields,
+});
+
+export const CustomConversionSchema = Schema.Struct({
+  id: objectId("Custom conversion"),
+  ...customConversionFields,
+  version,
+})
+  .annotate({ description: "Custom conversion definitions and status." })
+  .pipe(Iceberg.identifier("id"));
+
+export type CustomConversion = Schema.Schema.Type<typeof CustomConversionSchema>;
+
+/** Activities have no ID, so the row's ID is a hash of the activity. */
+export const AdActivityApiSchema = Schema.Struct({
+  event_time: Schema.DateFromString.pipe(
+    Schema.annotateKey({ description: "Time of the change." }),
+  ),
+  event_type: Schema.String.pipe(
+    Schema.annotateKey({ description: "Kind of change, such as update_ad_set_budget." }),
+  ),
+  actor_id: text("Actor ID."),
+  application_id: text("App that made the change."),
+  object_id: text("Object that changed."),
+  object_type: text("Kind of object that changed."),
+  object_name: text("Name of the object that changed."),
+  tool: text("Tool used to make the change."),
+  extra_data: text("Details of the change as Meta sends them, a JSON string."),
+});
+
+export const AdActivitySchema = Schema.Struct({
+  id: Schema.String.pipe(
+    Schema.annotateKey({ description: "SHA-256 of the account ID and the activity." }),
+  ),
+  account_id: Schema.String.pipe(Schema.annotateKey({ description: "Ad account ID." })),
+  ...AdActivityApiSchema.fields,
+  version,
+})
+  .annotate({ description: "Change history returned by the Meta ad account activity feed." })
+  .pipe(Iceberg.identifier("id"));
+
+export type AdActivity = Schema.Schema.Type<typeof AdActivitySchema>;

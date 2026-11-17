@@ -13,6 +13,8 @@ import {
 
 import type { LinearClientService } from "../client/client";
 
+import { Timestamp } from "../schemas/shared";
+
 const changesInterval = Duration.minutes(5);
 const hourly = Duration.hours(1);
 // A run stops after this many pages and the next one starts right away.
@@ -53,6 +55,9 @@ const PageInfoSchema = Schema.Struct({
   endCursor: Schema.NullOr(Schema.String),
 });
 
+const nextCursor = (pageInfo: typeof PageInfoSchema.Type) =>
+  pageInfo.hasNextPage ? Option.fromNullishOr(pageInfo.endCursor) : Option.none<string>();
+
 const readPage = <Item, Row>(
   client: LinearClientService,
   spec: ListSpec<Item, Row>,
@@ -79,14 +84,7 @@ const readPage = <Item, Row>(
         orderBy: options.orderBy,
       },
     )
-    .pipe(
-      Effect.map(({ page }) => ({
-        items: page.nodes,
-        next: page.pageInfo.hasNextPage
-          ? Option.fromNullishOr(page.pageInfo.endCursor)
-          : Option.none(),
-      })),
-    );
+    .pipe(Effect.map(({ page }) => ({ items: page.nodes, next: nextCursor(page.pageInfo) })));
 
 const listAll = <Item, Row>(
   client: LinearClientService,
@@ -98,6 +96,77 @@ const listAll = <Item, Row>(
     ),
   ).pipe(Stream.runCollect);
 
+const nestedPage = <Item>(item: Schema.Decoder<Item>) =>
+  Schema.Struct({ nodes: Schema.Array(item), pageInfo: PageInfoSchema });
+
+type NestedList<Item> = {
+  readonly parent: string;
+  readonly connection: string;
+  readonly fields: string;
+  readonly item: Schema.Decoder<Item>;
+};
+
+/** Reads a nested list in full, or the rest after `first`, the page read with the parent. */
+export const readNested = <Item>(
+  client: LinearClientService,
+  list: NestedList<Item>,
+  id: string,
+  first?: { readonly nodes: ReadonlyArray<Item>; readonly pageInfo: typeof PageInfoSchema.Type },
+): Effect.Effect<ReadonlyArray<Item>, ConnectorError> => {
+  const start = first ? nextCursor(first.pageInfo) : Option.none();
+  if (first && Option.isNone(start)) return Effect.succeed(first.nodes);
+  return Stream.paginate(start, (after) =>
+    client
+      .query(
+        Schema.Struct({ parent: Schema.Struct({ nested: nestedPage(list.item) }) }),
+        `query ${Str.capitalize(list.parent)}${Str.capitalize(list.connection)}($id: String!, $after: String) {
+  parent: ${list.parent}(id: $id) {
+    nested: ${list.connection}(first: 250, after: $after) { nodes { ${list.fields} } pageInfo { hasNextPage endCursor } }
+  }
+}`,
+        { id, after: Option.getOrNull(after) },
+      )
+      .pipe(
+        Effect.map(
+          ({ parent: { nested } }) =>
+            [nested.nodes, Option.map(nextCursor(nested.pageInfo), Option.some)] as const,
+        ),
+      ),
+  ).pipe(
+    Stream.runCollect,
+    Effect.map((rest) => [...(first?.nodes ?? []), ...rest]),
+  );
+};
+
+/**
+ * Lists a nested list through its parents, since Linear has no top-level query
+ * for it. Each parent brings the first 25 items, so pages stay under the cost limit.
+ */
+export const nestedSpec = <Item, Row>(
+  client: LinearClientService,
+  spec: NestedList<Item> & {
+    readonly parents: string;
+    readonly row: (item: Item, parent: { readonly id: string; readonly updated_at: Date }) => Row;
+  },
+) =>
+  listSpec({
+    connection: spec.parents,
+    fields: `id updated_at: updatedAt nested: ${spec.connection}(first: 25) { nodes { ${spec.fields} } pageInfo { hasNextPage endCursor } }`,
+    item: Schema.Struct({
+      id: Schema.String,
+      updated_at: Timestamp,
+      nested: nestedPage(spec.item),
+    }),
+    first: 20,
+    updatedAt: (parent) => parent.updated_at,
+    rows: (parents) =>
+      Effect.forEach(parents, (parent) =>
+        readNested(client, spec, parent.id, parent.nested).pipe(
+          Effect.map((items) => items.map((item) => spec.row(item, parent))),
+        ),
+      ).pipe(Effect.map(Arr.flatten)),
+  });
+
 export const checkList = <Item, Row>(client: LinearClientService, spec: ListSpec<Item, Row>) =>
   readPage(client, spec, { orderBy: "createdAt", after: Option.none(), first: 1 }).pipe(
     Effect.flatMap(({ items }) => spec.rows(items)),
@@ -105,28 +174,30 @@ export const checkList = <Item, Row>(client: LinearClientService, spec: ListSpec
   );
 
 /** Small lists are read in full every hour. */
+export const readAllSources = <Row extends object>(
+  check: Effect.Effect<void, ConnectorError>,
+  read: Effect.Effect<ReadonlyArray<Row>, ConnectorError>,
+) => ({
+  check,
+  backfill: Fetch.page({
+    pageCursor: Cursor.string(),
+    cutoff: Cursor.isoDateTime(),
+    fetch: () => read.pipe(Effect.map((rows) => ({ rows, hasMore: false }))),
+  }),
+  changes: Fetch.changes({
+    cursor: Cursor.string(),
+    interval: hourly,
+    fetch: () =>
+      Effect.all([read, DateTime.now]).pipe(
+        Effect.map(([rows, now]) => ({ rows, cursor: DateTime.formatIso(now) })),
+      ),
+  }),
+});
+
 export const listSources = <Item, Row extends object>(
   client: LinearClientService,
   spec: ListSpec<Item, Row>,
-) => {
-  const read = listAll(client, spec).pipe(Effect.flatMap(spec.rows));
-  return {
-    check: checkList(client, spec),
-    backfill: Fetch.page({
-      pageCursor: Cursor.string(),
-      cutoff: Cursor.isoDateTime(),
-      fetch: () => read.pipe(Effect.map((rows) => ({ rows, hasMore: false }))),
-    }),
-    changes: Fetch.changes({
-      cursor: Cursor.string(),
-      interval: hourly,
-      fetch: () =>
-        Effect.all([read, DateTime.now]).pipe(
-          Effect.map(([rows, now]) => ({ rows, cursor: DateTime.formatIso(now) })),
-        ),
-    }),
-  };
-};
+) => readAllSources(checkList(client, spec), listAll(client, spec).pipe(Effect.flatMap(spec.rows)));
 
 /** Changes pick up items created during backfill. */
 export const backfillList = <Item, Row extends object>(

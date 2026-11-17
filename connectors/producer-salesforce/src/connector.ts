@@ -7,6 +7,8 @@ import * as SalesforceClient from "./client/client";
 import { objects } from "./manifest";
 import { makeCustomObjects } from "./objects/custom-objects";
 import { makeDescriber } from "./objects/describe";
+import { makeFileLinks } from "./objects/file-links";
+import { makeKnowledgeVersions } from "./objects/knowledge";
 import { makeObjectFields } from "./objects/object-fields";
 import { objectResource } from "./objects/resource";
 export { SalesforceConfigDef, manifest } from "./manifest";
@@ -23,6 +25,8 @@ export const make = Effect.fnUntraced(function* () {
       ...objects.map((spec) => objectResource(client, describer, spec)),
       makeCustomObjects(client, describer),
       makeObjectFields(describer),
+      makeFileLinks(client),
+      makeKnowledgeVersions(client, describer),
     ],
   });
 });

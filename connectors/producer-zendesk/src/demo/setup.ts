@@ -2,6 +2,11 @@ import type { Demo } from "@useairfoil/connector-kit";
 import type { Schema } from "effect";
 
 import type { CsatSurvey } from "../schemas/csat";
+import type {
+  CustomObject,
+  CustomObjectField,
+  CustomObjectRecord,
+} from "../schemas/custom-objects";
 import type { GroupMembership } from "../schemas/memberships";
 import type { Organization } from "../schemas/organizations";
 import type { TalkLine } from "../schemas/talk";
@@ -39,6 +44,7 @@ import {
   slug,
   statusIds,
   surveyId,
+  talkLineId,
   vipGroup,
 } from "./shared";
 
@@ -327,7 +333,7 @@ export const setupRows = ({ faker, now }: Demo.DemoContext) => {
 
   const lines: Array<TalkLine> = [
     {
-      id: 360_001_500_001n,
+      id: talkLineId,
       version: now,
       created_at: setup,
       line_type: "phone",
@@ -404,6 +410,60 @@ export const setupRows = ({ faker, now }: Demo.DemoContext) => {
     default: true,
   }));
 
+  const planObject = "service_plan";
+  const customObjects: Array<CustomObject> = [
+    {
+      key: planObject,
+      version: setup,
+      title: "Service plan",
+      title_pluralized: "Service plans",
+      description: "Support plans sold to customers.",
+      created_at: setup,
+      updated_at: setup,
+    },
+  ];
+  const customObjectFields: Array<CustomObjectField> = [
+    {
+      id: 361_100_000_001n,
+      version: setup,
+      custom_object_key: planObject,
+      key: "tier",
+      title: "Tier",
+      type: "dropdown",
+      active: true,
+      required: true,
+      custom_field_options: plans.map((plan) => ({ name: plan, value: plan })),
+      created_at: setup,
+      updated_at: setup,
+    },
+    {
+      id: 361_100_000_002n,
+      version: setup,
+      custom_object_key: planObject,
+      key: "organization",
+      title: "Organization",
+      type: "lookup",
+      active: true,
+      required: false,
+      relationship_target_type: "zen:organization",
+      created_at: setup,
+      updated_at: setup,
+    },
+  ];
+  const customObjectRecords: Array<CustomObjectRecord> = organizations.map((organization, o) => ({
+    id: `01JDEMOPLAN${String(o).padStart(15, "0")}`,
+    version: organization.updated_at,
+    custom_object_key: planObject,
+    name: `${organization.name} plan`,
+    external_id: null,
+    custom_object_fields: JSON.stringify({
+      tier: plans[o % plans.length],
+      organization: String(organization.id),
+    }),
+    created_at: organization.created_at,
+    updated_at: organization.updated_at,
+  }));
+
   return {
     brands,
     groups: groupRows,
@@ -418,6 +478,9 @@ export const setupRows = ({ faker, now }: Demo.DemoContext) => {
     schedules,
     macros,
     talk_lines: lines,
+    custom_objects: customObjects,
+    custom_object_fields: customObjectFields,
+    custom_object_records: customObjectRecords,
     csat_surveys: surveys,
     organizations,
     ...helpCenterSetup,

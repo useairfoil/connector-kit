@@ -51,6 +51,8 @@ export const issue = {
   sla_type: "all",
   sla_started_at: null,
   sla_breaches_at: null,
+  sla_medium_risk_at: null,
+  sla_high_risk_at: null,
   customer_ticket_count: 0,
   integration_source_type: null,
   trashed: null,

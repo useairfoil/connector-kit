@@ -71,6 +71,11 @@ export const IssueObjectSchema = IssueSchema.mapFields((fields) => ({
   assignees: optionalList(user),
   // Set on pull requests, which the issues list also returns.
   pull_request: Schema.optionalKey(Schema.Unknown),
+  // Link counts, so `issue_links` can skip issues without links.
+  sub_issues_summary: Schema.optionalKey(Schema.Struct({ total: Schema.Number })),
+  issue_dependencies_summary: Schema.optionalKey(
+    Schema.Struct({ total_blocked_by: Schema.Number, total_blocking: Schema.Number }),
+  ),
 }));
 
 export type IssueObject = Schema.Schema.Type<typeof IssueObjectSchema>;

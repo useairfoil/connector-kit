@@ -2,6 +2,7 @@ import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
 import {
+  JsonText,
   Long,
   OptionalRef,
   OptionalString,
@@ -66,12 +67,8 @@ export const ProjectSchema = Schema.Struct({
   label_ids: Schema.Array(Schema.String).pipe(
     Schema.annotateKey({ description: "Project labels." }),
   ),
-  team_ids: RefList.pipe(
-    Schema.annotateKey({ description: "Teams the project belongs to. Reads up to 50." }),
-  ),
-  member_ids: RefList.pipe(
-    Schema.annotateKey({ description: "Project members. Reads up to 100." }),
-  ),
+  team_ids: RefList.pipe(Schema.annotateKey({ description: "Teams the project belongs to." })),
+  member_ids: RefList.pipe(Schema.annotateKey({ description: "Project members." })),
   trashed: Schema.NullOr(Schema.Boolean).pipe(
     Schema.annotateKey({ description: "Whether the project is in the trash." }),
   ),
@@ -207,4 +204,37 @@ export type ProjectRelation = Schema.Schema.Type<typeof ProjectRelationSchema>;
 
 export const ProjectRelationObjectSchema = ProjectRelationSchema.mapFields((fields) =>
   Struct.omit(fields, ["version"]),
+);
+
+export const ProjectHistorySchema = Schema.Struct({
+  ...common("History entry"),
+  project_id: Schema.String.pipe(Schema.annotateKey({ description: "Project that changed." })),
+  entries: JsonText.pipe(
+    Schema.annotateKey({ description: "Recorded changes and their times, as JSON." }),
+  ),
+})
+  .annotate({ description: "Linear project history." })
+  .pipe(Iceberg.identifier("id"));
+
+export type ProjectHistory = Schema.Schema.Type<typeof ProjectHistorySchema>;
+
+export const ProjectHistoryObjectSchema = ProjectHistorySchema.mapFields((fields) =>
+  Struct.omit(fields, ["version", "project_id"]),
+);
+
+export const ProjectExternalLinkSchema = Schema.Struct({
+  ...common("Link"),
+  project_id: Schema.String.pipe(Schema.annotateKey({ description: "Project." })),
+  label: Schema.String.pipe(Schema.annotateKey({ description: "Link label." })),
+  url: Schema.String.pipe(Schema.annotateKey({ description: "Link URL." })),
+  sort_order: Schema.Finite.pipe(Schema.annotateKey({ description: "Order in the list." })),
+  creator_id: OptionalRef.pipe(Schema.annotateKey({ description: "User who added the link." })),
+})
+  .annotate({ description: "Links attached to Linear projects." })
+  .pipe(Iceberg.identifier("id"));
+
+export type ProjectExternalLink = Schema.Schema.Type<typeof ProjectExternalLinkSchema>;
+
+export const ProjectExternalLinkObjectSchema = ProjectExternalLinkSchema.mapFields((fields) =>
+  Struct.omit(fields, ["version", "project_id"]),
 );

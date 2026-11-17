@@ -6,8 +6,15 @@ import type { ZendeskConfig } from "./manifest";
 import * as ZendeskClient from "./client/client";
 import { makeCsatSurveys, makeSurveyResponses } from "./resources/csat";
 import {
+  makeCustomObjectFields,
+  makeCustomObjectRecords,
+  makeCustomObjects,
+} from "./resources/custom-objects";
+import {
+  makeArticleTranslations,
   makeArticles,
   makeCategories,
+  makeCommunityComments,
   makeCommunityPosts,
   makeCommunityTopics,
   makeSections,
@@ -28,9 +35,13 @@ import {
 import { makeGroupMemberships, makeOrganizationMemberships } from "./resources/memberships";
 import { makeOrganizations } from "./resources/organizations";
 import { makeSatisfactionRatings } from "./resources/satisfaction-ratings";
-import { makeTalkLines } from "./resources/talk";
+import { makeTalkCalls, makeTalkLegs, makeTalkLines } from "./resources/talk";
 import { makeTicketComments } from "./resources/ticket-comments";
-import { makeTicketFieldHistory, makeTicketMetricEvents } from "./resources/ticket-events";
+import {
+  makeTicketAudits,
+  makeTicketFieldHistory,
+  makeTicketMetricEvents,
+} from "./resources/ticket-events";
 import { makeTickets } from "./resources/tickets";
 import { makeUsers } from "./resources/users";
 export { ZendeskConfigDef, manifest } from "./manifest";
@@ -56,6 +67,7 @@ export const make = Effect.fnUntraced(function* () {
       makeCsatSurveys(client),
       makeTicketFieldHistory(client),
       makeTicketMetricEvents(client),
+      makeTicketAudits(client),
       makeSatisfactionRatings(client),
       makeGroupMemberships(client),
       makeOrganizationMemberships(client),
@@ -66,11 +78,18 @@ export const make = Effect.fnUntraced(function* () {
       makeSchedules(client),
       makeMacros(client),
       makeArticles(client),
+      makeArticleTranslations(client),
       makeSections(client),
       makeCategories(client),
       makeCommunityPosts(client),
+      makeCommunityComments(client),
       makeCommunityTopics(client),
       makeTalkLines(client),
+      makeTalkCalls(client),
+      makeTalkLegs(client),
+      makeCustomObjects(client),
+      makeCustomObjectFields(client),
+      makeCustomObjectRecords(client),
     ],
   });
 });

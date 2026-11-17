@@ -3561,6 +3561,1174 @@
               "x-request-id": "a5907c205df47938-AMD"
             }
           }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { \\\\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n  identifier number title description url branch_name: branchName\\\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\\\n  external_user_creator_id: externalUserCreator { id }\\\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\\\n  customer_ticket_count: customerTicketCount\\\\n  integration_source_type: integrationSourceType trashed }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"1553\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "1553",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { \\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n  identifier number title description url branch_name: branchName\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\n  external_user_creator_id: externalUserCreator { id }\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\n  customer_ticket_count: customerTicketCount\\n  integration_source_type: integrationSourceType trashed }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issues\":{\"nodes\":[{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T15:37:04.798Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-12-connector-archive-history-check\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T15:37:04.757Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"identifier\":\"JOH-12\",\"integration_source_type\":null,\"label_ids\":[],\"number\":12,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Connector archive history check\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T15:37:04.757Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-12/connector-archive-history-check\"}],\"pageInfo\":{\"endCursor\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"hasNextPage\":true}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b77f72af21a3b2-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 15:23:37 GMT",
+              "etag": "W/\"5a8-wBySzzCzzOpQANl1QFPirXYBW8Q\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "13",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999987",
+              "x-ratelimit-complexity-reset": "1794846216939",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2499",
+              "x-ratelimit-requests-reset": "1794846216939",
+              "x-request-id": "a5b77f72c8b27935-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { \\\\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n  identifier number title description url branch_name: branchName\\\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\\\n  external_user_creator_id: externalUserCreator { id }\\\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\\\n  customer_ticket_count: customerTicketCount\\\\n  integration_source_type: integrationSourceType trashed }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":250,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"1555\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "1555",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { \\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n  identifier number title description url branch_name: branchName\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\n  external_user_creator_id: externalUserCreator { id }\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\n  customer_ticket_count: customerTicketCount\\n  integration_source_type: integrationSourceType trashed }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":250,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issues\":{\"nodes\":[{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T15:37:04.798Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-12-connector-archive-history-check\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T15:37:04.757Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"identifier\":\"JOH-12\",\"integration_source_type\":null,\"label_ids\":[],\"number\":12,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Connector archive history check\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T15:37:04.757Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-12/connector-archive-history-check\"},{\"added_to_cycle_at\":\"2026-10-16T10:20:54.676Z\",\"added_to_project_at\":\"2026-10-16T10:20:54.676Z\",\"added_to_team_at\":\"2026-10-16T10:20:54.676Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-11-fix-cookie-domain\",\"canceled_at\":null,\"completed_at\":\"2026-10-16T10:20:55.224Z\",\"created_at\":\"2026-10-16T10:20:54.580Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":{\"id\":\"17c529d6-ad61-48d1-8d21-351ad5da9447\"},\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":1,\"external_user_creator_id\":null,\"id\":\"25204671-45c9-4a37-8d4e-8a5386e6cb85\",\"identifier\":\"JOH-11\",\"integration_source_type\":null,\"label_ids\":[],\"number\":11,\"parent_id\":{\"id\":\"b567720b-711e-4b6a-b268-427908f0e40c\"},\"previous_identifiers\":[],\"priority\":2,\"priority_label\":\"High\",\"project_id\":{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\"},\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"49a20839-7396-4941-8335-39bfbcd5fc8c\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Fix cookie domain\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:20:55.253Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-11/fix-cookie-domain\"},{\"added_to_cycle_at\":\"2026-11-15T18:31:42.201Z\",\"added_to_project_at\":\"2026-10-16T10:20:54.019Z\",\"added_to_team_at\":\"2026-10-16T10:20:54.019Z\",\"archived_at\":null,\"assignee_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-10-login-fails-on-safari-17\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:53.938Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":{\"id\":\"5cfa74e6-c964-4418-9c80-ef0f3e6b535b\"},\"delegate_id\":null,\"description\":\"Steps:\\n\\n1. Open Safari\\n2. Log in\",\"due_date\":\"2026-10-30\",\"estimate\":3,\"external_user_creator_id\":null,\"id\":\"b567720b-711e-4b6a-b268-427908f0e40c\",\"identifier\":\"JOH-10\",\"integration_source_type\":null,\"label_ids\":[\"3c1b8522-3996-4d29-a6c3-67deacbb98d0\",\"5dd8040c-c281-4c3e-90f6-595e4b7924ef\"],\"number\":10,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":2,\"priority_label\":\"High\",\"project_id\":{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\"},\"project_milestone_id\":{\"id\":\"26638617-05e2-45d5-8c90-0e38317ba910\"},\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":\"2026-10-16T10:20:53.990Z\",\"started_triage_at\":null,\"state_id\":{\"id\":\"d3eaf3be-ca54-42f6-8204-3c98a68a8183\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Login fails on Safari 17\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-29T19:15:29.504Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-10/login-fails-on-safari-17\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T10:20:14.161Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-9-login-fails-on-safari-copy\",\"canceled_at\":\"2026-10-16T10:20:56.924Z\",\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:14.112Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"1d4724af-362f-413a-8017-467deed3895b\",\"identifier\":\"JOH-9\",\"integration_source_type\":null,\"label_ids\":[],\"number\":9,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":4,\"priority_label\":\"Low\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"2acccdfc-7d3f-4c01-84bf-68c4c79e7e7a\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Login fails on Safari (copy)\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:20:56.878Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-9/login-fails-on-safari-copy\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":\"2026-10-16T10:20:13.577Z\",\"added_to_team_at\":\"2026-10-16T10:20:13.577Z\",\"archived_at\":null,\"assignee_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-8-dashboard-loads-slowly\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:13.510Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\",\"identifier\":\"JOH-8\",\"integration_source_type\":null,\"label_ids\":[\"5dd8040c-c281-4c3e-90f6-595e4b7924ef\"],\"number\":8,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":1,\"priority_label\":\"Urgent\",\"project_id\":{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\"},\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":\"2026-10-16T10:31:39.572Z\",\"started_triage_at\":null,\"state_id\":{\"id\":\"0eb344b1-e812-41c5-8c86-bc72fdfbf253\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Dashboard loads slowly\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:31:39.606Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-8/dashboard-loads-slowly\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:56:50.484Z\",\"archived_at\":\"2026-10-16T09:59:15.637Z\",\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-7-delete-test-b\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:56:50.442Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"acccfd1c-0969-4edc-b4c7-86f99ddcdd61\",\"identifier\":\"JOH-7\",\"integration_source_type\":null,\"label_ids\":[],\"number\":7,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Delete test B\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:57:45.207Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-7/delete-test-b\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:56:49.915Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-6-delete-test-a\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:56:49.892Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0bd94b5d-3bf5-4a90-af8c-7fa4ab3a7d06\",\"identifier\":\"JOH-6\",\"integration_source_type\":null,\"label_ids\":[],\"number\":6,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Delete test A\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:57:45.198Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-6/delete-test-a\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:56:49.347Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-5-delete-test-a-dup\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:56:49.310Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0d3b1639-f6f2-4341-9d29-01c2e6ca3eb2\",\"identifier\":\"JOH-5\",\"integration_source_type\":null,\"label_ids\":[],\"number\":5,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Delete test A (dup)\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:18:25.583Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-5/delete-test-a-dup\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.123Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-2-connect-your-tools\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"Integrations turn Linear into your source of truth around product development. Keep data in sync, and eliminate manual updates between tools.\\n\\n![connect-your-tools.png](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/c2eae035-37e2-4754-adcb-b8305431aa1f/c92d70c7-e6d0-4fa2-a0fd-78f6e780993a)\\n\\n### **Key integrations**\\n\\n* [**Slack**](<https://linear.app/settings/integrations/slack>)\\n  Create issues from Slack messages and sync threads\\n* **[GitHub](<https://linear.app/settings/integrations/github>) / [GitLab](<https://linear.app/settings/integrations/gitlab>)**\\n  Automate your pull request, commit workflows, and keep issues synced both ways\\n* [**Agents**](<https://linear.app/integrations/agents>)\\n  Deploy AI agents that work alongside you as teammates\\n\\n### **Browse all integrations**\\n\\nDiscover 150+ available connections in our [integration directory](<https://linear.app/integrations>) – from bug creation via support tools (Intercom, Zendesk), to issues created from design explorations (Figma).\\n\\n### **Linear API**\\n\\nIf you need something more custom, you can build directly on the Linear API (built on GraphQL). [See our Dev Docs to learn more](<https://linear.app/developers>).\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"fa4ec16a-f34b-4caf-ac87-91287926d1bf\",\"identifier\":\"JOH-2\",\"integration_source_type\":null,\"label_ids\":[],\"number\":2,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Connect your tools\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-2/connect-your-tools\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.165Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-3-import-your-data\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"Sync data between Linear and your other tools.\\n\\n![import-your-data.png](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/80d7e050-dd1f-4d4f-8257-b29c16087017/65c16454-30f3-4f4a-8f25-c2428d64ff57)\\n\\nWhether you're exploring Linear, running a pilot, or ready for full migration, we’ve got you covered. \\n\\n### **Exploring Linear:**\\n\\n* [**Pitch Linear**](<https://linear.app/switch/pitch-guide>)\\n  Build your business case and get organizational buy-in\\n* [**Run a pilot**](<https://linear.app/switch/pilot-guide>)\\n  Test Linear with a small team before rolling out company-wide\\n\\n### **Ready to migrate:**\\n\\n* [**Migration guide**](<https://linear.app/switch/migration-guide>) \\n  Step-by-step process for importing data and rolling out Linear\\n\\n---\\n\\nIf you have any questions hit `?` in the bottom left > Contact us.\\n\\n![contactlinear (1).gif](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/191f6985-8562-4f62-9482-a094b69c4756/0e4ff63b-3da2-4699-912b-04afb68511e8)\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8d3caca7-518e-41fd-9703-25b6c717f260\",\"identifier\":\"JOH-3\",\"integration_source_type\":null,\"label_ids\":[],\"number\":3,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Import your data\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-3/import-your-data\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.079Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-1-get-familiar-with-linear\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"Welcome to Linear! \\n\\nWatch an introductory video and access a list of resources below.\\n\\n[LinearH264Version_1.mp4](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/a044fb03-9b84-470c-ab6f-8eae613e2529/98d7274d-de7f-4910-b3f3-f72e8e286a98)\\n\\n### **Choose your setup guide** based on your company stage:\\n\\n* [Small teams](<https://linear.app/docs/how-to-use-linear-small-teams>)\\n  For early-stage startups and projects\\n* [Startups & mid-size companies](<https://linear.app/docs/how-to-use-linear-startups-mid-size-companies>)\\n  For growing teams with cross-functional needs\\n* [Large & scaling companies](<https://linear.app/docs/how-to-use-linear-large-scaling-companies>)\\n  For enterprise and high-growth teams with complex workflows\\n\\n### **Need help getting started?**\\n\\n* [Join our Slack community](<https://linear.app/join-slack>)\\n  Connect with other Linear users and get tips\\n* [Join a live ](<https://lu.ma/welcome-to-linear?utm_source=docs>)[onboarding](<https://lu.ma/welcome-to-linear?utm_source=onboarding>)[ ](<https://lu.ma/welcome-to-linear?utm_source=docs>)[session](<https://lu.ma/welcome-to-linear?utm_source=onboarding>)\\n  Learn the essentials and see demos of core workflows\\n\\n---\\n\\nIf you have any questions hit `?` in the bottom left > Contact us.\\n\\n![contactlinear (1).gif](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/bc9bbf62-4192-411f-88f6-c89c9150503e/4df0346e-803b-4f58-8527-4aeb30d88411)\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8c75af1c-6960-45e0-a949-500baa23a8b7\",\"identifier\":\"JOH-1\",\"integration_source_type\":null,\"label_ids\":[],\"number\":1,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Get familiar with Linear\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-1/get-familiar-with-linear\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.208Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-4-set-up-your-teams\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"This workspace is a container for your organization’s work. \\n\\n* [Learn more about Workspaces](<https://linear.app/docs/workspaces>)\\n  How to configure settings and workflows \\n\\nTeams are how you organize people and work in Linear.\\n\\n* [Learn about Teams](<https://linear.app/docs/teams>)\\n  How to structure teams and configure workflows\\n\\nTeams are made of members with defined roles (Admin, Member, Guest).\\n\\n* [Learn more about Members](<https://linear.app/docs/invite-members>)\\n  Add your team and assign roles\\n\\n---\\n\\nReady to add your team? Invite via CSV or a unique link in [settings](<http://linear.app/settings/members>).\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"identifier\":\"JOH-4\",\"integration_source_type\":null,\"label_ids\":[],\"number\":4,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Set up your teams\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-4/set-up-your-teams\"}],\"pageInfo\":{\"endCursor\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b77f7519a4a3b2-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 15:23:37 GMT",
+              "etag": "W/\"506d-iwnvoD5mkPM5QLjSldTE56aEHyk\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "13",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999987",
+              "x-ratelimit-complexity-reset": "1794846217362",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2498",
+              "x-ratelimit-requests-reset": "1794846217362",
+              "x-request-id": "a5b77f753c6e7932-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { \\\\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n  identifier number title description url branch_name: branchName\\\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\\\n  external_user_creator_id: externalUserCreator { id }\\\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\\\n  customer_ticket_count: customerTicketCount\\\\n  integration_source_type: integrationSourceType trashed }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":250,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"1555\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "1555",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { \\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n  identifier number title description url branch_name: branchName\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\n  external_user_creator_id: externalUserCreator { id }\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\n  customer_ticket_count: customerTicketCount\\n  integration_source_type: integrationSourceType trashed }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":250,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issues\":{\"nodes\":[{\"added_to_cycle_at\":\"2026-11-15T18:31:42.201Z\",\"added_to_project_at\":\"2026-10-16T10:20:54.019Z\",\"added_to_team_at\":\"2026-10-16T10:20:54.019Z\",\"archived_at\":null,\"assignee_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-10-login-fails-on-safari-17\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:53.938Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":{\"id\":\"5cfa74e6-c964-4418-9c80-ef0f3e6b535b\"},\"delegate_id\":null,\"description\":\"Steps:\\n\\n1. Open Safari\\n2. Log in\",\"due_date\":\"2026-10-30\",\"estimate\":3,\"external_user_creator_id\":null,\"id\":\"b567720b-711e-4b6a-b268-427908f0e40c\",\"identifier\":\"JOH-10\",\"integration_source_type\":null,\"label_ids\":[\"3c1b8522-3996-4d29-a6c3-67deacbb98d0\",\"5dd8040c-c281-4c3e-90f6-595e4b7924ef\"],\"number\":10,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":2,\"priority_label\":\"High\",\"project_id\":{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\"},\"project_milestone_id\":{\"id\":\"26638617-05e2-45d5-8c90-0e38317ba910\"},\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":\"2026-10-16T10:20:53.990Z\",\"started_triage_at\":null,\"state_id\":{\"id\":\"d3eaf3be-ca54-42f6-8204-3c98a68a8183\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Login fails on Safari 17\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-29T19:15:29.504Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-10/login-fails-on-safari-17\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T15:37:04.798Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-12-connector-archive-history-check\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T15:37:04.757Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"identifier\":\"JOH-12\",\"integration_source_type\":null,\"label_ids\":[],\"number\":12,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Connector archive history check\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T15:37:04.757Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-12/connector-archive-history-check\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":\"2026-10-16T10:20:13.577Z\",\"added_to_team_at\":\"2026-10-16T10:20:13.577Z\",\"archived_at\":null,\"assignee_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-8-dashboard-loads-slowly\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:13.510Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\",\"identifier\":\"JOH-8\",\"integration_source_type\":null,\"label_ids\":[\"5dd8040c-c281-4c3e-90f6-595e4b7924ef\"],\"number\":8,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":1,\"priority_label\":\"Urgent\",\"project_id\":{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\"},\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":\"2026-10-16T10:31:39.572Z\",\"started_triage_at\":null,\"state_id\":{\"id\":\"0eb344b1-e812-41c5-8c86-bc72fdfbf253\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Dashboard loads slowly\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:31:39.606Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-8/dashboard-loads-slowly\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T10:20:14.161Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-9-login-fails-on-safari-copy\",\"canceled_at\":\"2026-10-16T10:20:56.924Z\",\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:14.112Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"1d4724af-362f-413a-8017-467deed3895b\",\"identifier\":\"JOH-9\",\"integration_source_type\":null,\"label_ids\":[],\"number\":9,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":4,\"priority_label\":\"Low\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"2acccdfc-7d3f-4c01-84bf-68c4c79e7e7a\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Login fails on Safari (copy)\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:20:56.878Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-9/login-fails-on-safari-copy\"},{\"added_to_cycle_at\":\"2026-10-16T10:20:54.676Z\",\"added_to_project_at\":\"2026-10-16T10:20:54.676Z\",\"added_to_team_at\":\"2026-10-16T10:20:54.676Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-11-fix-cookie-domain\",\"canceled_at\":null,\"completed_at\":\"2026-10-16T10:20:55.224Z\",\"created_at\":\"2026-10-16T10:20:54.580Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":{\"id\":\"17c529d6-ad61-48d1-8d21-351ad5da9447\"},\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":1,\"external_user_creator_id\":null,\"id\":\"25204671-45c9-4a37-8d4e-8a5386e6cb85\",\"identifier\":\"JOH-11\",\"integration_source_type\":null,\"label_ids\":[],\"number\":11,\"parent_id\":{\"id\":\"b567720b-711e-4b6a-b268-427908f0e40c\"},\"previous_identifiers\":[],\"priority\":2,\"priority_label\":\"High\",\"project_id\":{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\"},\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"49a20839-7396-4941-8335-39bfbcd5fc8c\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Fix cookie domain\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:20:55.253Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-11/fix-cookie-domain\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:56:49.347Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-5-delete-test-a-dup\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:56:49.310Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0d3b1639-f6f2-4341-9d29-01c2e6ca3eb2\",\"identifier\":\"JOH-5\",\"integration_source_type\":null,\"label_ids\":[],\"number\":5,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Delete test A (dup)\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:18:25.583Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-5/delete-test-a-dup\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:56:50.484Z\",\"archived_at\":\"2026-10-16T09:59:15.637Z\",\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-7-delete-test-b\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:56:50.442Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"acccfd1c-0969-4edc-b4c7-86f99ddcdd61\",\"identifier\":\"JOH-7\",\"integration_source_type\":null,\"label_ids\":[],\"number\":7,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Delete test B\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:57:45.207Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-7/delete-test-b\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:56:49.915Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-6-delete-test-a\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:56:49.892Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0bd94b5d-3bf5-4a90-af8c-7fa4ab3a7d06\",\"identifier\":\"JOH-6\",\"integration_source_type\":null,\"label_ids\":[],\"number\":6,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Delete test A\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:57:45.198Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-6/delete-test-a\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.123Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-2-connect-your-tools\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"Integrations turn Linear into your source of truth around product development. Keep data in sync, and eliminate manual updates between tools.\\n\\n![connect-your-tools.png](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/c2eae035-37e2-4754-adcb-b8305431aa1f/c92d70c7-e6d0-4fa2-a0fd-78f6e780993a)\\n\\n### **Key integrations**\\n\\n* [**Slack**](<https://linear.app/settings/integrations/slack>)\\n  Create issues from Slack messages and sync threads\\n* **[GitHub](<https://linear.app/settings/integrations/github>) / [GitLab](<https://linear.app/settings/integrations/gitlab>)**\\n  Automate your pull request, commit workflows, and keep issues synced both ways\\n* [**Agents**](<https://linear.app/integrations/agents>)\\n  Deploy AI agents that work alongside you as teammates\\n\\n### **Browse all integrations**\\n\\nDiscover 150+ available connections in our [integration directory](<https://linear.app/integrations>) – from bug creation via support tools (Intercom, Zendesk), to issues created from design explorations (Figma).\\n\\n### **Linear API**\\n\\nIf you need something more custom, you can build directly on the Linear API (built on GraphQL). [See our Dev Docs to learn more](<https://linear.app/developers>).\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"fa4ec16a-f34b-4caf-ac87-91287926d1bf\",\"identifier\":\"JOH-2\",\"integration_source_type\":null,\"label_ids\":[],\"number\":2,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Connect your tools\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-2/connect-your-tools\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.165Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-3-import-your-data\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"Sync data between Linear and your other tools.\\n\\n![import-your-data.png](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/80d7e050-dd1f-4d4f-8257-b29c16087017/65c16454-30f3-4f4a-8f25-c2428d64ff57)\\n\\nWhether you're exploring Linear, running a pilot, or ready for full migration, we’ve got you covered. \\n\\n### **Exploring Linear:**\\n\\n* [**Pitch Linear**](<https://linear.app/switch/pitch-guide>)\\n  Build your business case and get organizational buy-in\\n* [**Run a pilot**](<https://linear.app/switch/pilot-guide>)\\n  Test Linear with a small team before rolling out company-wide\\n\\n### **Ready to migrate:**\\n\\n* [**Migration guide**](<https://linear.app/switch/migration-guide>) \\n  Step-by-step process for importing data and rolling out Linear\\n\\n---\\n\\nIf you have any questions hit `?` in the bottom left > Contact us.\\n\\n![contactlinear (1).gif](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/191f6985-8562-4f62-9482-a094b69c4756/0e4ff63b-3da2-4699-912b-04afb68511e8)\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8d3caca7-518e-41fd-9703-25b6c717f260\",\"identifier\":\"JOH-3\",\"integration_source_type\":null,\"label_ids\":[],\"number\":3,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Import your data\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-3/import-your-data\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.079Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-1-get-familiar-with-linear\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"Welcome to Linear! \\n\\nWatch an introductory video and access a list of resources below.\\n\\n[LinearH264Version_1.mp4](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/a044fb03-9b84-470c-ab6f-8eae613e2529/98d7274d-de7f-4910-b3f3-f72e8e286a98)\\n\\n### **Choose your setup guide** based on your company stage:\\n\\n* [Small teams](<https://linear.app/docs/how-to-use-linear-small-teams>)\\n  For early-stage startups and projects\\n* [Startups & mid-size companies](<https://linear.app/docs/how-to-use-linear-startups-mid-size-companies>)\\n  For growing teams with cross-functional needs\\n* [Large & scaling companies](<https://linear.app/docs/how-to-use-linear-large-scaling-companies>)\\n  For enterprise and high-growth teams with complex workflows\\n\\n### **Need help getting started?**\\n\\n* [Join our Slack community](<https://linear.app/join-slack>)\\n  Connect with other Linear users and get tips\\n* [Join a live ](<https://lu.ma/welcome-to-linear?utm_source=docs>)[onboarding](<https://lu.ma/welcome-to-linear?utm_source=onboarding>)[ ](<https://lu.ma/welcome-to-linear?utm_source=docs>)[session](<https://lu.ma/welcome-to-linear?utm_source=onboarding>)\\n  Learn the essentials and see demos of core workflows\\n\\n---\\n\\nIf you have any questions hit `?` in the bottom left > Contact us.\\n\\n![contactlinear (1).gif](https://uploads.linear.app/fe63b3e2-bf87-46c0-8784-cd7d639287c8/bc9bbf62-4192-411f-88f6-c89c9150503e/4df0346e-803b-4f58-8527-4aeb30d88411)\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"8c75af1c-6960-45e0-a949-500baa23a8b7\",\"identifier\":\"JOH-1\",\"integration_source_type\":null,\"label_ids\":[],\"number\":1,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Get familiar with Linear\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-1/get-familiar-with-linear\"},{\"added_to_cycle_at\":null,\"added_to_project_at\":null,\"added_to_team_at\":\"2026-10-16T09:32:02.208Z\",\"archived_at\":null,\"assignee_id\":null,\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-4-set-up-your-teams\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T09:32:01.690Z\",\"creator_id\":null,\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":\"This workspace is a container for your organization’s work. \\n\\n* [Learn more about Workspaces](<https://linear.app/docs/workspaces>)\\n  How to configure settings and workflows \\n\\nTeams are how you organize people and work in Linear.\\n\\n* [Learn about Teams](<https://linear.app/docs/teams>)\\n  How to structure teams and configure workflows\\n\\nTeams are made of members with defined roles (Admin, Member, Guest).\\n\\n* [Learn more about Members](<https://linear.app/docs/invite-members>)\\n  Add your team and assign roles\\n\\n---\\n\\nReady to add your team? Invite via CSV or a unique link in [settings](<http://linear.app/settings/members>).\",\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"identifier\":\"JOH-4\",\"integration_source_type\":null,\"label_ids\":[],\"number\":4,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":0,\"priority_label\":\"No priority\",\"project_id\":null,\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":null,\"started_triage_at\":null,\"state_id\":{\"id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Set up your teams\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T09:32:01.690Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-4/set-up-your-teams\"}],\"pageInfo\":{\"endCursor\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b77f781d12a3b2-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 15:23:37 GMT",
+              "etag": "W/\"506d-a9AI6TCdV+f8n0EH88+l4gdSESQ\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "13",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999974",
+              "x-ratelimit-complexity-reset": "1794846217829",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2497",
+              "x-ratelimit-requests-reset": "1794846217829",
+              "x-request-id": "a5b77f7829a87935-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issue($id: String!) {\\\\n  issue(id: $id) { \\\\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n  identifier number title description url branch_name: branchName\\\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\\\n  external_user_creator_id: externalUserCreator { id }\\\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\\\n  customer_ticket_count: customerTicketCount\\\\n  integration_source_type: integrationSourceType trashed }\\\\n}\\\",\\\"variables\\\":{\\\"id\\\":\\\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"1384\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "1384",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issue($id: String!) {\\n  issue(id: $id) { \\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n  identifier number title description url branch_name: branchName\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\n  external_user_creator_id: externalUserCreator { id }\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\n  customer_ticket_count: customerTicketCount\\n  integration_source_type: integrationSourceType trashed }\\n}\",\"variables\":{\"id\":\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issue\":{\"added_to_cycle_at\":null,\"added_to_project_at\":\"2026-10-16T10:20:13.577Z\",\"added_to_team_at\":\"2026-10-16T10:20:13.577Z\",\"archived_at\":null,\"assignee_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"auto_archived_at\":null,\"auto_closed_at\":null,\"branch_name\":\"acetone_beaches7s/joh-8-dashboard-loads-slowly\",\"canceled_at\":null,\"completed_at\":null,\"created_at\":\"2026-10-16T10:20:13.510Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"customer_ticket_count\":0,\"cycle_id\":null,\"delegate_id\":null,\"description\":null,\"due_date\":null,\"estimate\":null,\"external_user_creator_id\":null,\"id\":\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\",\"identifier\":\"JOH-8\",\"integration_source_type\":null,\"label_ids\":[\"5dd8040c-c281-4c3e-90f6-595e4b7924ef\"],\"number\":8,\"parent_id\":null,\"previous_identifiers\":[],\"priority\":1,\"priority_label\":\"Urgent\",\"project_id\":{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\"},\"project_milestone_id\":null,\"sla_breaches_at\":null,\"sla_high_risk_at\":null,\"sla_medium_risk_at\":null,\"sla_started_at\":null,\"sla_type\":\"all\",\"snoozed_by_id\":null,\"snoozed_until_at\":null,\"source_comment_id\":null,\"started_at\":\"2026-10-16T10:31:39.572Z\",\"started_triage_at\":null,\"state_id\":{\"id\":\"0eb344b1-e812-41c5-8c86-bc72fdfbf253\"},\"team_id\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"},\"title\":\"Dashboard loads slowly\",\"trashed\":null,\"triaged_at\":null,\"updated_at\":\"2026-10-16T10:31:39.606Z\",\"url\":\"https://linear.app/john-doe-demo/issue/JOH-8/dashboard-loads-slowly\"}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b77f7abfe9a3b2-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 15:23:38 GMT",
+              "etag": "W/\"5ca-6uYNveoEb2vToLjVsNqXc2DcCpE\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "11",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999989",
+              "x-ratelimit-complexity-reset": "1794846218221",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2497",
+              "x-ratelimit-requests-reset": "1794846218221",
+              "x-request-id": "a5b77f7adce17941-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issue($id: String!) {\\\\n  issue(id: $id) { \\\\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n  identifier number title description url branch_name: branchName\\\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\\\n  external_user_creator_id: externalUserCreator { id }\\\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\\\n  customer_ticket_count: customerTicketCount\\\\n  integration_source_type: integrationSourceType trashed }\\\\n}\\\",\\\"variables\\\":{\\\"id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"1384\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "1384",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issue($id: String!) {\\n  issue(id: $id) { \\n  id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n  identifier number title description url branch_name: branchName\\n  priority priority_label: priorityLabel estimate due_date: dueDate\\n  creator_id: creator { id } assignee_id: assignee { id } delegate_id: delegate { id }\\n  snoozed_by_id: snoozedBy { id } state_id: state { id } team_id: team { id }\\n  project_id: project { id } project_milestone_id: projectMilestone { id }\\n  cycle_id: cycle { id } parent_id: parent { id } source_comment_id: sourceComment { id }\\n  external_user_creator_id: externalUserCreator { id }\\n  label_ids: labelIds previous_identifiers: previousIdentifiers\\n  started_at: startedAt completed_at: completedAt canceled_at: canceledAt\\n  started_triage_at: startedTriageAt triaged_at: triagedAt auto_closed_at: autoClosedAt\\n  auto_archived_at: autoArchivedAt added_to_cycle_at: addedToCycleAt\\n  added_to_project_at: addedToProjectAt added_to_team_at: addedToTeamAt\\n  snoozed_until_at: snoozedUntilAt sla_type: slaType sla_started_at: slaStartedAt\\n  sla_breaches_at: slaBreachesAt sla_medium_risk_at: slaMediumRiskAt sla_high_risk_at: slaHighRiskAt\\n  customer_ticket_count: customerTicketCount\\n  integration_source_type: integrationSourceType trashed }\\n}\",\"variables\":{\"id\":\"00000000-0000-4000-8000-000000000000\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":null,\"errors\":[{\"extensions\":{\"code\":\"INPUT_ERROR\",\"statusCode\":400,\"type\":\"invalid input\",\"userError\":true,\"userPresentableMessage\":\"Could not find referenced Issue.\"},\"locations\":[{\"column\":3,\"line\":2}],\"message\":\"Entity not found: Issue\",\"path\":[\"issue\"]}]}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b77f7cfa51a3b2-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 15:23:40 GMT",
+              "etag": "W/\"10d-nY7sJugkmZdmyS3rr29g3PBMU8c\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "11",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999989",
+              "x-ratelimit-complexity-reset": "1794846219674",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2497",
+              "x-ratelimit-requests-reset": "1794846219674",
+              "x-request-id": "a5b77f7d0ded7932-AMD"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description content url icon color status_id: status { id } priority\\\\n    priority_label: priorityLabel health health_updated_at: healthUpdatedAt progress scope\\\\n    lead_id: lead { id } creator_id: creator { id }\\\\n    converted_from_issue_id: convertedFromIssue { id } start_date: startDate\\\\n    target_date: targetDate started_at: startedAt completed_at: completedAt\\\\n    canceled_at: canceledAt auto_archived_at: autoArchivedAt label_ids: labelIds\\\\n    team_ids: teams(first: 50) { nodes { id } }\\\\n    member_ids: members(first: 100) { nodes { id } }\\\\n    trashed }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"943\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "943",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description content url icon color status_id: status { id } priority\\n    priority_label: priorityLabel health health_updated_at: healthUpdatedAt progress scope\\n    lead_id: lead { id } creator_id: creator { id }\\n    converted_from_issue_id: convertedFromIssue { id } start_date: startDate\\n    target_date: targetDate started_at: startedAt completed_at: completedAt\\n    canceled_at: canceledAt auto_archived_at: autoArchivedAt label_ids: labelIds\\n    team_ids: teams(first: 50) { nodes { id } }\\n    member_ids: members(first: 100) { nodes { id } }\\n    trashed }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"archived_at\":null,\"auto_archived_at\":null,\"canceled_at\":null,\"color\":\"#f2994a\",\"completed_at\":null,\"content\":null,\"converted_from_issue_id\":null,\"created_at\":\"2026-10-16T10:20:02.201Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"description\":\"\",\"health\":null,\"health_updated_at\":null,\"icon\":null,\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"label_ids\":[],\"lead_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"member_ids\":{\"nodes\":[{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"}]},\"name\":\"Seed project two\",\"priority\":0,\"priority_label\":\"No priority\",\"progress\":0.25,\"scope\":1,\"start_date\":null,\"started_at\":null,\"status_id\":{\"id\":\"ea7b6389-bb19-4f56-9320-fceb53367d72\"},\"target_date\":\"2026-12-31\",\"team_ids\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"}]},\"trashed\":null,\"updated_at\":\"2026-10-16T10:20:02.201Z\",\"url\":\"https://linear.app/john-doe-demo/project/seed-project-two-7d9e4c8bacc8\"}],\"pageInfo\":{\"endCursor\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"hasNextPage\":true}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b774da7f7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:22 GMT",
+              "etag": "W/\"40e-sRgujlWEz++TeYr0wA5tWCw0ErE\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "40",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999960",
+              "x-ratelimit-complexity-reset": "1794869482570",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2499",
+              "x-ratelimit-requests-reset": "1794869482570",
+              "x-request-id": "a5b9b774fd9d7935-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: stateHistory(first: 25) { nodes { id state_id: stateId started_at: startedAt ended_at: endedAt } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"458\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "458",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: stateHistory(first: 25) { nodes { id state_id: stateId started_at: startedAt ended_at: endedAt } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issues\":{\"nodes\":[{\"id\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"a6020c67-1cc3-45bb-9174-9163c1327314\",\"started_at\":\"2026-10-16T15:37:04.757Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"a6020c67-1cc3-45bb-9174-9163c1327314\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T15:37:04.757Z\"}],\"pageInfo\":{\"endCursor\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"hasNextPage\":true}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7783b207938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:23 GMT",
+              "etag": "W/\"1ca-CiyGIPM2DfqTvsNZPFHgT7S+kd8\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "69",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999931",
+              "x-ratelimit-complexity-reset": "1794869483088",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2498",
+              "x-ratelimit-requests-reset": "1794869483088",
+              "x-request-id": "a5b9b7784d6ba3b2-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"475\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "475",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:02.201Z\"}],\"pageInfo\":{\"endCursor\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"hasNextPage\":true}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b77a6b7a7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:23 GMT",
+              "etag": "W/\"113-s9uZVGTabwbedcD06yXHLaqqxqo\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "93",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999838",
+              "x-ratelimit-complexity-reset": "1794869483432",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2497",
+              "x-ratelimit-requests-reset": "1794869483432",
+              "x-request-id": "a5b9b77a7d9ba3b2-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: externalLinks(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n      label url sort_order: sortOrder creator_id: creator { id } } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"539\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "539",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: externalLinks(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n      label url sort_order: sortOrder creator_id: creator { id } } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:02.201Z\"}],\"pageInfo\":{\"endCursor\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"hasNextPage\":true}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b77c8bd47938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:23 GMT",
+              "etag": "W/\"113-s9uZVGTabwbedcD06yXHLaqqxqo\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "80",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999758",
+              "x-ratelimit-complexity-reset": "1794869483795",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2496",
+              "x-ratelimit-requests-reset": "1794869483795",
+              "x-request-id": "a5b9b77c9c9b794d-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Initiatives($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  initiatives(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"481\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "481",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Initiatives($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  initiatives(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"initiatives\":{\"nodes\":[{\"id\":\"92f42342-c675-439a-8cce-acf77f5e44c6\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:07.781Z\"}],\"pageInfo\":{\"endCursor\":\"92f42342-c675-439a-8cce-acf77f5e44c6\",\"hasNextPage\":true}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b77edc3d7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:24 GMT",
+              "etag": "W/\"116-8R1i4z386qEfSQUYFm2lOw94N3k\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "93",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999907",
+              "x-ratelimit-complexity-reset": "1794869484178",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2496",
+              "x-ratelimit-requests-reset": "1794869484178",
+              "x-request-id": "a5b9b77ef852a3b7-AMD"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Releases($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  releases(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"475\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "475",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Releases($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  releases(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"releases\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7815d077938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:24 GMT",
+              "etag": "W/\"55-GFarrvf495Ayv1kmaau1Oamltmg\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "93",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999814",
+              "x-ratelimit-complexity-reset": "1794869484544",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2495",
+              "x-ratelimit-requests-reset": "1794869484544",
+              "x-request-id": "a5b9b7816e34a3b2-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Templates {\\\\n  templates {\\\\n    id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description team_id: team { id } type template_data: templateData content has_form_fields: hasFormFields\\\\n  }\\\\n}\\\",\\\"variables\\\":{}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"258\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "258",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Templates {\\n  templates {\\n    id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description team_id: team { id } type template_data: templateData content has_form_fields: hasFormFields\\n  }\\n}\",\"variables\":{}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"templates\":[]}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7836d937938-AMD",
+              "connection": "keep-alive",
+              "content-length": "26",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:25 GMT",
+              "etag": "W/\"1a-HaSXlDPwHT7XEpA8mdNPfgBIJJc\"",
+              "server": "cloudflare",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "28",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999786",
+              "x-ratelimit-complexity-reset": "1794869484874",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2494",
+              "x-ratelimit-requests-reset": "1794869484874",
+              "x-request-id": "a5b9b7837c12792f-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query CustomViews($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  customViews(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description team_id: team { id } model_name: modelName owner_id: owner { id }\\\\n    creator_id: creator { id } shared filter_data: filterData\\\\n    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData\\\\n    feed_item_filter_data: feedItemFilterData }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"659\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "659",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query CustomViews($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  customViews(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description team_id: team { id } model_name: modelName owner_id: owner { id }\\n    creator_id: creator { id } shared filter_data: filterData\\n    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData\\n    feed_item_filter_data: feedItemFilterData }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"customViews\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7858e1e7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:25 GMT",
+              "etag": "W/\"58-pvEOB1/1Jw19igHSecbDUwrXoPE\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "8",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999992",
+              "x-ratelimit-complexity-reset": "1794869485209",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2494",
+              "x-ratelimit-requests-reset": "1794869485209",
+              "x-request-id": "a5b9b7859a1f7937-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Teams($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  teams(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":1,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"314\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "314",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Teams($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  teams(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":1,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"teams\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\",\"updated_at\":\"2026-10-16T20:52:33.984Z\"}],\"pageInfo\":{\"endCursor\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b787be8f7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:25 GMT",
+              "etag": "W/\"c9-2VGW/gBXLA1OIIBKBd93k9VshIg\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "3",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999989",
+              "x-ratelimit-complexity-reset": "1794869485595",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2493",
+              "x-ratelimit-requests-reset": "1794869485595",
+              "x-request-id": "a5b9b787bec3a3b2-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query SlaConfigurations($id: String!) {\\\\n  rules: slaConfigurations(teamId: $id) {\\\\n    id name conditions removes_sla: removesSla sla sla_type: slaType start_mode: startMode\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"id\\\":\\\"0a24709a-8c2e-4bb4-9a60-65c55636927c\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"252\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "252",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query SlaConfigurations($id: String!) {\\n  rules: slaConfigurations(teamId: $id) {\\n    id name conditions removes_sla: removesSla sla sla_type: slaType start_mode: startMode\\n  }\\n}\",\"variables\":{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"rules\":[]}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b78a1f7f7938-AMD",
+              "connection": "keep-alive",
+              "content-length": "22",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:26 GMT",
+              "etag": "W/\"16-cHjXH2XKsTeKmukO4SeSD+xNA7s\"",
+              "server": "cloudflare",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "5",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2999984",
+              "x-ratelimit-complexity-reset": "1794869485948",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2492",
+              "x-ratelimit-requests-reset": "1794869485948",
+              "x-request-id": "a5b9b78a292da3b7-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description content url icon color status_id: status { id } priority\\\\n    priority_label: priorityLabel health health_updated_at: healthUpdatedAt progress scope\\\\n    lead_id: lead { id } creator_id: creator { id }\\\\n    converted_from_issue_id: convertedFromIssue { id } start_date: startDate\\\\n    target_date: targetDate started_at: startedAt completed_at: completedAt\\\\n    canceled_at: canceledAt auto_archived_at: autoArchivedAt label_ids: labelIds\\\\n    team_ids: teams(first: 50) { nodes { id } }\\\\n    member_ids: members(first: 100) { nodes { id } }\\\\n    trashed }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":50,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"944\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "944",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description content url icon color status_id: status { id } priority\\n    priority_label: priorityLabel health health_updated_at: healthUpdatedAt progress scope\\n    lead_id: lead { id } creator_id: creator { id }\\n    converted_from_issue_id: convertedFromIssue { id } start_date: startDate\\n    target_date: targetDate started_at: startedAt completed_at: completedAt\\n    canceled_at: canceledAt auto_archived_at: autoArchivedAt label_ids: labelIds\\n    team_ids: teams(first: 50) { nodes { id } }\\n    member_ids: members(first: 100) { nodes { id } }\\n    trashed }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":50,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"archived_at\":null,\"auto_archived_at\":null,\"canceled_at\":null,\"color\":\"#f2994a\",\"completed_at\":null,\"content\":null,\"converted_from_issue_id\":null,\"created_at\":\"2026-10-16T10:20:02.201Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"description\":\"\",\"health\":null,\"health_updated_at\":null,\"icon\":null,\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"label_ids\":[],\"lead_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"member_ids\":{\"nodes\":[{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"}]},\"name\":\"Seed project two\",\"priority\":0,\"priority_label\":\"No priority\",\"progress\":0.25,\"scope\":1,\"start_date\":null,\"started_at\":null,\"status_id\":{\"id\":\"ea7b6389-bb19-4f56-9320-fceb53367d72\"},\"target_date\":\"2026-12-31\",\"team_ids\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"}]},\"trashed\":null,\"updated_at\":\"2026-10-16T10:20:02.201Z\",\"url\":\"https://linear.app/john-doe-demo/project/seed-project-two-7d9e4c8bacc8\"},{\"archived_at\":null,\"auto_archived_at\":null,\"canceled_at\":null,\"color\":\"#5e6ad2\",\"completed_at\":null,\"content\":null,\"converted_from_issue_id\":null,\"created_at\":\"2026-10-16T09:56:55.089Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"description\":\"\",\"health\":\"onTrack\",\"health_updated_at\":\"2026-10-16T10:20:06.757Z\",\"icon\":null,\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"label_ids\":[\"dd0b9cd3-9c81-486c-9311-3eae0f32e095\"],\"lead_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"member_ids\":{\"nodes\":[{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"}]},\"name\":\"Seed project one\",\"priority\":0,\"priority_label\":\"No priority\",\"progress\":0.625,\"scope\":2,\"start_date\":null,\"started_at\":null,\"status_id\":{\"id\":\"ea7b6389-bb19-4f56-9320-fceb53367d72\"},\"target_date\":null,\"team_ids\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"}]},\"trashed\":null,\"updated_at\":\"2026-10-16T10:20:03.762Z\",\"url\":\"https://linear.app/john-doe-demo/project/seed-project-one-c29045fc3213\"}],\"pageInfo\":{\"endCursor\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b78cc8317938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:26 GMT",
+              "etag": "W/\"7e2-XkWj53siXxgD5squp59WbMdNBCk\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1951",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2998049",
+              "x-ratelimit-complexity-reset": "1794869486380",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2491",
+              "x-ratelimit-requests-reset": "1794869486380",
+              "x-request-id": "a5b9b78cdeeba3b1-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description content url icon color status_id: status { id } priority\\\\n    priority_label: priorityLabel health health_updated_at: healthUpdatedAt progress scope\\\\n    lead_id: lead { id } creator_id: creator { id }\\\\n    converted_from_issue_id: convertedFromIssue { id } start_date: startDate\\\\n    target_date: targetDate started_at: startedAt completed_at: completedAt\\\\n    canceled_at: canceledAt auto_archived_at: autoArchivedAt label_ids: labelIds\\\\n    team_ids: teams(first: 50) { nodes { id } }\\\\n    member_ids: members(first: 100) { nodes { id } }\\\\n    trashed }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":50,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"944\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "944",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description content url icon color status_id: status { id } priority\\n    priority_label: priorityLabel health health_updated_at: healthUpdatedAt progress scope\\n    lead_id: lead { id } creator_id: creator { id }\\n    converted_from_issue_id: convertedFromIssue { id } start_date: startDate\\n    target_date: targetDate started_at: startedAt completed_at: completedAt\\n    canceled_at: canceledAt auto_archived_at: autoArchivedAt label_ids: labelIds\\n    team_ids: teams(first: 50) { nodes { id } }\\n    member_ids: members(first: 100) { nodes { id } }\\n    trashed }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":50,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"archived_at\":null,\"auto_archived_at\":null,\"canceled_at\":null,\"color\":\"#5e6ad2\",\"completed_at\":null,\"content\":null,\"converted_from_issue_id\":null,\"created_at\":\"2026-10-16T09:56:55.089Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"description\":\"\",\"health\":\"onTrack\",\"health_updated_at\":\"2026-10-16T10:20:06.757Z\",\"icon\":null,\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"label_ids\":[\"dd0b9cd3-9c81-486c-9311-3eae0f32e095\"],\"lead_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"member_ids\":{\"nodes\":[{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"}]},\"name\":\"Seed project one\",\"priority\":0,\"priority_label\":\"No priority\",\"progress\":0.625,\"scope\":2,\"start_date\":null,\"started_at\":null,\"status_id\":{\"id\":\"ea7b6389-bb19-4f56-9320-fceb53367d72\"},\"target_date\":null,\"team_ids\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"}]},\"trashed\":null,\"updated_at\":\"2026-10-16T10:20:03.762Z\",\"url\":\"https://linear.app/john-doe-demo/project/seed-project-one-c29045fc3213\"},{\"archived_at\":null,\"auto_archived_at\":null,\"canceled_at\":null,\"color\":\"#f2994a\",\"completed_at\":null,\"content\":null,\"converted_from_issue_id\":null,\"created_at\":\"2026-10-16T10:20:02.201Z\",\"creator_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"description\":\"\",\"health\":null,\"health_updated_at\":null,\"icon\":null,\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"label_ids\":[],\"lead_id\":{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"},\"member_ids\":{\"nodes\":[{\"id\":\"618d15a8-80f0-4cbf-ba33-2cbf91ddfd8e\"}]},\"name\":\"Seed project two\",\"priority\":0,\"priority_label\":\"No priority\",\"progress\":0.25,\"scope\":1,\"start_date\":null,\"started_at\":null,\"status_id\":{\"id\":\"ea7b6389-bb19-4f56-9320-fceb53367d72\"},\"target_date\":\"2026-12-31\",\"team_ids\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\"}]},\"trashed\":null,\"updated_at\":\"2026-10-16T10:20:02.201Z\",\"url\":\"https://linear.app/john-doe-demo/project/seed-project-two-7d9e4c8bacc8\"}],\"pageInfo\":{\"endCursor\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b78f08c57938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:26 GMT",
+              "etag": "W/\"7e2-keGdJf/0XEc5YhiJgDUk3KFDMjc\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1951",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2996098",
+              "x-ratelimit-complexity-reset": "1794869486730",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2490",
+              "x-ratelimit-requests-reset": "1794869486730",
+              "x-request-id": "a5b9b78f1f78a3b2-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: stateHistory(first: 25) { nodes { id state_id: stateId started_at: startedAt ended_at: endedAt } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"459\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "459",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: stateHistory(first: 25) { nodes { id state_id: stateId started_at: startedAt ended_at: endedAt } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issues\":{\"nodes\":[{\"id\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"a6020c67-1cc3-45bb-9174-9163c1327314\",\"started_at\":\"2026-10-16T15:37:04.757Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"a6020c67-1cc3-45bb-9174-9163c1327314\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T15:37:04.757Z\"},{\"id\":\"25204671-45c9-4a37-8d4e-8a5386e6cb85\",\"nested\":{\"nodes\":[{\"ended_at\":\"2026-10-16T10:20:55.240Z\",\"id\":\"6099872a-a791-492e-966f-322ae4663de6\",\"started_at\":\"2026-10-16T10:20:54.580Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},{\"ended_at\":null,\"id\":\"e1283b14-dbce-4ae5-8d82-7c013ecaf5bc\",\"started_at\":\"2026-10-16T10:20:55.240Z\",\"state_id\":\"49a20839-7396-4941-8335-39bfbcd5fc8c\"}],\"pageInfo\":{\"endCursor\":\"e1283b14-dbce-4ae5-8d82-7c013ecaf5bc\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:55.253Z\"},{\"id\":\"b567720b-711e-4b6a-b268-427908f0e40c\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"88c234ce-9dfc-4a56-8cd5-5adf5b790f71\",\"started_at\":\"2026-10-16T10:20:53.938Z\",\"state_id\":\"d3eaf3be-ca54-42f6-8204-3c98a68a8183\"}],\"pageInfo\":{\"endCursor\":\"88c234ce-9dfc-4a56-8cd5-5adf5b790f71\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-29T19:15:29.504Z\"},{\"id\":\"1d4724af-362f-413a-8017-467deed3895b\",\"nested\":{\"nodes\":[{\"ended_at\":\"2026-10-16T10:20:56.878Z\",\"id\":\"b73be17c-b5c8-482f-bba7-3ee5676bf8eb\",\"started_at\":\"2026-10-16T10:20:14.112Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},{\"ended_at\":null,\"id\":\"f163a4b2-890f-4a70-8fb9-2ccf223676af\",\"started_at\":\"2026-10-16T10:20:56.878Z\",\"state_id\":\"2acccdfc-7d3f-4c01-84bf-68c4c79e7e7a\"}],\"pageInfo\":{\"endCursor\":\"f163a4b2-890f-4a70-8fb9-2ccf223676af\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:56.878Z\"},{\"id\":\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\",\"nested\":{\"nodes\":[{\"ended_at\":\"2026-10-16T10:31:39.598Z\",\"id\":\"a6d4dfb6-9d7b-41d6-aba4-c127f9727bef\",\"started_at\":\"2026-10-16T10:20:13.510Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},{\"ended_at\":null,\"id\":\"bee161f3-b13f-4e7c-94d8-e7848bbf80ed\",\"started_at\":\"2026-10-16T10:31:39.598Z\",\"state_id\":\"0eb344b1-e812-41c5-8c86-bc72fdfbf253\"}],\"pageInfo\":{\"endCursor\":\"bee161f3-b13f-4e7c-94d8-e7848bbf80ed\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:31:39.606Z\"},{\"id\":\"acccfd1c-0969-4edc-b4c7-86f99ddcdd61\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"7067b3b6-85df-4e62-bb4c-1a9ddf90b9df\",\"started_at\":\"2026-10-16T09:56:50.442Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"7067b3b6-85df-4e62-bb4c-1a9ddf90b9df\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:57:45.207Z\"},{\"id\":\"0bd94b5d-3bf5-4a90-af8c-7fa4ab3a7d06\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"5653052e-682d-4a5f-af77-cdae1d44ff20\",\"started_at\":\"2026-10-16T09:56:49.892Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"5653052e-682d-4a5f-af77-cdae1d44ff20\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:57:45.198Z\"},{\"id\":\"0d3b1639-f6f2-4341-9d29-01c2e6ca3eb2\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"fd765759-461b-410e-89a7-ead7d165c6d4\",\"started_at\":\"2026-10-16T09:56:49.310Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"fd765759-461b-410e-89a7-ead7d165c6d4\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:18:25.583Z\"},{\"id\":\"fa4ec16a-f34b-4caf-ac87-91287926d1bf\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"b68f4da1-3dac-48c1-991b-559b65437d59\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"b68f4da1-3dac-48c1-991b-559b65437d59\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"},{\"id\":\"8d3caca7-518e-41fd-9703-25b6c717f260\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"5d4d51b6-7f56-4b2a-a0a8-c96c585470fd\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"5d4d51b6-7f56-4b2a-a0a8-c96c585470fd\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"},{\"id\":\"8c75af1c-6960-45e0-a949-500baa23a8b7\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"32652f88-b95b-42e3-9f56-59a8e89fd4c8\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"32652f88-b95b-42e3-9f56-59a8e89fd4c8\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"},{\"id\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"ed64f6ee-989d-4e20-8a53-7a5844eeda9c\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"ed64f6ee-989d-4e20-8a53-7a5844eeda9c\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"}],\"pageInfo\":{\"endCursor\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b791e9627938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:27 GMT",
+              "etag": "W/\"1292-kbmKzb2yUdio9jZleuOLmUB4vng\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "69",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2996862",
+              "x-ratelimit-complexity-reset": "1794869487186",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2490",
+              "x-ratelimit-requests-reset": "1794869487186",
+              "x-request-id": "a5b9b791fab47937-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: stateHistory(first: 25) { nodes { id state_id: stateId started_at: startedAt ended_at: endedAt } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"459\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "459",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Issues($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  issues(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: stateHistory(first: 25) { nodes { id state_id: stateId started_at: startedAt ended_at: endedAt } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"issues\":{\"nodes\":[{\"id\":\"b567720b-711e-4b6a-b268-427908f0e40c\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"88c234ce-9dfc-4a56-8cd5-5adf5b790f71\",\"started_at\":\"2026-10-16T10:20:53.938Z\",\"state_id\":\"d3eaf3be-ca54-42f6-8204-3c98a68a8183\"}],\"pageInfo\":{\"endCursor\":\"88c234ce-9dfc-4a56-8cd5-5adf5b790f71\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-29T19:15:29.504Z\"},{\"id\":\"8c2d2d3e-ba1c-4159-b33b-d5daafcc63eb\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"a6020c67-1cc3-45bb-9174-9163c1327314\",\"started_at\":\"2026-10-16T15:37:04.757Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"a6020c67-1cc3-45bb-9174-9163c1327314\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T15:37:04.757Z\"},{\"id\":\"0ba5ba1b-fcc2-423c-ad89-fc7a0bf208a9\",\"nested\":{\"nodes\":[{\"ended_at\":\"2026-10-16T10:31:39.598Z\",\"id\":\"a6d4dfb6-9d7b-41d6-aba4-c127f9727bef\",\"started_at\":\"2026-10-16T10:20:13.510Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},{\"ended_at\":null,\"id\":\"bee161f3-b13f-4e7c-94d8-e7848bbf80ed\",\"started_at\":\"2026-10-16T10:31:39.598Z\",\"state_id\":\"0eb344b1-e812-41c5-8c86-bc72fdfbf253\"}],\"pageInfo\":{\"endCursor\":\"bee161f3-b13f-4e7c-94d8-e7848bbf80ed\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:31:39.606Z\"},{\"id\":\"1d4724af-362f-413a-8017-467deed3895b\",\"nested\":{\"nodes\":[{\"ended_at\":\"2026-10-16T10:20:56.878Z\",\"id\":\"b73be17c-b5c8-482f-bba7-3ee5676bf8eb\",\"started_at\":\"2026-10-16T10:20:14.112Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"},{\"ended_at\":null,\"id\":\"f163a4b2-890f-4a70-8fb9-2ccf223676af\",\"started_at\":\"2026-10-16T10:20:56.878Z\",\"state_id\":\"2acccdfc-7d3f-4c01-84bf-68c4c79e7e7a\"}],\"pageInfo\":{\"endCursor\":\"f163a4b2-890f-4a70-8fb9-2ccf223676af\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:56.878Z\"},{\"id\":\"25204671-45c9-4a37-8d4e-8a5386e6cb85\",\"nested\":{\"nodes\":[{\"ended_at\":\"2026-10-16T10:20:55.240Z\",\"id\":\"6099872a-a791-492e-966f-322ae4663de6\",\"started_at\":\"2026-10-16T10:20:54.580Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"},{\"ended_at\":null,\"id\":\"e1283b14-dbce-4ae5-8d82-7c013ecaf5bc\",\"started_at\":\"2026-10-16T10:20:55.240Z\",\"state_id\":\"49a20839-7396-4941-8335-39bfbcd5fc8c\"}],\"pageInfo\":{\"endCursor\":\"e1283b14-dbce-4ae5-8d82-7c013ecaf5bc\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:55.253Z\"},{\"id\":\"0d3b1639-f6f2-4341-9d29-01c2e6ca3eb2\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"fd765759-461b-410e-89a7-ead7d165c6d4\",\"started_at\":\"2026-10-16T09:56:49.310Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"fd765759-461b-410e-89a7-ead7d165c6d4\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:18:25.583Z\"},{\"id\":\"acccfd1c-0969-4edc-b4c7-86f99ddcdd61\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"7067b3b6-85df-4e62-bb4c-1a9ddf90b9df\",\"started_at\":\"2026-10-16T09:56:50.442Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"7067b3b6-85df-4e62-bb4c-1a9ddf90b9df\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:57:45.207Z\"},{\"id\":\"0bd94b5d-3bf5-4a90-af8c-7fa4ab3a7d06\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"5653052e-682d-4a5f-af77-cdae1d44ff20\",\"started_at\":\"2026-10-16T09:56:49.892Z\",\"state_id\":\"33849245-b58b-4c69-a1cc-47fb93d35d91\"}],\"pageInfo\":{\"endCursor\":\"5653052e-682d-4a5f-af77-cdae1d44ff20\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:57:45.198Z\"},{\"id\":\"fa4ec16a-f34b-4caf-ac87-91287926d1bf\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"b68f4da1-3dac-48c1-991b-559b65437d59\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"b68f4da1-3dac-48c1-991b-559b65437d59\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"},{\"id\":\"8d3caca7-518e-41fd-9703-25b6c717f260\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"5d4d51b6-7f56-4b2a-a0a8-c96c585470fd\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"5d4d51b6-7f56-4b2a-a0a8-c96c585470fd\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"},{\"id\":\"8c75af1c-6960-45e0-a949-500baa23a8b7\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"32652f88-b95b-42e3-9f56-59a8e89fd4c8\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"32652f88-b95b-42e3-9f56-59a8e89fd4c8\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"},{\"id\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"nested\":{\"nodes\":[{\"ended_at\":null,\"id\":\"ed64f6ee-989d-4e20-8a53-7a5844eeda9c\",\"started_at\":\"2026-10-16T09:32:01.690Z\",\"state_id\":\"d63ee4ab-def3-4c92-84cd-74154690a031\"}],\"pageInfo\":{\"endCursor\":\"ed64f6ee-989d-4e20-8a53-7a5844eeda9c\",\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T09:32:01.690Z\"}],\"pageInfo\":{\"endCursor\":\"28051b04-c300-401b-bd47-0bae6b5f238d\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b79419ec7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:27 GMT",
+              "etag": "W/\"1292-L6qAkxirMUbVw0AQr2SWnzLZCJk\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "69",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2996793",
+              "x-ratelimit-complexity-reset": "1794869487547",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2489",
+              "x-ratelimit-requests-reset": "1794869487547",
+              "x-request-id": "a5b9b79439dba3b7-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"476\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "476",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:02.201Z\"},{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:03.762Z\"}],\"pageInfo\":{\"endCursor\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7965b6f7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:28 GMT",
+              "etag": "W/\"1b2-5GLiYnoI4PJsLHujlJGBS+czZm8\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1848",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2994945",
+              "x-ratelimit-complexity-reset": "1794869487961",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2488",
+              "x-ratelimit-requests-reset": "1794869487961",
+              "x-request-id": "a5b9b79668957956-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"476\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "476",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:03.762Z\"},{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:02.201Z\"}],\"pageInfo\":{\"endCursor\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b798dc377938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:28 GMT",
+              "etag": "W/\"1b2-d/rhmxr7q9LqRWqyiS2lhRCYypQ\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1848",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2993930",
+              "x-ratelimit-complexity-reset": "1794869488301",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2488",
+              "x-ratelimit-requests-reset": "1794869488301",
+              "x-request-id": "a5b9b798ee20794d-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: externalLinks(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n      label url sort_order: sortOrder creator_id: creator { id } } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"540\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "540",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: externalLinks(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n      label url sort_order: sortOrder creator_id: creator { id } } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:02.201Z\"},{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:03.762Z\"}],\"pageInfo\":{\"endCursor\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b79afc9f7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:28 GMT",
+              "etag": "W/\"1b2-5GLiYnoI4PJsLHujlJGBS+czZm8\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1598",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2992332",
+              "x-ratelimit-complexity-reset": "1794869488644",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2487",
+              "x-ratelimit-requests-reset": "1794869488644",
+              "x-request-id": "a5b9b79b0805a3af-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: externalLinks(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n      label url sort_order: sortOrder creator_id: creator { id } } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"540\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "540",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Projects($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  projects(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: externalLinks(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n      label url sort_order: sortOrder creator_id: creator { id } } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"projects\":{\"nodes\":[{\"id\":\"71940c03-dd21-4877-9c97-f793e61615fc\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:03.762Z\"},{\"id\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:02.201Z\"}],\"pageInfo\":{\"endCursor\":\"06ba5bf4-61c6-44fc-93df-ea437974ff6f\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b79d2d057938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:29 GMT",
+              "etag": "W/\"1b2-d/rhmxr7q9LqRWqyiS2lhRCYypQ\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1598",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2991568",
+              "x-ratelimit-complexity-reset": "1794869489078",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2486",
+              "x-ratelimit-requests-reset": "1794869489078",
+              "x-request-id": "a5b9b79d4f1d7957-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Initiatives($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  initiatives(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"482\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "482",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Initiatives($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  initiatives(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"initiatives\":{\"nodes\":[{\"id\":\"92f42342-c675-439a-8cce-acf77f5e44c6\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:07.781Z\"},{\"id\":\"fab783e7-beb2-4baa-8170-83fae6856a5c\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:25.646Z\"}],\"pageInfo\":{\"endCursor\":\"fab783e7-beb2-4baa-8170-83fae6856a5c\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b79ffda87938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:29 GMT",
+              "etag": "W/\"1b5-CFRyH9MnDHmSXaocq+9lt2TqXSU\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1848",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2989720",
+              "x-ratelimit-complexity-reset": "1794869489442",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2485",
+              "x-ratelimit-requests-reset": "1794869489442",
+              "x-request-id": "a5b9b7a00f407957-AMD"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Initiatives($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  initiatives(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"482\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "482",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Initiatives($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  initiatives(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"initiatives\":{\"nodes\":[{\"id\":\"fab783e7-beb2-4baa-8170-83fae6856a5c\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:25.646Z\"},{\"id\":\"92f42342-c675-439a-8cce-acf77f5e44c6\",\"nested\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}},\"updated_at\":\"2026-10-16T10:20:07.781Z\"}],\"pageInfo\":{\"endCursor\":\"92f42342-c675-439a-8cce-acf77f5e44c6\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7a20e307938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:29 GMT",
+              "etag": "W/\"1b5-tcl4v5vfp2bguPW4UiFW0ZOEsMM\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1848",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2987872",
+              "x-ratelimit-complexity-reset": "1794869489779",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2484",
+              "x-ratelimit-requests-reset": "1794869489779",
+              "x-request-id": "a5b9b7a22f8f7935-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Releases($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  releases(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"476\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "476",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Releases($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  releases(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"releases\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7a44ea17938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:30 GMT",
+              "etag": "W/\"55-GFarrvf495Ayv1kmaau1Oamltmg\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1848",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2986857",
+              "x-ratelimit-complexity-reset": "1794869490137",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2484",
+              "x-ratelimit-requests-reset": "1794869490137",
+              "x-request-id": "a5b9b7a45a3f793d-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Releases($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  releases(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":20,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"476\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "476",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Releases($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  releases(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt nested: history(first: 25) { nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries } pageInfo { hasNextPage endCursor } } }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":20,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"releases\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7a65efb7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:30 GMT",
+              "etag": "W/\"55-GFarrvf495Ayv1kmaau1Oamltmg\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1848",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2985009",
+              "x-ratelimit-complexity-reset": "1794869490515",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2483",
+              "x-ratelimit-requests-reset": "1794869490515",
+              "x-request-id": "a5b9b7a66ed1794d-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query CustomViews($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  customViews(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description team_id: team { id } model_name: modelName owner_id: owner { id }\\\\n    creator_id: creator { id } shared filter_data: filterData\\\\n    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData\\\\n    feed_item_filter_data: feedItemFilterData }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":250,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"661\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "661",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query CustomViews($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  customViews(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description team_id: team { id } model_name: modelName owner_id: owner { id }\\n    creator_id: creator { id } shared filter_data: filterData\\n    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData\\n    feed_item_filter_data: feedItemFilterData }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":250,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"customViews\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7a90fa67938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:31 GMT",
+              "etag": "W/\"58-pvEOB1/1Jw19igHSecbDUwrXoPE\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1901",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2983108",
+              "x-ratelimit-complexity-reset": "1794869490885",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2482",
+              "x-ratelimit-requests-reset": "1794869490885",
+              "x-request-id": "a5b9b7a91fb87957-AMD"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query CustomViews($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  customViews(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\\\n    name description team_id: team { id } model_name: modelName owner_id: owner { id }\\\\n    creator_id: creator { id } shared filter_data: filterData\\\\n    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData\\\\n    feed_item_filter_data: feedItemFilterData }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":250,\\\"orderBy\\\":\\\"updatedAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"661\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "661",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query CustomViews($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  customViews(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id created_at: createdAt updated_at: updatedAt archived_at: archivedAt\\n    name description team_id: team { id } model_name: modelName owner_id: owner { id }\\n    creator_id: creator { id } shared filter_data: filterData\\n    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData\\n    feed_item_filter_data: feedItemFilterData }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":250,\"orderBy\":\"updatedAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"customViews\":{\"nodes\":[],\"pageInfo\":{\"endCursor\":null,\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7ab182f7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:31 GMT",
+              "etag": "W/\"58-pvEOB1/1Jw19igHSecbDUwrXoPE\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "1901",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2982040",
+              "x-ratelimit-complexity-reset": "1794869491223",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2482",
+              "x-ratelimit-requests-reset": "1794869491223",
+              "x-request-id": "a5b9b7ab39b8a3b2-BOM"
+            }
+          }
+        },
+        "{\"body\":\"{\\\"query\\\":\\\"query Teams($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\\\n  teams(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\\\n    nodes { id updated_at: updatedAt }\\\\n    pageInfo { hasNextPage endCursor }\\\\n  }\\\\n}\\\",\\\"variables\\\":{\\\"after\\\":null,\\\"first\\\":250,\\\"orderBy\\\":\\\"createdAt\\\"}}\",\"headers\":{\"accept\":\"application/json\",\"content-length\":\"316\",\"content-type\":\"application/json\"},\"method\":\"POST\",\"url\":\"https://api.linear.app/graphql\"}": {
+          "request": {
+            "method": "POST",
+            "url": "https://api.linear.app/graphql",
+            "headers": {
+              "content-type": "application/json",
+              "content-length": "316",
+              "accept": "application/json"
+            },
+            "body": "{\"query\":\"query Teams($first: Int!, $after: String, $orderBy: PaginationOrderBy) {\\n  teams(first: $first, after: $after, orderBy: $orderBy, includeArchived: true) {\\n    nodes { id updated_at: updatedAt }\\n    pageInfo { hasNextPage endCursor }\\n  }\\n}\",\"variables\":{\"after\":null,\"first\":250,\"orderBy\":\"createdAt\"}}"
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":{\"teams\":{\"nodes\":[{\"id\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\",\"updated_at\":\"2026-10-16T20:52:33.984Z\"}],\"pageInfo\":{\"endCursor\":\"0a24709a-8c2e-4bb4-9a60-65c55636927c\",\"hasNextPage\":false}}}}",
+            "headers": {
+              "alt-svc": "h3=\":443\"; ma=86400",
+              "cache-control": "private, no-cache, no-store, must-revalidate",
+              "cf-cache-status": "DYNAMIC",
+              "cf-ray": "a5b9b7ad58ad7938-AMD",
+              "connection": "keep-alive",
+              "content-encoding": "br",
+              "content-type": "application/json; charset=utf-8",
+              "date": "Mon, 16 Nov 2026 21:51:31 GMT",
+              "etag": "W/\"c9-2VGW/gBXLA1OIIBKBd93k9VshIg\"",
+              "server": "cloudflare",
+              "transfer-encoding": "chunked",
+              "vary": "Accept-Encoding",
+              "via": "1.1 google",
+              "x-complexity": "600",
+              "x-ratelimit-complexity-limit": "3000000",
+              "x-ratelimit-complexity-remaining": "2981440",
+              "x-ratelimit-complexity-reset": "1794869491575",
+              "x-ratelimit-requests-limit": "2500",
+              "x-ratelimit-requests-remaining": "2481",
+              "x-ratelimit-requests-reset": "1794869491575",
+              "x-request-id": "a5b9b7ad6a3b795d-BOM"
+            }
+          }
         }
       }
     }

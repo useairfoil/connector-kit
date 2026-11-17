@@ -64,6 +64,27 @@ export const PriceSchema = Schema.Struct({
   ).pipe(Schema.annotateKey({ description: "Billing period of recurring prices." })),
   metadata: Metadata.pipe(Schema.annotateKey({ description: "Key-value pairs set on the price." })),
   _deleted: deleted,
+  tiers: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        up_to: Schema.optional(Schema.NullOr(Long)).pipe(
+          Schema.annotateKey({ description: "Upper unit limit, or null for the final tier." }),
+        ),
+        unit_amount: Schema.optional(Schema.NullOr(Long)).pipe(
+          Schema.annotateKey({ description: "Amount per unit in this tier." }),
+        ),
+        unit_amount_decimal: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+          Schema.annotateKey({ description: "Exact amount per unit as decimal text." }),
+        ),
+        flat_amount: Schema.optional(Schema.NullOr(Long)).pipe(
+          Schema.annotateKey({ description: "Flat amount for this tier." }),
+        ),
+        flat_amount_decimal: Schema.optional(Schema.NullOr(Schema.String)).pipe(
+          Schema.annotateKey({ description: "Exact flat amount as decimal text." }),
+        ),
+      }),
+    ),
+  ).pipe(Schema.annotateKey({ description: "Billing tiers for a tiered price." })),
 })
   .annotate({
     description: "Prices in a Stripe account, including inactive ones.",

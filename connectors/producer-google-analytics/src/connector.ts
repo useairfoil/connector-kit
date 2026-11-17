@@ -6,6 +6,7 @@ import type { GoogleAnalyticsConfig } from "./manifest";
 import * as GoogleAnalyticsClient from "./client/client";
 import { reportEntity } from "./resources/reports/resource";
 import {
+  cohortRetention,
   dailyOverview,
   devices,
   ecommerceItems,
@@ -13,7 +14,10 @@ import {
   landingPages,
   locations,
   pages,
+  paidCampaigns,
+  streamScreens,
   trafficSources,
+  transactions,
   userAcquisition,
 } from "./resources/reports/specs";
 export { GoogleAnalyticsConfigDef, manifest } from "./manifest";
@@ -35,6 +39,10 @@ export const make = Effect.fnUntraced(function* (config: GoogleAnalyticsConfig) 
       Resource.entity(reportEntity(client, config, locations)),
       Resource.entity(reportEntity(client, config, devices)),
       Resource.entity(reportEntity(client, config, ecommerceItems)),
+      Resource.entity(reportEntity(client, config, transactions)),
+      Resource.entity(reportEntity(client, config, paidCampaigns)),
+      Resource.entity(reportEntity(client, config, streamScreens)),
+      Resource.entity(reportEntity(client, config, cohortRetention)),
     ],
   });
 });
