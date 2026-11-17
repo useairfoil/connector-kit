@@ -39,13 +39,17 @@ or leave out. Check whether a field holds the record or just its ID or a
 summary. If the resource only needs a table binding, call it a setup issue.
 
 Check why we skip known resources and whether the reason still holds.
-Flag reads that need another API version, product, auth, scope, or plan.
-Say which ones still need an account check.
+Flag reads that need another API version, product, scope, or plan.
+Use the docs or recorded responses when the test account can't read a
+resource. Recommend adding important resources the connector can support
+with the right access. Say what is needed to test them.
 
 ## Report the gaps
 
 Put the useful gaps first. Link the provider read and the local code.
 Say why the data matters and what might make it hard to sync.
+Keep each important gap in the final summary, even if it was deferred.
+If work followed the review, say what was added and what is still open.
 
 For a full review, list the source sections and record a result for every
 read or event, including aliases and exclusions. Compare the list with the
