@@ -32,7 +32,8 @@ export const makeCheckCommand = <E, R>(
         return yield* new ConnectorError({ message: "Connector connection check failed" });
     }).pipe(
       Effect.provide(notifierLayer(notifier)),
-      Effect.timeout("3 minutes"),
+      // Leaves room for rate-limit waits, under the hosted job's five-minute deadline.
+      Effect.timeout("4 minutes"),
       Effect.provide(RuntimeConfig.layerHosted()),
       Effect.mapError(() => new ConnectorError({ message: "Connector connection check failed" })),
       Effect.scoped,
