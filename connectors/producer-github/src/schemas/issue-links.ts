@@ -1,4 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import { Schema } from "effect";
 
 import { Long, readVersion } from "./shared";

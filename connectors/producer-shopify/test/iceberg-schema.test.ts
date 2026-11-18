@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest";
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import { Effect } from "effect";
 
 import { CartSchema } from "../src/resources/carts/row";

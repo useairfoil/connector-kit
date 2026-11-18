@@ -1,4 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import { Effect, Schema, SchemaTransformation } from "effect";
 
 // Keep backfills older than webhook updates.

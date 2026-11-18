@@ -1,4 +1,7 @@
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Manifest from "@useairfoil/connector-kit/manifest";
+
+import { tableSchemas } from "./tables";
 
 export const GoogleAnalyticsConfigDef = Manifest.defineConfig({
   propertyId: Manifest.string({
@@ -37,18 +40,70 @@ export const manifest = Manifest.define({
   title: "Google Analytics",
   config: GoogleAnalyticsConfigDef.spec,
   resources: [
-    { name: "daily_overview", capabilities },
-    { name: "traffic_sources", capabilities },
-    { name: "user_acquisition", capabilities },
-    { name: "pages", capabilities },
-    { name: "landing_pages", capabilities },
-    { name: "events", capabilities },
-    { name: "locations", capabilities },
-    { name: "devices", capabilities },
-    { name: "ecommerce_items", capabilities },
-    { name: "transactions", capabilities },
-    { name: "paid_campaigns", capabilities },
-    { name: "stream_screens", capabilities },
-    { name: "cohort_retention", capabilities },
+    {
+      name: "daily_overview",
+      description: Iceberg.resolveDescription(tableSchemas.daily_overview),
+      capabilities,
+    },
+    {
+      name: "traffic_sources",
+      description: Iceberg.resolveDescription(tableSchemas.traffic_sources),
+      capabilities,
+    },
+    {
+      name: "user_acquisition",
+      description: Iceberg.resolveDescription(tableSchemas.user_acquisition),
+      capabilities,
+    },
+    {
+      name: "pages",
+      description: Iceberg.resolveDescription(tableSchemas.pages),
+      capabilities,
+    },
+    {
+      name: "landing_pages",
+      description: Iceberg.resolveDescription(tableSchemas.landing_pages),
+      capabilities,
+    },
+    {
+      name: "events",
+      description: Iceberg.resolveDescription(tableSchemas.events),
+      capabilities,
+    },
+    {
+      name: "locations",
+      description: Iceberg.resolveDescription(tableSchemas.locations),
+      capabilities,
+    },
+    {
+      name: "devices",
+      description: Iceberg.resolveDescription(tableSchemas.devices),
+      capabilities,
+    },
+    {
+      name: "ecommerce_items",
+      description: Iceberg.resolveDescription(tableSchemas.ecommerce_items),
+      capabilities,
+    },
+    {
+      name: "transactions",
+      description: Iceberg.resolveDescription(tableSchemas.transactions),
+      capabilities,
+    },
+    {
+      name: "paid_campaigns",
+      description: Iceberg.resolveDescription(tableSchemas.paid_campaigns),
+      capabilities,
+    },
+    {
+      name: "stream_screens",
+      description: Iceberg.resolveDescription(tableSchemas.stream_screens),
+      capabilities,
+    },
+    {
+      name: "cohort_retention",
+      description: Iceberg.resolveDescription(tableSchemas.cohort_retention),
+      capabilities,
+    },
   ],
 });

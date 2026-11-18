@@ -1,4 +1,4 @@
-import { Schema } from "effect";
+import { Schema, SchemaAST } from "effect";
 
 declare module "effect/Schema" {
   namespace Annotations {
@@ -9,6 +9,10 @@ declare module "effect/Schema" {
 }
 
 type KnownField<S extends Schema.Top> = keyof S["Type"] & string;
+
+/** Reads the schema description used as the Iceberg table comment. */
+export const resolveDescription = (schema: Schema.Top): string | undefined =>
+  SchemaAST.resolveDescription(schema.ast);
 
 /** A row field that cannot be null or undefined. */
 export type RequiredField<S extends Schema.Top> = [KnownField<S>] extends [never]

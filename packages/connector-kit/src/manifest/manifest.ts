@@ -22,6 +22,7 @@ export type ConnectorManifest = {
   readonly webhook?: WebhookSetup;
   readonly resources: ReadonlyArray<{
     readonly name: string;
+    readonly description?: string;
     readonly capabilities: ReadonlyArray<ResourceCapability>;
   }>;
 };

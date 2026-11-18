@@ -1,7 +1,7 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Schema from "effect/Schema";
 
-import { address } from "../shared";
+import { address } from "../schemas/shared";
 
 export const CustomerStateSchema = Schema.Literals(["DECLINED", "DISABLED", "ENABLED", "INVITED"]);
 

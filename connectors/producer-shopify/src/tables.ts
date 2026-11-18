@@ -2,21 +2,21 @@ import * as Schema from "effect/Schema";
 
 import { CartSchema } from "./resources/carts/row";
 import { CustomerSchema } from "./resources/customers/row";
+import { OrderSchema } from "./resources/orders/row";
+import { ProductSchema } from "./resources/products/row";
+import { RefundSchema } from "./resources/refunds/row";
 import {
   InventoryItemSchema,
   InventoryLevelSchema,
   InventoryShipmentSchema,
   LocationSchema,
-} from "./resources/inventory";
+} from "./resources/schemas/inventory";
 import {
   FulfillmentOrderSchema,
   FulfillmentSchema,
   OrderTransactionSchema,
-} from "./resources/order-children";
-import { OrderSchema } from "./resources/orders/row";
-import { ProductSchema } from "./resources/products/row";
-import { RefundSchema } from "./resources/refunds/row";
-import { ReturnSchema, ReverseDeliverySchema } from "./resources/returns";
+} from "./resources/schemas/order-children";
+import { ReturnSchema, ReverseDeliverySchema } from "./resources/schemas/returns";
 import {
   InventoryTransfersSchema,
   AbandonedCheckoutsSchema,
@@ -26,7 +26,7 @@ import {
   PaymentsBalanceTransactionsSchema,
   PaymentsPayoutsSchema,
   PaymentsDisputesSchema,
-} from "./resources/storefront-reads";
+} from "./resources/schemas/storefront-reads";
 
 export const tableSchemas: Readonly<Record<string, Schema.Top>> = {
   products: ProductSchema,

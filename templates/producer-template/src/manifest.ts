@@ -1,4 +1,7 @@
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Manifest from "@useairfoil/connector-kit/manifest";
+
+import { tableSchemas } from "./tables";
 
 export const TemplateConfigDef = Manifest.defineConfig({
   apiBaseUrl: Manifest.string({
@@ -26,5 +29,11 @@ export const manifest = Manifest.define({
   name: "producer-template",
   title: "Producer Template",
   config: TemplateConfigDef.spec,
-  resources: [{ name: "posts", capabilities: ["backfill", "webhook"] }],
+  resources: [
+    {
+      name: "posts",
+      description: Iceberg.resolveDescription(tableSchemas.posts),
+      capabilities: ["backfill", "webhook"],
+    },
+  ],
 });

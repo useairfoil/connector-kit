@@ -1,4 +1,9 @@
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Manifest from "@useairfoil/connector-kit/manifest";
+
+import { FileLinksSchema } from "./schemas/file-links";
+import { ObjectFieldSchema } from "./schemas/object-fields";
+import { CustomObjectSchema, KnowledgeVersionSchema, objectSchema } from "./schemas/objects";
 
 export const SalesforceConfigDef = Manifest.defineConfig({
   domain: Manifest.string({
@@ -149,10 +154,30 @@ export const manifest = Manifest.define({
   title: "Salesforce",
   config: SalesforceConfigDef.spec,
   resources: [
-    ...objects.map(({ name }) => ({ name, capabilities })),
-    { name: "custom_objects", capabilities },
-    { name: "object_fields", capabilities },
-    { name: "content_document_links", capabilities },
-    { name: "knowledge_article_versions", capabilities },
+    ...objects.map(({ name, object }) => ({
+      name,
+      description: Iceberg.resolveDescription(objectSchema(object)),
+      capabilities,
+    })),
+    {
+      name: "custom_objects",
+      description: Iceberg.resolveDescription(CustomObjectSchema),
+      capabilities,
+    },
+    {
+      name: "object_fields",
+      description: Iceberg.resolveDescription(ObjectFieldSchema),
+      capabilities,
+    },
+    {
+      name: "content_document_links",
+      description: Iceberg.resolveDescription(FileLinksSchema),
+      capabilities,
+    },
+    {
+      name: "knowledge_article_versions",
+      description: Iceberg.resolveDescription(KnowledgeVersionSchema),
+      capabilities,
+    },
   ],
 });

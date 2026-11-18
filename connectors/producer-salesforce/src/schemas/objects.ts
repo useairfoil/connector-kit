@@ -1,4 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import { Schema } from "effect";
 
 import { deleted, version } from "./shared";
@@ -32,6 +32,8 @@ export const objectSchema = (object: string) =>
     .pipe(Iceberg.identifier("id"));
 
 export type ObjectRow = Schema.Schema.Type<ReturnType<typeof objectSchema>>;
+
+export const KnowledgeVersionSchema = objectSchema("Knowledge__kav");
 
 export const CustomObjectSchema = Schema.Struct({
   ...objectFields,

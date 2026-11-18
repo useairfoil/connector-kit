@@ -5,7 +5,7 @@ import type { SalesforceClientService } from "../client/client";
 import type { Describer } from "./describe";
 
 import { IdQuerySchema } from "../schemas/api";
-import { objectSchema } from "../schemas/objects";
+import { KnowledgeVersionSchema } from "../schemas/objects";
 import { queryRecords, readRows } from "./read";
 
 const object = "Knowledge__kav";
@@ -15,7 +15,7 @@ const cursorPrefix = "knowledge:";
 
 const IdRecord = Schema.Struct({ Id: Schema.String });
 
-export const KnowledgeVersionSchema = objectSchema(object);
+export { KnowledgeVersionSchema } from "../schemas/objects";
 
 /**
  * Reads articles in ID order with all their versions and translations.

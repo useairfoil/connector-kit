@@ -1,7 +1,7 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Schema from "effect/Schema";
 
-import { moneyBag } from "../shared";
+import { moneyBag } from "../schemas/shared";
 
 export const CartLineItemSchema = Schema.Struct({
   id: Schema.String.pipe(Schema.annotateKey({ description: "Unique cart line identifier." })),

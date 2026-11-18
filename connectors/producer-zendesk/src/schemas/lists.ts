@@ -1,4 +1,4 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import { Schema, Struct } from "effect";
 
 import { Json, Long, TextOrJson, Timestamp, keyedCustomFields, version } from "./shared";

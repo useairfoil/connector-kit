@@ -1,7 +1,7 @@
-import { Iceberg } from "@useairfoil/connector-kit";
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Schema from "effect/Schema";
 
-import { address, attributes, discountAllocations, moneyBag, taxLines } from "../shared";
+import { address, attributes, discountAllocations, moneyBag, taxLines } from "../schemas/shared";
 
 export const OrderCancelReasonSchema = Schema.Literals([
   "CUSTOMER",

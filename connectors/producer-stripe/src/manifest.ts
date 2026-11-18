@@ -1,5 +1,7 @@
+import * as Iceberg from "@useairfoil/connector-kit/iceberg";
 import * as Manifest from "@useairfoil/connector-kit/manifest";
 
+import { tableSchemas } from "./tables";
 import { webhookEvents } from "./webhook/events";
 
 const connectionFields = {
@@ -46,24 +48,100 @@ export const manifest = Manifest.define({
   },
   config: StripeConfigDef.spec,
   resources: [
-    { name: "customers", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "products", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "prices", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "subscriptions", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "invoices", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "charges", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "invoice_payments", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "refunds", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "payment_intents", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "payouts", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "disputes", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "credit_notes", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "checkout_sessions", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "subscription_schedules", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "coupons", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "promotion_codes", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "meter_summaries", capabilities: ["backfill", "changes"] },
-    { name: "billing_meters", capabilities: ["backfill", "changes", "webhook"] },
-    { name: "balance_transactions", capabilities: ["backfill", "changes"] },
+    {
+      name: "customers",
+      description: Iceberg.resolveDescription(tableSchemas.customers),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "products",
+      description: Iceberg.resolveDescription(tableSchemas.products),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "prices",
+      description: Iceberg.resolveDescription(tableSchemas.prices),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "subscriptions",
+      description: Iceberg.resolveDescription(tableSchemas.subscriptions),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "invoices",
+      description: Iceberg.resolveDescription(tableSchemas.invoices),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "charges",
+      description: Iceberg.resolveDescription(tableSchemas.charges),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "invoice_payments",
+      description: Iceberg.resolveDescription(tableSchemas.invoice_payments),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "refunds",
+      description: Iceberg.resolveDescription(tableSchemas.refunds),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "payment_intents",
+      description: Iceberg.resolveDescription(tableSchemas.payment_intents),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "payouts",
+      description: Iceberg.resolveDescription(tableSchemas.payouts),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "disputes",
+      description: Iceberg.resolveDescription(tableSchemas.disputes),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "credit_notes",
+      description: Iceberg.resolveDescription(tableSchemas.credit_notes),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "checkout_sessions",
+      description: Iceberg.resolveDescription(tableSchemas.checkout_sessions),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "subscription_schedules",
+      description: Iceberg.resolveDescription(tableSchemas.subscription_schedules),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "coupons",
+      description: Iceberg.resolveDescription(tableSchemas.coupons),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "promotion_codes",
+      description: Iceberg.resolveDescription(tableSchemas.promotion_codes),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "meter_summaries",
+      description: Iceberg.resolveDescription(tableSchemas.meter_summaries),
+      capabilities: ["backfill", "changes"],
+    },
+    {
+      name: "billing_meters",
+      description: Iceberg.resolveDescription(tableSchemas.billing_meters),
+      capabilities: ["backfill", "changes", "webhook"],
+    },
+    {
+      name: "balance_transactions",
+      description: Iceberg.resolveDescription(tableSchemas.balance_transactions),
+      capabilities: ["backfill", "changes"],
+    },
   ],
 });

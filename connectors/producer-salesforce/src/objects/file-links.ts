@@ -1,34 +1,13 @@
-import { Cursor, Fetch, Iceberg, Resource } from "@useairfoil/connector-kit";
-import { DateTime, Duration, Effect, Schema } from "effect";
+import { Cursor, Fetch, Resource } from "@useairfoil/connector-kit";
+import { DateTime, Duration, Effect } from "effect";
 
 import type { SalesforceClientService } from "../client/client";
 
 import { IdQuerySchema } from "../schemas/api";
-import { version } from "../schemas/shared";
+import { FileLinkSchema as Link, FileLinksSchema } from "../schemas/file-links";
 import { queryRecords } from "./read";
 
-const text = (description: string) => Schema.String.pipe(Schema.annotateKey({ description }));
-const optionalText = (description: string) =>
-  Schema.NullOr(Schema.String).pipe(Schema.annotateKey({ description }));
-
-const Link = Schema.Struct({
-  Id: text("Salesforce file link ID."),
-  ContentDocumentId: text("File ID."),
-  LinkedEntityId: text("Record, user, group, or library sharing the file."),
-  ShareType: optionalText("Access granted by this link."),
-  Visibility: optionalText("Visibility of this link."),
-  SystemModstamp: text("Time Salesforce last changed the link."),
-});
-
-export const FileLinksSchema = Schema.Struct({
-  id: text("Salesforce file ID."),
-  version,
-  links: Schema.Array(Link).pipe(
-    Schema.annotateKey({ description: "All visible links for this file." }),
-  ),
-})
-  .annotate({ description: "Record links for each Salesforce file." })
-  .pipe(Iceberg.identifier("id"));
+export { FileLinksSchema } from "../schemas/file-links";
 
 const pageSize = 100;
 // The first changes cursor is the backfill cutoff, so file IDs carry a prefix.

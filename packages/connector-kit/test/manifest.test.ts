@@ -5,6 +5,21 @@ import * as Manifest from "../src/manifest";
 import * as RuntimeConfig from "../src/runtime-config";
 
 describe("connector manifests", () => {
+  it("preserves resource descriptions in serializable metadata", () => {
+    const manifest: Manifest.ConnectorManifest = Manifest.define({
+      name: "producer-test",
+      title: "Test Producer",
+      config: [],
+      resources: [
+        { name: "items", description: "Items in an account.", capabilities: ["backfill"] },
+      ],
+    });
+
+    expect(JSON.parse(JSON.stringify(manifest)).resources).toEqual([
+      { name: "items", description: "Items in an account.", capabilities: ["backfill"] },
+    ]);
+  });
+
   it.effect("builds runtime config and serializable specs together", () => {
     const def = Manifest.defineConfig({
       token: Manifest.secret({ runtimeKey: "API_TOKEN", description: "API token" }),
