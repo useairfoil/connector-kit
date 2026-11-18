@@ -5,7 +5,11 @@ import { TestClock } from "effect/testing";
 
 import { LinearClient } from "../src/index";
 
-type FakeResponse = { readonly status: number; readonly body: unknown };
+type FakeResponse = {
+  readonly status: number;
+  readonly body: unknown;
+  readonly headers?: Record<string, string>;
+};
 
 const ok = { status: 200, body: { data: { viewer: { id: "user-1" } } } };
 
@@ -19,12 +23,12 @@ const queryWith = (responses: Arr.NonEmptyReadonlyArray<FakeResponse>) =>
           ...list,
           `${request.method} ${request.url} ${request.headers.authorization ?? ""}`,
         ]);
-        const { status, body } = responses[sent.length - 1] ?? Arr.lastNonEmpty(responses);
+        const { status, body, headers } = responses[sent.length - 1] ?? Arr.lastNonEmpty(responses);
         return HttpClientResponse.fromWeb(
           request,
           new Response(JSON.stringify(body), {
             status,
-            headers: { "content-type": "application/json" },
+            headers: { "content-type": "application/json", ...headers },
           }),
         );
       }),
@@ -88,6 +92,23 @@ describe("client", () => {
         queryWith([graphqlError(400, "Rate limit exceeded", "RATELIMITED"), ok]),
       );
       yield* TestClock.adjust("1 minute");
+      const { result, calls } = yield* Fiber.join(fiber);
+      expect({ result, calls: calls.length }).toMatchInlineSnapshot(`
+        {
+          "calls": 2,
+          "result": "user-1",
+        }
+      `);
+    }),
+  );
+
+  it.effect("waits for a Retry-After longer than the request timeout", () =>
+    Effect.gen(function* () {
+      const limited = graphqlError(429, "Rate limit exceeded", "RATELIMITED");
+      const fiber = yield* Effect.forkChild(
+        queryWith([{ ...limited, headers: { "retry-after": "150" } }, ok]),
+      );
+      yield* TestClock.adjust("150 seconds");
       const { result, calls } = yield* Fiber.join(fiber);
       expect({ result, calls: calls.length }).toMatchInlineSnapshot(`
         {

@@ -69,6 +69,7 @@ export const make = Effect.fnUntraced(function* (config: LinearConnectionConfig)
         HttpClientRequest.setHeader("Authorization", Redacted.value(config.apiKey)),
       ),
     ),
+    HttpClient.transform((effect) => Effect.timeout(effect, requestTimeout)),
     HttpClient.retryTransient({
       schedule: Metrics.retrySchedule({
         connector: manifest.name,
@@ -96,7 +97,7 @@ export const make = Effect.fnUntraced(function* (config: LinearConnectionConfig)
           Effect.mapError(
             (error) =>
               new ConnectorError({
-                message: `Linear API request failed for ${operation}`,
+                message: `Linear API request ${error._tag === "TimeoutError" ? "timed out" : "failed"} for ${operation}`,
                 cause: error,
               }),
           ),
@@ -144,13 +145,6 @@ export const make = Effect.fnUntraced(function* (config: LinearConnectionConfig)
         ),
       );
     }).pipe(
-      Effect.timeoutOrElse({
-        duration: requestTimeout,
-        orElse: () =>
-          Effect.fail(
-            new ConnectorError({ message: `Linear API request timed out for ${operation}` }),
-          ),
-      }),
       Effect.retry({
         schedule: limitRetry.pipe(
           Schedule.tap(({ duration }) =>

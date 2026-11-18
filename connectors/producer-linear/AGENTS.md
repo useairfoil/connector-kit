@@ -7,7 +7,9 @@
 
 ## Rules
 
-- Rate limit is HTTP 400 with code `RATELIMITED`. Retry, max 10 min apart.
+- HTTP 429 retries honor `Retry-After`. Limits are per user and shared across
+  their API keys. GraphQL `RATELIMITED` errors still retry with backoff capped
+  at 10 minutes.
 - GraphQL errors can come with HTTP 200. "Entity not found" means the item is
   missing.
 - `first` max 250, query cost max 10,000 points. A nested connection
