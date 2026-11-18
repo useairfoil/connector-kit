@@ -4,6 +4,13 @@
 
 <!-- Start content -->
 
+## 0.11.0
+
+### Minor Changes
+
+- 21ebfbd: Expose resource descriptions in connector manifests using the same text as table comments.
+  Add `Iceberg.resolveDescription(schema)` to read schema description annotations.
+
 ## 0.10.1
 
 ### Patch Changes
