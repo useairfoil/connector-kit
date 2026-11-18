@@ -76,6 +76,7 @@ export const fromRefundWebhook = (payload: RefundWebhookPayload): Refund => ({
   note: payload.note ?? "",
   createdAt: payload.created_at,
   processedAt: payload.processed_at,
+  version: payload.processed_at,
   // Webhooks only give transaction amounts in the customer currency.
   transactions: payload.transactions.map((transaction) => ({
     id: transaction.admin_graphql_api_id,

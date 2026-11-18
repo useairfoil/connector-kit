@@ -130,6 +130,12 @@ export const TicketSchema = Schema.Struct({
     }),
   ),
   tags: Schema.Array(Schema.String).pipe(Schema.annotateKey({ description: "Ticket tags." })),
+  email_cc_ids: Schema.optionalKey(Schema.Array(Long)).pipe(
+    Schema.annotateKey({ description: "Users copied on ticket emails." }),
+  ),
+  follower_ids: Schema.optionalKey(Schema.Array(Long)).pipe(
+    Schema.annotateKey({ description: "Agents following the ticket." }),
+  ),
   custom_fields: Schema.ReadonlyMap(Schema.String, Schema.String).pipe(
     Schema.annotateKey({
       description: "Custom field values by field ID, in `ticket_fields`. Lists are JSON.",

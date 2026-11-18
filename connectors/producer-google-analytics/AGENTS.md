@@ -1,40 +1,32 @@
 # Google Analytics producer
 
-## Current scope
+- Auth: service account JSON key, signed as RS256 JWT, one property.
+- Webhooks: none.
+- API version: `v1beta` in the URL. Every call is a Data API `runReport`.
 
-- Resources: 9 fixed daily reports (see `src/resources/reports/specs.ts`)
-- Auth: a service account JSON key, signed as an RS256 JWT, for one property
-- Changes: every 6 hours, reading the last `GA_LOOKBACK_DAYS` again
-- Webhooks: none. GA has none for report data.
+## Rules
 
-## Google Analytics rules
-
-- Every request is a Data API `runReport` through `src/client`, so VCR records
-  it. The version is in the URL, `v1beta`.
-- A request takes at most 9 dimensions, 10 metrics, and 4 date ranges. The
-  earliest day is 2015-08-14.
-- Every value comes as a string. `TYPE_INTEGER` metrics are `long`; float,
-  currency, and seconds metrics are `double`. `keyEvents` is a float.
+- One request: max 9 dimensions, 10 metrics, 4 date ranges. Earliest day is
+  2015-08-14.
+- Every value is a string. `TYPE_INTEGER` is `long`. Float, currency and
+  seconds are `double`. `keyEvents` is a float.
 - An empty report has no `rows` or `rowCount`. A report with no dimensions has
   no `dimensionHeaders`, so every request asks for `date`.
-- A used-up quota returns 429 `RESOURCE_EXHAUSTED`. It can also be the 10
-  concurrent requests limit, so the client first retries quickly, then keeps
-  waiting, with at most 10 minutes between tries. A failed source stays
-  stopped until restart.
-- 500 and 503 count against a small server error quota, so they get only the
-  normal retries.
+- 429 `RESOURCE_EXHAUSTED` can be the quota or the 10 concurrent requests
+  limit. Retry fast first, then wait, max 10 min apart.
+- 500 and 503 use a small server error quota, so only normal retries.
+- Order by every dimension, or offset pages aren't stable.
+- Days are in the property time zone, from `metadata.timeZone`.
+- Numbers change for a few days, so changes read the last `GA_LOOKBACK_DAYS`
+  again.
+- `cohort_retention` needs 7 days of data, so each day is read 7 days late.
+- A row missing in a later read isn't deleted.
 
-Each request reads one day, ordered by every dimension so offset pages stay
-stable. Days are in the property's time zone, which the client reads from a
-report's `metadata.timeZone`. Backfill ends the day before the cutoff. Changes
-read the last `lookbackDays` days, ending yesterday, plus any days missed since
-the last run. A run reads one page per fetch and resumes from its cursor.
+## New report
 
-Rows have no update time, so the version is the fetch time. A row that drops
-out of a later read isn't deleted.
+Check fields with `checkCompatibility` and types in `metricHeaders`. Use only
+pairs Google shows in its own reports.
 
-For a new report, check its fields with `checkCompatibility` and their types in
-`metricHeaders`. Keep it to pairs Google shows in its own reports.
+## VCR
 
-Record VCR against the test property only, on a day after the seeded data is
-processed.
+Test property, on a day after the seeded data is processed.

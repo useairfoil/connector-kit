@@ -6,7 +6,8 @@ import type { TicketComment } from "../schemas/comments";
 import type { SurveyResponse } from "../schemas/csat";
 import type { OrganizationMembership } from "../schemas/memberships";
 import type { SatisfactionRating } from "../schemas/satisfaction";
-import type { TicketFieldChange, TicketMetricEvent } from "../schemas/ticket-events";
+import type { TalkCall, TalkLeg } from "../schemas/talk";
+import type { TicketAudit, TicketFieldChange, TicketMetricEvent } from "../schemas/ticket-events";
 import type { Ticket } from "../schemas/tickets";
 import type { User } from "../schemas/users";
 
@@ -23,6 +24,7 @@ export const organizationId = (o: number) => 360_000_300_000n + BigInt(o);
 export const formId = (f: number) => 360_000_400_000n + BigInt(f);
 export const fieldId = (f: number) => 360_000_500_000n + BigInt(f);
 export const slaId = 360_000_600_001n;
+export const talkLineId = 360_001_500_001n;
 export const surveyId = "01JDEMO00000000000000CSAT1";
 
 export const groups = ["Support", "Billing", "Technical", "VIP"] as const;
@@ -85,6 +87,9 @@ export type Rows = {
   readonly ticket_comments: Array<TicketComment>;
   readonly ticket_field_history: Array<TicketFieldChange>;
   readonly ticket_metric_events: Array<TicketMetricEvent>;
+  readonly ticket_audits: Array<TicketAudit>;
+  readonly talk_calls: Array<TalkCall>;
+  readonly talk_legs: Array<TalkLeg>;
   readonly satisfaction_ratings: Array<SatisfactionRating>;
   readonly survey_responses: Array<SurveyResponse>;
 };

@@ -1,6 +1,11 @@
-import type { InsightsSpec } from "./spec";
+import type { InsightsItem, InsightsSpec } from "./spec";
 
 import {
+  AccountInsightsApiSchema,
+  AdSetInsightsApiSchema,
+  CampaignInsightsApiSchema,
+  type NativeInsights,
+  NativeInsightsSchema,
   type AdInsights,
   type AdInsightsAgeGender,
   AdInsightsAgeGenderApiSchema,
@@ -56,3 +61,56 @@ export const adInsightsPlatform: InsightsSpec<
   rowSchema: AdInsightsPlatformSchema,
   toRow: ({ date_start, ...item }, id, version) => ({ ...item, id, version, date: date_start }),
 };
+
+const nativeInsights = <Item extends InsightsItem & typeof AccountInsightsApiSchema.Type>(
+  name: string,
+  level: "account" | "campaign" | "adset",
+  item: InsightsSpec<Item, NativeInsights>["item"],
+  monthly: boolean,
+): InsightsSpec<Item, NativeInsights> => ({
+  name,
+  level,
+  item,
+  monthly,
+  attributionWindows: ["1d_click", "7d_click", "1d_view"],
+  breakdowns: [],
+  rowSchema: NativeInsightsSchema,
+  toRow: (entry, id, version) => ({ ...entry, id, version }),
+});
+
+export const accountDaily = nativeInsights(
+  "account_insights_daily",
+  "account",
+  AccountInsightsApiSchema,
+  false,
+);
+export const accountMonthly = nativeInsights(
+  "account_insights_monthly",
+  "account",
+  AccountInsightsApiSchema,
+  true,
+);
+export const campaignDaily = nativeInsights(
+  "campaign_insights_daily",
+  "campaign",
+  CampaignInsightsApiSchema,
+  false,
+);
+export const campaignMonthly = nativeInsights(
+  "campaign_insights_monthly",
+  "campaign",
+  CampaignInsightsApiSchema,
+  true,
+);
+export const adSetDaily = nativeInsights(
+  "ad_set_insights_daily",
+  "adset",
+  AdSetInsightsApiSchema,
+  false,
+);
+export const adSetMonthly = nativeInsights(
+  "ad_set_insights_monthly",
+  "adset",
+  AdSetInsightsApiSchema,
+  true,
+);

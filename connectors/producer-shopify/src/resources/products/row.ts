@@ -45,6 +45,9 @@ export const ProductVariantSchema = Schema.Struct({
   compareAtPrice: Schema.NullOr(Schema.String).pipe(
     Schema.annotateKey({ description: "Original price used for comparison." }),
   ),
+  inventoryItemId: Schema.optionalKey(Schema.String).pipe(
+    Schema.annotateKey({ description: "Inventory item tracked for this variant." }),
+  ),
   inventoryPolicy: ProductVariantInventoryPolicySchema.pipe(
     Schema.annotateKey({ description: "Behavior when the variant is out of stock." }),
   ),

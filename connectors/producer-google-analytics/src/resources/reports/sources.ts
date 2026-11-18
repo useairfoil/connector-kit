@@ -25,8 +25,8 @@ const dayIn = (zone: DateTime.TimeZone, time: DateTime.DateTime) =>
 const minDay = (a: string, b: string) => (a < b ? a : b);
 
 /** Reports cover whole days, so backfill ends the day before the cutoff. */
-const lastBackfillDay = (zone: DateTime.TimeZone, cutoff: DateTime.Utc) =>
-  addDays(dayIn(zone, cutoff), -1);
+const lastBackfillDay = (zone: DateTime.TimeZone, cutoff: DateTime.Utc, lag = 0) =>
+  addDays(dayIn(zone, cutoff), -1 - lag);
 
 // The API rejects earlier days.
 const firstDay = "2015-08-14";
@@ -74,7 +74,7 @@ export const reportCheck = <Row extends object>(
 ) =>
   Effect.gen(function* () {
     const zone = yield* client.timeZone;
-    const yesterday = addDays(dayIn(zone, yield* DateTime.now), -1);
+    const yesterday = lastBackfillDay(zone, yield* DateTime.now, spec.cohortEndOffset);
     yield* startDay(config, yesterday);
     yield* readDay(client, config.propertyId, spec, { day: yesterday, offset: 0, limit: 1 });
   });
@@ -93,7 +93,7 @@ export const reportBackfill = <Row extends object>(
         const cutoffTime = yield* Schema.decodeUnknownEffect(Schema.DateTimeUtcFromString)(
           String(cutoff),
         ).pipe(Effect.mapError(cursorError));
-        const end = lastBackfillDay(zone, cutoffTime);
+        const end = lastBackfillDay(zone, cutoffTime, spec.cohortEndOffset);
         const at =
           pageCursor === undefined
             ? { day: yield* startDay(config, end), offset: 0 }
@@ -137,9 +137,9 @@ export const reportChanges = <Row extends object>(
           Effect.mapError(cursorError),
         );
         const state: ChangesCursor = DateTime.isDateTime(decoded)
-          ? { through: lastBackfillDay(zone, decoded) }
+          ? { through: lastBackfillDay(zone, decoded, spec.cohortEndOffset) }
           : decoded;
-        const yesterday = addDays(dayIn(zone, yield* DateTime.now), -1);
+        const yesterday = lastBackfillDay(zone, yield* DateTime.now, spec.cohortEndOffset);
         const window = state.pending ?? {
           day: minDay(addDays(state.through, 1), addDays(yesterday, 1 - config.lookbackDays)),
           end: yesterday,

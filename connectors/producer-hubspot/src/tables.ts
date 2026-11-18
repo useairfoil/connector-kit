@@ -1,6 +1,12 @@
 import type { Schema } from "effect";
 
 import {
+  DealPropertyHistorySchema,
+  AppointmentSchema,
+  ProjectSchema,
+  CourseSchema,
+  ListingSchema,
+  ServiceSchema,
   CallSchema,
   CartSchema,
   CommercePaymentSchema,
@@ -30,7 +36,9 @@ import {
   TicketSchema,
   UserSchema,
 } from "./schemas/crm";
-import { ListSchema } from "./schemas/lists";
+import { CommerceLinkSchema, PeerLinkSchema } from "./schemas/links";
+import { ListSchema, SegmentMembershipSchema } from "./schemas/lists";
+import { MarketingEventSchema, MarketingParticipationSchema } from "./schemas/marketing";
 import { OwnerSchema } from "./schemas/owners";
 import { PipelineSchema } from "./schemas/pipelines";
 import { PropertySchema } from "./schemas/properties";
@@ -70,4 +78,16 @@ export const tableSchemas: Readonly<Record<string, Schema.Top>> = {
   properties: PropertySchema,
   teams: TeamSchema,
   lists: ListSchema,
+  commerce_links: CommerceLinkSchema,
+  peer_links: PeerLinkSchema,
+  segment_memberships: SegmentMembershipSchema,
+  marketing_events: MarketingEventSchema,
+  marketing_event_participation: MarketingParticipationSchema,
+  deal_property_history: DealPropertyHistorySchema,
+
+  projects: ProjectSchema,
+  appointments: AppointmentSchema,
+  courses: CourseSchema,
+  listings: ListingSchema,
+  services: ServiceSchema,
 };

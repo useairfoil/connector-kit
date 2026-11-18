@@ -136,8 +136,37 @@ export const setupRows = (context: Demo.DemoContext) => {
       release_ids: [release.id],
     }));
 
+  const historyEntry = (item: { readonly updated_at: Date }, group: number, index: number) => ({
+    id: uuid(group, index),
+    ...stamp(item.updated_at, item.updated_at),
+    entries: JSON.stringify({
+      status: [{ to: "active", timestamp: item.updated_at.toISOString() }],
+    }),
+  });
+
   return {
     ...teamSetup,
+    project_external_links: projectSetup.projects.map((project, p) => ({
+      id: uuid(48, p),
+      ...stamp(project.created_at, project.created_at),
+      project_id: project.id,
+      label: "Project brief",
+      url: `${project.url}/brief`,
+      sort_order: 0,
+      creator_id: project.creator_id,
+    })),
+    project_history: projectSetup.projects.map((project, p) => ({
+      ...historyEntry(project, 43, p),
+      project_id: project.id,
+    })),
+    initiative_history: initiativeSetup.initiatives.map((initiative, i) => ({
+      ...historyEntry(initiative, 44, i),
+      initiative_id: initiative.id,
+    })),
+    release_history: releases.map((release, r) => ({
+      ...historyEntry(release, 45, r),
+      release_id: release.id,
+    })),
     ...projectSetup,
     ...initiativeSetup,
     customer_statuses: customerStatuses,
@@ -147,5 +176,50 @@ export const setupRows = (context: Demo.DemoContext) => {
     release_stages: stages,
     releases,
     release_notes: releaseNotes,
+    team_sla_rules: teamSetup.teams.map((team) => ({
+      id: team.id,
+      version: now,
+      rules: [
+        {
+          id: uuid(49, 0),
+          name: "Urgent issue response",
+          conditions: JSON.stringify({ priority: { eq: 1 } }),
+          removes_sla: false,
+          sla: 86_400_000,
+          sla_type: "all",
+          start_mode: "ruleMatch",
+        },
+      ],
+    })),
+    templates: [
+      {
+        id: uuid(46, 0),
+        ...set,
+        name: "Bug report",
+        description: "Record a product defect",
+        type: "issue",
+        team_id: null,
+        template_data: JSON.stringify({ title: "Bug: ", priority: 2 }),
+        content: "## Steps to reproduce",
+        has_form_fields: false,
+      },
+    ],
+    custom_views: [
+      {
+        id: uuid(47, 0),
+        ...set,
+        name: "High-priority issues",
+        description: null,
+        model_name: "Issue",
+        team_id: null,
+        owner_id: userId(0),
+        creator_id: userId(0),
+        shared: true,
+        filter_data: JSON.stringify({ priority: { lte: 2 } }),
+        project_filter_data: null,
+        initiative_filter_data: null,
+        feed_item_filter_data: null,
+      },
+    ],
   };
 };

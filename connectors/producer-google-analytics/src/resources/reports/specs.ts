@@ -1,6 +1,8 @@
 import type { ReportSpec } from "./spec";
 
 import {
+  type CohortRetention,
+  CohortRetentionSchema,
   type DailyOverview,
   DailyOverviewSchema,
   type Device,
@@ -15,8 +17,14 @@ import {
   LocationSchema,
   type Page,
   PageSchema,
+  type PaidCampaign,
+  PaidCampaignSchema,
+  type StreamScreen,
+  StreamScreenSchema,
   type TrafficSource,
   TrafficSourceSchema,
+  type Transaction,
+  TransactionSchema,
   type UserAcquisition,
   UserAcquisitionSchema,
 } from "../../schemas/reports";
@@ -47,6 +55,7 @@ export const trafficSources: ReportSpec<TrafficSource> = {
   dimensions: {
     session_source: "sessionSource",
     session_medium: "sessionMedium",
+    session_campaign_id: "sessionCampaignId",
     session_campaign_name: "sessionCampaignName",
     session_default_channel_group: "sessionDefaultChannelGroup",
   },
@@ -69,6 +78,7 @@ export const userAcquisition: ReportSpec<UserAcquisition> = {
   dimensions: {
     first_user_source: "firstUserSource",
     first_user_medium: "firstUserMedium",
+    first_user_campaign_id: "firstUserCampaignId",
     first_user_campaign_name: "firstUserCampaignName",
     first_user_default_channel_group: "firstUserDefaultChannelGroup",
   },
@@ -167,7 +177,61 @@ export const ecommerceItems: ReportSpec<EcommerceItem> = {
     items_viewed: "itemsViewed",
     items_added_to_cart: "itemsAddedToCart",
     items_purchased: "itemsPurchased",
+    items_checked_out: "itemsCheckedOut",
+    item_refund_amount: "itemRefundAmount",
     item_revenue: "itemRevenue",
   },
   rowSchema: EcommerceItemSchema,
+};
+
+export const transactions: ReportSpec<Transaction> = {
+  name: "transactions",
+  dimensions: {
+    transaction_id: "transactionId",
+  },
+  metrics: {
+    ecommerce_purchases: "ecommercePurchases",
+    purchase_revenue: "purchaseRevenue",
+    refund_amount: "refundAmount",
+  },
+  rowSchema: TransactionSchema,
+};
+
+export const paidCampaigns: ReportSpec<PaidCampaign> = {
+  name: "paid_campaigns",
+  dimensions: {
+    customer_id: "sessionGoogleAdsCustomerId",
+    campaign_id: "sessionGoogleAdsCampaignId",
+    ad_group_id: "sessionGoogleAdsAdGroupId",
+  },
+  metrics: {
+    sessions: "sessions",
+    advertiser_ad_cost: "advertiserAdCost",
+    advertiser_ad_clicks: "advertiserAdClicks",
+    advertiser_ad_impressions: "advertiserAdImpressions",
+  },
+  rowSchema: PaidCampaignSchema,
+};
+
+export const streamScreens: ReportSpec<StreamScreen> = {
+  name: "stream_screens",
+  dimensions: {
+    stream_id: "streamId",
+    stream_name: "streamName",
+    platform: "platform",
+    screen_class: "unifiedScreenClass",
+  },
+  metrics: {
+    screen_page_views: "screenPageViews",
+    active_users: "activeUsers",
+  },
+  rowSchema: StreamScreenSchema,
+};
+
+export const cohortRetention: ReportSpec<CohortRetention> = {
+  name: "cohort_retention",
+  cohortEndOffset: 7,
+  dimensions: { day_offset: "cohortNthDay" },
+  metrics: { active_users: "cohortActiveUsers", total_users: "cohortTotalUsers" },
+  rowSchema: CohortRetentionSchema,
 };

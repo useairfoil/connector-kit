@@ -1,5 +1,5 @@
 import { Resource } from "@useairfoil/connector-kit";
-import { Effect } from "effect";
+import { DateTime, Effect, Option, Schema } from "effect";
 
 import type { IncidentIoClientService } from "../client/client";
 
@@ -15,6 +15,7 @@ import {
   FollowUpObjectSchema,
   FollowUpSchema,
   type PostmortemDocument,
+  PostmortemContentSchema,
   PostmortemDocumentObjectSchema,
   PostmortemDocumentSchema,
 } from "../schemas/tasks";
@@ -58,6 +59,45 @@ export const makePostmortemDocuments = (client: IncidentIoClientService) =>
           toRow: toPostmortemDocument,
         }),
     },
+  });
+
+// Only in-app documents have text in incident.io. It's read one document at a time.
+export const makePostmortemContents = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "postmortem_contents",
+    rowSchema: PostmortemContentSchema,
+    version: "version",
+    ...listSources(
+      Effect.gen(function* () {
+        const version = yield* DateTime.nowAsDate;
+        const documents = yield* listAll(client, {
+          path: "/v1/postmortem_documents",
+          key: "postmortem_documents",
+          item: PostmortemDocumentObjectSchema,
+          params: { page_size: "250" },
+        });
+        const contents = yield* Effect.forEach(
+          documents.filter((document) => document.type === "in_app"),
+          (document) =>
+            client
+              .find(
+                Schema.Struct({ markdown: Schema.String }),
+                `/v1/postmortem_documents/${document.id}/content`,
+              )
+              .pipe(
+                Effect.map(
+                  Option.map(({ markdown }) => ({
+                    id: document.id,
+                    version,
+                    incident_id: document.incident_id,
+                    markdown,
+                  })),
+                ),
+              ),
+        );
+        return contents.flatMap(Option.toArray);
+      }),
+    ),
   });
 
 const toFollowUp = ({

@@ -1,7 +1,15 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, SchemaTransformation, Struct } from "effect";
 
-import { Long, OptionalRef, OptionalString, OptionalTimestamp, Ref, common } from "./shared";
+import {
+  JsonText,
+  Long,
+  OptionalRef,
+  OptionalString,
+  OptionalTimestamp,
+  Ref,
+  common,
+} from "./shared";
 
 export const ReleaseSchema = Schema.Struct({
   ...common("Release"),
@@ -129,4 +137,20 @@ export type IssueToRelease = Schema.Schema.Type<typeof IssueToReleaseSchema>;
 
 export const IssueToReleaseObjectSchema = IssueToReleaseSchema.mapFields((fields) =>
   Struct.omit(fields, ["version"]),
+);
+
+export const ReleaseHistorySchema = Schema.Struct({
+  ...common("History entry"),
+  release_id: Schema.String.pipe(Schema.annotateKey({ description: "Release that changed." })),
+  entries: JsonText.pipe(
+    Schema.annotateKey({ description: "Recorded changes and their times, as JSON." }),
+  ),
+})
+  .annotate({ description: "Linear release history." })
+  .pipe(Iceberg.identifier("id"));
+
+export type ReleaseHistory = Schema.Schema.Type<typeof ReleaseHistorySchema>;
+
+export const ReleaseHistoryObjectSchema = ReleaseHistorySchema.mapFields((fields) =>
+  Struct.omit(fields, ["version", "release_id"]),
 );

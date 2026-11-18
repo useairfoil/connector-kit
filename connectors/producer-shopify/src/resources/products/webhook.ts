@@ -27,6 +27,7 @@ export const ProductWebhookVariantSchema = Schema.Struct({
   id: Schema.Number,
   title: Schema.String,
   price: Schema.String,
+  inventory_item_id: Schema.optionalKey(Schema.NullOr(Schema.Number)),
   inventory_policy: upper(ProductVariantInventoryPolicySchema),
   compare_at_price: Schema.NullOr(Schema.String),
   created_at: Schema.DateFromString,
@@ -100,6 +101,9 @@ const normalizeProductVariant = (variant: ProductWebhookVariant): ProductVariant
   price: variant.price,
   compareAtPrice: variant.compare_at_price,
   inventoryPolicy: variant.inventory_policy,
+  ...(variant.inventory_item_id == null
+    ? {}
+    : { inventoryItemId: gid("InventoryItem", variant.inventory_item_id) }),
   taxable: variant.taxable,
   createdAt: variant.created_at,
   updatedAt: variant.updated_at,

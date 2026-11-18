@@ -7,17 +7,28 @@ import * as GitHubClient from "./client/client";
 import { makeCheckRuns } from "./resources/check-runs";
 import { makeCommitStatuses } from "./resources/commit-statuses";
 import { makeCommits } from "./resources/commits";
+import { makeDeployments, makeDeploymentStatuses } from "./resources/deployments";
 import { makeIssueComments } from "./resources/issue-comments";
+import { makeIssueLinks } from "./resources/issue-links";
+import { makeIssueTimeline } from "./resources/issue-timeline";
 import { makeIssues } from "./resources/issues";
+import { makeLabels } from "./resources/labels";
+import { makeMilestones } from "./resources/milestones";
+import { makeProjectFields, makeProjectItems, makeProjects } from "./resources/projects";
 import { makePullRequestCommits } from "./resources/pull-request-commits";
+import { makePullRequestFiles } from "./resources/pull-request-files";
 import { makePullRequestReviewComments } from "./resources/pull-request-review-comments";
 import { makePullRequestReviews } from "./resources/pull-request-reviews";
 import { makePullRequests } from "./resources/pull-requests";
+import { makeBranches, makeTags } from "./resources/refs";
 import { makeReleases } from "./resources/releases";
 import { makeRepositories } from "./resources/repositories";
 import { cachedRepositoryRefs } from "./resources/shared";
+import { makeWorkflowArtifacts } from "./resources/workflow-artifacts";
+import { makeWorkflowAttempts } from "./resources/workflow-attempts";
 import { makeWorkflowJobs } from "./resources/workflow-jobs";
 import { makeWorkflowRuns } from "./resources/workflow-runs";
+import { makeWorkflows } from "./resources/workflows";
 import { webhookEvents } from "./webhook/events";
 import { makeWebhookRoute } from "./webhook/route";
 export { GitHubConfigDef, manifest } from "./manifest";
@@ -42,6 +53,9 @@ const build = Effect.gen(function* () {
   const WorkflowJobs = makeWorkflowJobs(client, repositories);
   const Releases = makeReleases(client, repositories);
 
+  const Labels = makeLabels(client, repositories);
+  const Milestones = makeMilestones(client, repositories);
+
   const connector = Connector.define({
     name: "producer-github",
     title: "GitHub",
@@ -59,6 +73,21 @@ const build = Effect.gen(function* () {
       WorkflowRuns,
       WorkflowJobs,
       Releases,
+      Labels,
+      Milestones,
+      makePullRequestFiles(client, repositories),
+      makeIssueTimeline(client, repositories),
+      makeDeployments(client, repositories),
+      makeDeploymentStatuses(client, repositories),
+      makeBranches(client, repositories),
+      makeTags(client, repositories),
+      makeWorkflows(client, repositories),
+      makeWorkflowArtifacts(client, repositories),
+      makeWorkflowAttempts(client, repositories),
+      makeIssueLinks(client, repositories),
+      makeProjects(client),
+      makeProjectFields(client),
+      makeProjectItems(client),
     ],
   });
 
@@ -82,6 +111,8 @@ const build = Effect.gen(function* () {
             [webhookEvents.workflow_run, [WorkflowRuns]],
             [webhookEvents.workflow_job, [WorkflowJobs]],
             [webhookEvents.release, [Releases]],
+            [webhookEvents.milestone, [Milestones]],
+            [webhookEvents.label, [Labels]],
           ]),
         }),
       ]),

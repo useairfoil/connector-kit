@@ -1,10 +1,10 @@
 import { ConnectorError } from "@useairfoil/connector-kit";
-import { Array as Arr, Effect, Order, Schema } from "effect";
+import { Array as Arr, Effect, Option, Order, Schema, Stream } from "effect";
 
-import type { SalesforceClientService } from "../client/client";
 import type { ObjectRow } from "../schemas/objects";
 import type { Describer } from "./describe";
 
+import { SALESFORCE_API_VERSION, type SalesforceClientService } from "../client/client";
 import { RecordListSchema, type SalesforceRecord, RecordTimesSchema } from "../schemas/api";
 
 // The most IDs one collections read takes.
@@ -76,3 +76,31 @@ export const readRows = (
     Effect.tapError(() => describer.invalidate(object)),
     Effect.retry({ times: 1 }),
   );
+
+const nextPagePrefix = `/services/data/v${SALESFORCE_API_VERSION}`;
+
+export const queryRecords = <S extends Schema.Top & { readonly DecodingServices: never }>(
+  client: SalesforceClientService,
+  record: S,
+  q: string,
+): Effect.Effect<ReadonlyArray<S["Type"]>, ConnectorError> => {
+  const Page = Schema.Struct({
+    nextRecordsUrl: Schema.optionalKey(Schema.String),
+    records: Schema.Array(record),
+  });
+  return Stream.paginate("/query", (path: string) =>
+    client
+      .get(Page, path, path === "/query" ? { q } : undefined)
+      .pipe(
+        Effect.map(
+          ({ body }) =>
+            [
+              body.records,
+              Option.map(Option.fromUndefinedOr(body.nextRecordsUrl), (url) =>
+                url.slice(nextPagePrefix.length),
+              ),
+            ] as const,
+        ),
+      ),
+  ).pipe(Stream.runCollect);
+};

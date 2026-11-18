@@ -26,6 +26,7 @@ const isExample = (path: string): path is keyof typeof examples => path in examp
 
 /** Every list answers with its example. Show paths use the `{id}` example. */
 const fromExamples: FakeIncidentIo = (request) => {
+  if (request.path.endsWith("/content")) return examples["/v1/postmortem_documents/{id}/content"];
   const path = request.path.replace(/^(\/v\d\/[a-z_]+)\/[^/]+$/, (_, list) =>
     list === "/v2/status_page_incidents" ? `${list}/{status_page_incident_id}` : `${list}/{id}`,
   );
@@ -34,6 +35,7 @@ const fromExamples: FakeIncidentIo = (request) => {
     const [document] = examples[path].postmortem_documents;
     return { postmortem_documents: [{ ...document, updated_at: document.created_at }] };
   }
+  if (isExample(request.path)) return examples[request.path];
   return isExample(path) ? examples[path] : undefined;
 };
 
@@ -77,6 +79,21 @@ describe("resources", () => {
         expect(table.rowSchema).toBe(resource?.rowSchema);
         expect(table.version).toBe(resource?.version);
       }
+    }),
+  );
+
+  it.effect("catches up one complete availability day per poll page", () =>
+    Effect.gen(function* () {
+      const { resource } = yield* getResource("status_page_availability", fromExamples);
+      const changes = yield* Effect.fromOption(Option.fromNullishOr(resource.changes));
+      const first = yield* changes.fetch({ cursor: "2026-10-17T12:00:00.000Z" });
+      const second = yield* changes.fetch({ cursor: first.cursor });
+      expect(first.rows).toHaveLength(1);
+      expect(first.cursor).toBe("2026-10-18T00:00:00.000Z");
+      expect(first.hasMore).toBe(true);
+      expect(second.rows).toHaveLength(1);
+      expect(second.cursor).toBe("2026-10-19T00:00:00.000Z");
+      expect(second.hasMore).toBe(false);
     }),
   );
 
@@ -296,7 +313,15 @@ describe("resources", () => {
             "backfill": 1,
             "changes": 1,
           },
+          "alert_tags": {
+            "backfill": 1,
+            "changes": 1,
+          },
           "alerts": {
+            "backfill": 1,
+            "changes": 1,
+          },
+          "call_routes": {
             "backfill": 1,
             "changes": 1,
           },
@@ -344,6 +369,10 @@ describe("resources", () => {
             "backfill": 1,
             "changes": 1,
           },
+          "incident_call_transcripts": {
+            "backfill": 1,
+            "changes": 1,
+          },
           "incident_participant_workloads": {
             "backfill": 1,
             "changes": 1,
@@ -361,6 +390,10 @@ describe("resources", () => {
             "changes": 1,
           },
           "incident_statuses": {
+            "backfill": 1,
+            "changes": 1,
+          },
+          "incident_templates": {
             "backfill": 1,
             "changes": 1,
           },
@@ -392,11 +425,23 @@ describe("resources", () => {
             "backfill": 1,
             "changes": 1,
           },
+          "pay_configs": {
+            "backfill": 1,
+            "changes": 1,
+          },
+          "pay_reports": {
+            "backfill": 1,
+            "changes": 1,
+          },
           "policies": {
             "backfill": 1,
             "changes": 1,
           },
           "policy_findings": {
+            "backfill": 1,
+            "changes": 1,
+          },
+          "postmortem_contents": {
             "backfill": 1,
             "changes": 1,
           },
@@ -420,7 +465,19 @@ describe("resources", () => {
             "backfill": 1,
             "changes": 1,
           },
+          "status_page_availability": {
+            "backfill": 1,
+            "changes": 0,
+          },
           "status_page_components": {
+            "backfill": 1,
+            "changes": 1,
+          },
+          "status_page_groups": {
+            "backfill": 2,
+            "changes": 2,
+          },
+          "status_page_incident_links": {
             "backfill": 1,
             "changes": 1,
           },
@@ -512,7 +569,7 @@ describe("resources", () => {
       const [entry] = examples["/v2/schedule_entries"].schedule_entries.final;
       const { resource, requests } = yield* getResource("schedule_shifts", (request) =>
         request.path === "/v2/schedules"
-          ? { schedules: [schedule] }
+          ? { schedules: [{ ...schedule, created_at: "2026-10-12T12:00:00.000Z" }] }
           : {
               schedule_entries: {
                 scheduled: [],
@@ -542,7 +599,7 @@ describe("resources", () => {
             },
       );
       const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
-      const page = yield* backfill.fetch({ cutoff });
+      const page = yield* backfill.fetch({ cutoff: new Date(now).toISOString() });
 
       expect({
         rows: pick(page.rows, ["id", "start_at", "end_at"]),

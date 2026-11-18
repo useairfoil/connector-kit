@@ -40,6 +40,7 @@ export type StripeClientService = {
   readonly retrieve: <A>(
     schema: Schema.Decoder<A>,
     path: string,
+    params?: StripeParams,
   ) => Effect.Effect<Option.Option<StripeObject<A>>, ConnectorError>;
 };
 
@@ -162,8 +163,8 @@ export const make = Effect.fnUntraced(function* (config: StripeConnectionConfig)
       }),
     );
 
-  const retrieve = <A>(schema: Schema.Decoder<A>, path: string) =>
-    get(path, [], (response, fetchedAt) =>
+  const retrieve = <A>(schema: Schema.Decoder<A>, path: string, params: StripeParams = []) =>
+    get(path, params, (response, fetchedAt) =>
       HttpClientResponse.matchStatus(response, {
         "2xx": (ok) =>
           decode(schema, ok, path).pipe(Effect.map((item) => Option.some({ item, fetchedAt }))),

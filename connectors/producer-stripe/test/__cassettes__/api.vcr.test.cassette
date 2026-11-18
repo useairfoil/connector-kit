@@ -593,6 +593,117 @@
               "x-wc": "3c3"
             }
           }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoice_payments?limit=1&status=paid\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoice_payments?limit=1&status=paid",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":[{\"amount_paid\":1500,\"amount_requested\":1500,\"created\":1793722199,\"currency\":\"usd\",\"id\":\"inpay_1UXkHcEivF1ML8esLXsxzgt9\",\"invoice\":\"in_1UXjKXEivF1ML8es70XfHpKi\",\"is_default\":true,\"livemode\":false,\"object\":\"invoice_payment\",\"payment\":{\"payment_intent\":\"pi_3UXkHbEivF1ML8es19wHOr3s\",\"type\":\"payment_intent\"},\"status\":\"paid\",\"status_transitions\":{\"canceled_at\":null,\"paid_at\":1793722201}}],\"has_more\":true,\"object\":\"list\",\"url\":\"/v1/invoice_payments\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "636",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f&t=1\"",
+              "request-id": "req_T1MuTIUTAwWtsh",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoice_payments/inpay_1UXkHcEivF1ML8esLXsxzgt9\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoice_payments/inpay_1UXkHcEivF1ML8esLXsxzgt9",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"amount_paid\":1500,\"amount_requested\":1500,\"created\":1793722199,\"currency\":\"usd\",\"id\":\"inpay_1UXkHcEivF1ML8esLXsxzgt9\",\"invoice\":\"in_1UXjKXEivF1ML8es70XfHpKi\",\"is_default\":true,\"livemode\":false,\"object\":\"invoice_payment\",\"payment\":{\"payment_intent\":\"pi_3UXkHbEivF1ML8es19wHOr3s\",\"type\":\"payment_intent\"},\"status\":\"paid\",\"status_transitions\":{\"canceled_at\":null,\"paid_at\":1793722201}}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "463",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f&t=1\"",
+              "request-id": "req_vX5SyfaBINe0Ug",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices?limit=1&expand%5B%5D=data.tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices?limit=1&expand%5B%5D=data.tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":[{\"active\":false,\"billing_scheme\":\"per_unit\",\"created\":1791121268,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMpf6EivF1ML8esiRYIwilS\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{\"e2e\":\"2\"},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNaqgOw1qNCyRu\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":900,\"unit_amount_decimal\":\"900\"}],\"has_more\":true,\"object\":\"list\",\"url\":\"/v1/prices\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "839",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:43 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_9sbFJCQoSNpCdX",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
         }
       }
     },
@@ -3354,6 +3465,1079 @@
               "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=5n0eiY9ssj0EJwQcruozdWa0LjA8fDOcyOgiTsh1BoHb3jiewdxVvheAE5w-3zS4mJ5PQNuyfY4HrVaM&t=1\"}],\"include_subdomains\":true}",
               "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=5n0eiY9ssj0EJwQcruozdWa0LjA8fDOcyOgiTsh1BoHb3jiewdxVvheAE5w-3zS4mJ5PQNuyfY4HrVaM&t=1\"",
               "request-id": "req_QNrXS5xNhLTFCP",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoice_payments/inpay_1UMUv8EivF1ML8esF2fEghog\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoice_payments/inpay_1UMUv8EivF1ML8esF2fEghog",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"amount_paid\":2000,\"amount_requested\":2000,\"created\":1791041538,\"currency\":\"usd\",\"id\":\"inpay_1UMUv8EivF1ML8esF2fEghog\",\"invoice\":\"in_1UMUv7EivF1ML8esHzvL7QYl\",\"is_default\":true,\"livemode\":false,\"object\":\"invoice_payment\",\"payment\":{\"payment_intent\":\"pi_3UMUv8EivF1ML8es1o0US8qM\",\"type\":\"payment_intent\"},\"status\":\"paid\",\"status_transitions\":{\"canceled_at\":null,\"paid_at\":1791041539}}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "463",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=8LGwPB6StXC74lk6Dbu1Er8Z9bhY_d4pY_7H6GKigA2NaBMraFMg8737yAwvSQqcNLzQO0n7su2YjZ-f&t=1\"",
+              "request-id": "req_x7kF9rBa8K9vye",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoice_payments/inpay_1UMUvJEivF1ML8eskipG9RwK\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoice_payments/inpay_1UMUvJEivF1ML8eskipG9RwK",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 404,
+            "body": "{\"error\":{\"code\":\"resource_missing\",\"doc_url\":\"https://stripe.com/docs/error-codes/resource-missing\",\"message\":\"No such invoice_payment: 'inpay_1UMUvJEivF1ML8eskipG9RwK'\",\"param\":\"invoice_payment\",\"request_log_url\":\"https://dashboard.stripe.com/acct_1UMOxEEivF1ML8es/test/workbench/logs?object=req_i4I81tPm2t3uFp\",\"type\":\"invalid_request_error\"}}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "391",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=7p08BaLdPq4i0cOUQpgYSECxerWKhP8vtEUlk9rAWYxIdhSyFA5EG057FWdt-473nwv6fXFi4tKtmW94; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=7p08BaLdPq4i0cOUQpgYSECxerWKhP8vtEUlk9rAWYxIdhSyFA5EG057FWdt-473nwv6fXFi4tKtmW94&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=7p08BaLdPq4i0cOUQpgYSECxerWKhP8vtEUlk9rAWYxIdhSyFA5EG057FWdt-473nwv6fXFi4tKtmW94&t=1\"",
+              "request-id": "req_i4I81tPm2t3uFp",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoice_payments/inpay_1UMUYREivF1ML8esYitnU3A9\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoice_payments/inpay_1UMUYREivF1ML8esYitnU3A9",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"amount_paid\":2000,\"amount_requested\":2000,\"created\":1791040131,\"currency\":\"usd\",\"id\":\"inpay_1UMUYREivF1ML8esYitnU3A9\",\"invoice\":\"in_1UMUYQEivF1ML8esRgEXAWM9\",\"is_default\":true,\"livemode\":false,\"object\":\"invoice_payment\",\"payment\":{\"payment_intent\":\"pi_3UMUYREivF1ML8es1Ewqai4W\",\"type\":\"payment_intent\"},\"status\":\"paid\",\"status_transitions\":{\"canceled_at\":null,\"paid_at\":1791040132}}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "463",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=st6TuxRhyVLIA1WApRZ9kfDADdikgeZj4APCg8WdrJRcBSzOls4etWydA1_aWLntucrwmrqPXGH6vmpU; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=st6TuxRhyVLIA1WApRZ9kfDADdikgeZj4APCg8WdrJRcBSzOls4etWydA1_aWLntucrwmrqPXGH6vmpU&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=st6TuxRhyVLIA1WApRZ9kfDADdikgeZj4APCg8WdrJRcBSzOls4etWydA1_aWLntucrwmrqPXGH6vmpU&t=1\"",
+              "request-id": "req_K1Em4thgefP0Qi",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoice_payments/inpay_1UMUYMEivF1ML8esWp75rVtG\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoice_payments/inpay_1UMUYMEivF1ML8esWp75rVtG",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"amount_paid\":1500,\"amount_requested\":1500,\"created\":1791040126,\"currency\":\"usd\",\"id\":\"inpay_1UMUYMEivF1ML8esWp75rVtG\",\"invoice\":\"in_1UMUYKEivF1ML8esQAQVzIFC\",\"is_default\":true,\"livemode\":false,\"object\":\"invoice_payment\",\"payment\":{\"payment_intent\":\"pi_3UMUYKEivF1ML8es18LAEh1k\",\"type\":\"payment_intent\"},\"status\":\"paid\",\"status_transitions\":{\"canceled_at\":null,\"paid_at\":1791040125}}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "463",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=vTBVRAvosuAi75bbGMm-0audLyf0pgJCn4Xy4vzbzkSWsHz3aGB-8PIdS_tg1cgE5lmB-sZlTCcFhl2e; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=vTBVRAvosuAi75bbGMm-0audLyf0pgJCn4Xy4vzbzkSWsHz3aGB-8PIdS_tg1cgE5lmB-sZlTCcFhl2e&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=vTBVRAvosuAi75bbGMm-0audLyf0pgJCn4Xy4vzbzkSWsHz3aGB-8PIdS_tg1cgE5lmB-sZlTCcFhl2e&t=1\"",
+              "request-id": "req_btVfpCR4f8QSkC",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/invoices/in_1UMVO4EivF1ML8esmzO0g9ug/lines?limit=100\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/invoices/in_1UMVO4EivF1ML8esmzO0g9ug/lines?limit=100",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"data\":[{\"amount\":100,\"currency\":\"usd\",\"description\":\"1 × Seat 0 (at $1.00 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVO4EivF1ML8esFbSvOSmL\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtddQrZptQsx\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNsEivF1ML8esAMXmEpa9\",\"product\":\"prod_VNFtfxVob4gOb7\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"100\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":100,\"taxes\":[]},{\"amount\":101,\"currency\":\"usd\",\"description\":\"1 × Seat 1 (at $1.01 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVO5EivF1ML8esUSI02NiR\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFt9vGXQLgsVG\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNtEivF1ML8es2Eae7vXh\",\"product\":\"prod_VNFt0SXZtd1Jxu\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"101\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":101,\"taxes\":[]},{\"amount\":102,\"currency\":\"usd\",\"description\":\"1 × Seat 2 (at $1.02 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVO6EivF1ML8esksqOaeXe\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtzXUAjXO0Ak\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNuEivF1ML8esw5xqbrc6\",\"product\":\"prod_VNFtQfRqVxEEWI\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"102\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":102,\"taxes\":[]},{\"amount\":103,\"currency\":\"usd\",\"description\":\"1 × Seat 3 (at $1.03 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVO7EivF1ML8eswDKz2sgN\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtP6CQ0TaWzD\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNvEivF1ML8es1IBN1PU2\",\"product\":\"prod_VNFtfIFQPUu96N\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"103\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":103,\"taxes\":[]},{\"amount\":104,\"currency\":\"usd\",\"description\":\"1 × Seat 4 (at $1.04 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVO8EivF1ML8esrDCEtWR3\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtdA1OAXZxP9\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNwEivF1ML8esW7o6Ottm\",\"product\":\"prod_VNFtHMU0nU03hb\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"104\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":104,\"taxes\":[]},{\"amount\":105,\"currency\":\"usd\",\"description\":\"1 × Seat 5 (at $1.05 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVO9EivF1ML8esCbnLxDdo\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtoK6YhyLzmB\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNxEivF1ML8esAHXqsFyo\",\"product\":\"prod_VNFtFShIi1De0B\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"105\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":105,\"taxes\":[]},{\"amount\":106,\"currency\":\"usd\",\"description\":\"1 × Seat 6 (at $1.06 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVOAEivF1ML8escynRxOVy\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFt7JoIdiSP3R\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNyEivF1ML8esrxBtpBZD\",\"product\":\"prod_VNFtVBX7yD1E3b\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"106\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":106,\"taxes\":[]},{\"amount\":107,\"currency\":\"usd\",\"description\":\"1 × Seat 7 (at $1.07 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVOBEivF1ML8esMv384EYU\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFt3PkMp9HSyV\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVNzEivF1ML8escnr8hbNS\",\"product\":\"prod_VNFt7GmKRpnL2p\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"107\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":107,\"taxes\":[]},{\"amount\":108,\"currency\":\"usd\",\"description\":\"1 × Seat 8 (at $1.08 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVOCEivF1ML8esXE1Eetid\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtXLkCNO3Cl9\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVO0EivF1ML8esdAjmDfDC\",\"product\":\"prod_VNFtrf3nCHHb5Q\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"108\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":108,\"taxes\":[]},{\"amount\":109,\"currency\":\"usd\",\"description\":\"1 × Seat 9 (at $1.09 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVODEivF1ML8esjJexoA27\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFtUYuUDt6JOi\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVO1EivF1ML8es0u3ycefx\",\"product\":\"prod_VNFtT8tcnkuiVp\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"109\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":109,\"taxes\":[]},{\"amount\":110,\"currency\":\"usd\",\"description\":\"1 × Seat 10 (at $1.10 / month)\",\"discount_amounts\":[],\"discountable\":true,\"discounts\":[],\"id\":\"il_1UMVOEEivF1ML8esZX05b44W\",\"invoice\":\"in_1UMVO4EivF1ML8esmzO0g9ug\",\"livemode\":false,\"metadata\":{},\"object\":\"line_item\",\"parent\":{\"invoice_item_details\":null,\"subscription_item_details\":{\"invoice_item\":null,\"proration\":false,\"proration_details\":{\"credited_items\":null},\"subscription\":\"sub_1UMVO4EivF1ML8esni9F3W36\",\"subscription_item\":\"si_VNFt4vpQDetDL8\"},\"type\":\"subscription_item_details\"},\"period\":{\"end\":1793721732,\"start\":1791043332},\"pretax_credit_amounts\":[],\"pricing\":{\"price_details\":{\"price\":\"price_1UMVO3EivF1ML8esWWyJi6qj\",\"product\":\"prod_VNFt0LBL6Pxl4f\"},\"type\":\"price_details\",\"unit_amount_decimal\":\"110\"},\"quantity\":1,\"quantity_decimal\":\"1\",\"subtotal\":110,\"taxes\":[]}],\"has_more\":false,\"object\":\"list\",\"url\":\"/v1/invoices/in_1UMVO4EivF1ML8esmzO0g9ug/lines\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "13484",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=r6wgaq7Ys8b-WH9S-G6cjX6iH7wnp3TC7a3r4DUPl3xE0gEvdKT1gYCsRo7onyqG-EW6vBgWG35ksrTV; report-to csp",
+              "content-type": "application/json",
+              "date": "Wed, 11 Nov 2026 15:11:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=r6wgaq7Ys8b-WH9S-G6cjX6iH7wnp3TC7a3r4DUPl3xE0gEvdKT1gYCsRo7onyqG-EW6vBgWG35ksrTV&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=r6wgaq7Ys8b-WH9S-G6cjX6iH7wnp3TC7a3r4DUPl3xE0gEvdKT1gYCsRo7onyqG-EW6vBgWG35ksrTV&t=1\"",
+              "request-id": "req_LoAUKQJXPPvkkG",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOgEivF1ML8esCm4Cwe0q?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOgEivF1ML8esCm4Cwe0q?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043370,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOgEivF1ML8esCm4Cwe0q\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFuRf8skzTQ1D\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":118,\"unit_amount_decimal\":\"118\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_meBurWtvgZc9tN",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOdEivF1ML8esDIAl9YX8?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOdEivF1ML8esDIAl9YX8?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043367,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOdEivF1ML8esDIAl9YX8\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFu0ygIEPfEYy\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":117,\"unit_amount_decimal\":\"117\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"",
+              "request-id": "req_GxpIf5c06Z52nG",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOiEivF1ML8esE3pHa2dp?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOiEivF1ML8esE3pHa2dp?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043372,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOiEivF1ML8esE3pHa2dp\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFu7181f0i9Ja\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":119,\"unit_amount_decimal\":\"119\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"",
+              "request-id": "req_jMDzLjGBjHvpFP",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVObEivF1ML8esLKwX6yAA?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVObEivF1ML8esLKwX6yAA?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043365,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVObEivF1ML8esLKwX6yAA\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFuhXR3kBRE65\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":116,\"unit_amount_decimal\":\"116\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"",
+              "request-id": "req_MtDg4mu3EmZEsT",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOYEivF1ML8esmjm2K40q?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOYEivF1ML8esmjm2K40q?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043362,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOYEivF1ML8esmjm2K40q\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFuHYpHbFLSYO\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":115,\"unit_amount_decimal\":\"115\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_WVtXI2e2kmZgUC",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOWEivF1ML8esI8NtToFk?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOWEivF1ML8esI8NtToFk?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043360,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOWEivF1ML8esI8NtToFk\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFu0aIJHJihaU\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":114,\"unit_amount_decimal\":\"114\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"",
+              "request-id": "req_eBEJQhLl7bzJKa",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOTEivF1ML8essoZVNLpj?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOTEivF1ML8essoZVNLpj?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043357,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOTEivF1ML8essoZVNLpj\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFuvuUP1KmBvY\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":113,\"unit_amount_decimal\":\"113\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"",
+              "request-id": "req_e6K6pkUhITTT15",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOREivF1ML8esUBe3zAna?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOREivF1ML8esUBe3zAna?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043354,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOREivF1ML8esUBe3zAna\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFu33RIUBLTaH\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":112,\"unit_amount_decimal\":\"112\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:44 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"",
+              "request-id": "req_D1bDBGDHBpqB0S",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVOOEivF1ML8estahLrPcm?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVOOEivF1ML8estahLrPcm?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043352,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVOOEivF1ML8estahLrPcm\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFuzCa1O7zYeh\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":111,\"unit_amount_decimal\":\"111\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_VeuT1xoWuvH9nQ",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVO6EivF1ML8esuCkscwRS?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVO6EivF1ML8esuCkscwRS?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043334,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVO6EivF1ML8esuCkscwRS\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtCDuNwzUbIG\",\"recurring\":null,\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"one_time\",\"unit_amount\":999,\"unit_amount_decimal\":\"999\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "490",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"",
+              "request-id": "req_pCMGbUu2o5fhtT",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVO3EivF1ML8esWWyJi6qj?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVO3EivF1ML8esWWyJi6qj?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043331,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVO3EivF1ML8esWWyJi6qj\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFt0LBL6Pxl4f\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":110,\"unit_amount_decimal\":\"110\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"",
+              "request-id": "req_Cri1ihZpe0HmT6",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVO1EivF1ML8es0u3ycefx?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVO1EivF1ML8es0u3ycefx?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043329,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVO1EivF1ML8es0u3ycefx\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtT8tcnkuiVp\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":109,\"unit_amount_decimal\":\"109\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"",
+              "request-id": "req_8Tm5YVDsV7B7JW",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVO0EivF1ML8esdAjmDfDC?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVO0EivF1ML8esdAjmDfDC?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043328,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVO0EivF1ML8esdAjmDfDC\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtrf3nCHHb5Q\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":108,\"unit_amount_decimal\":\"108\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_k2uRCXC9dNRg5i",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNzEivF1ML8escnr8hbNS?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNzEivF1ML8escnr8hbNS?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043327,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNzEivF1ML8escnr8hbNS\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFt7GmKRpnL2p\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":107,\"unit_amount_decimal\":\"107\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"",
+              "request-id": "req_kPnZgdC3Ora00m",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNyEivF1ML8esrxBtpBZD?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNyEivF1ML8esrxBtpBZD?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043326,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNyEivF1ML8esrxBtpBZD\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtVBX7yD1E3b\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":106,\"unit_amount_decimal\":\"106\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"",
+              "request-id": "req_xTsR1TtvVl7oYQ",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNxEivF1ML8esAHXqsFyo?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNxEivF1ML8esAHXqsFyo?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043325,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNxEivF1ML8esAHXqsFyo\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtFShIi1De0B\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":105,\"unit_amount_decimal\":\"105\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"",
+              "request-id": "req_TGtuGIXKSl6JxN",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNwEivF1ML8esW7o6Ottm?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNwEivF1ML8esW7o6Ottm?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043324,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNwEivF1ML8esW7o6Ottm\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtHMU0nU03hb\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":104,\"unit_amount_decimal\":\"104\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_qatSZ1kYv6E2BW",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNvEivF1ML8es1IBN1PU2?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNvEivF1ML8es1IBN1PU2?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043323,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNvEivF1ML8es1IBN1PU2\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtfIFQPUu96N\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":103,\"unit_amount_decimal\":\"103\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"",
+              "request-id": "req_0jrul9HzYQ8UoP",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNuEivF1ML8esw5xqbrc6?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNuEivF1ML8esw5xqbrc6?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043322,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNuEivF1ML8esw5xqbrc6\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtQfRqVxEEWI\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":102,\"unit_amount_decimal\":\"102\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_PGBuQrTiFJdRZT",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNtEivF1ML8es2Eae7vXh?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNtEivF1ML8es2Eae7vXh?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043321,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNtEivF1ML8es2Eae7vXh\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFt0SXZtd1Jxu\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":101,\"unit_amount_decimal\":\"101\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"",
+              "request-id": "req_Ws78O5BEb93R9n",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMVNsEivF1ML8esAMXmEpa9?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMVNsEivF1ML8esAMXmEpa9?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791043320,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMVNsEivF1ML8esAMXmEpa9\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFtfxVob4gOb7\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":100,\"unit_amount_decimal\":\"100\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "621",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:45 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=FNaScX_sX2_wMUyOJaR8FXCdeFw4oZKYCQbBaz47BoIFNgfrAAeu5Zzk9Ww_TQBnrSgyixxL6sxpi4FS&t=1\"",
+              "request-id": "req_5ajgvGADX4XqS3",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMUvHEivF1ML8esp9ZsxA4x?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMUvHEivF1ML8esp9ZsxA4x?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791041547,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMUvHEivF1ML8esp9ZsxA4x\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNFQWZ94Cu09Pw\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":1500,\"unit_amount_decimal\":\"1500\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "623",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:46 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=tGlMjdfzBYodiXgY_-R5mbwSUdT23q3jqjjCwo8S4coSXTocVuxxUkHWe1BkSLd4hU6WbJpRdCltwUBt&t=1\"",
+              "request-id": "req_44AE7l23NDhdl0",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMUYJEivF1ML8esFB6rOtNO?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMUYJEivF1ML8esFB6rOtNO?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791040123,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMUYJEivF1ML8esFB6rOtNO\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNF2dlAWxV5JST\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":1500,\"unit_amount_decimal\":\"1500\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "623",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:46 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=uSmF10jbh_Ogo20v-AnwcN0roZC7n8QDqSRYoU0uUwEpIkkagWQA42IQs5Nsds2EH8g5lVkfugqNvU2W&t=1\"",
+              "request-id": "req_9GSVmUticQhoIc",
+              "server": "nginx",
+              "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+              "stripe-version": "2026-09-30.endive",
+              "vary": "Origin",
+              "x-stripe-priority-routing-enabled": "true",
+              "x-stripe-routing-context-priority-tier": "api-testmode",
+              "x-wc": "3c3"
+            }
+          }
+        },
+        "{\"body\":\"\",\"headers\":{\"accept\":\"application/json\",\"stripe-version\":\"2026-09-30.endive\"},\"method\":\"GET\",\"url\":\"https://api.stripe.com/v1/prices/price_1UMUYGEivF1ML8esgeX8S7O9?expand%5B%5D=tiers\"}": {
+          "request": {
+            "method": "GET",
+            "url": "https://api.stripe.com/v1/prices/price_1UMUYGEivF1ML8esgeX8S7O9?expand%5B%5D=tiers",
+            "headers": {
+              "accept": "application/json",
+              "stripe-version": "2026-09-30.endive"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": "{\"active\":true,\"billing_scheme\":\"per_unit\",\"created\":1791040120,\"currency\":\"usd\",\"custom_unit_amount\":null,\"id\":\"price_1UMUYGEivF1ML8esgeX8S7O9\",\"livemode\":false,\"lookup_key\":null,\"metadata\":{},\"nickname\":null,\"object\":\"price\",\"product\":\"prod_VNF2kkLxOYLy64\",\"recurring\":{\"interval\":\"month\",\"interval_count\":1,\"meter\":null,\"trial_period_days\":null,\"usage_type\":\"licensed\"},\"tax_behavior\":\"unspecified\",\"tiers_mode\":null,\"transform_quantity\":null,\"type\":\"recurring\",\"unit_amount\":1500,\"unit_amount_decimal\":\"1500\"}",
+            "headers": {
+              "access-control-allow-credentials": "true",
+              "access-control-allow-methods": "GET, HEAD, PUT, PATCH, POST, DELETE",
+              "access-control-allow-origin": "*",
+              "access-control-expose-headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+              "access-control-max-age": "300",
+              "cache-control": "no-cache, no-store",
+              "connection": "keep-alive",
+              "content-length": "623",
+              "content-security-policy": "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'; worker-src 'none'; upgrade-insecure-requests; report-uri https://q.stripe.com/csp-violation?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2; report-to csp",
+              "content-type": "application/json",
+              "date": "Tue, 17 Nov 2026 10:02:46 GMT",
+              "report-to": "{\"group\":\"csp\",\"max_age\":8640,\"endpoints\":[{\"url\":\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"}],\"include_subdomains\":true}",
+              "reporting-endpoints": "csp=\"https://q.stripe.com/csp-report-v2?q=Bgcg06Ae6rzzKUg63d-zm4C744SywOlKnLrj07ChpnG-_Xl24BkEkKXsM_M52_VRgSSR7NhBue9NNC-2&t=1\"",
+              "request-id": "req_mzT7ZsIdnpva53",
               "server": "nginx",
               "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
               "stripe-version": "2026-09-30.endive",

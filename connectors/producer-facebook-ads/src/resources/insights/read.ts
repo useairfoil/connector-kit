@@ -15,20 +15,29 @@ export type InsightsPage<Row> = {
   readonly next: Option.Option<string>;
 };
 
-/** One page of one account's insights for one day, per ad. */
 export const readDay = <A extends InsightsItem, Row extends object>(
   client: FacebookAdsClientService,
   spec: InsightsSpec<A, Row>,
   account: string,
-  options: { readonly day: string; readonly after?: string; readonly limit?: number },
+  options: {
+    readonly day: string;
+    readonly until?: string;
+    readonly after?: string;
+    readonly limit?: number;
+  },
 ): Effect.Effect<InsightsPage<Row>, ConnectorError> =>
   Effect.gen(function* () {
     const breakdowns = new Set<string>(spec.breakdowns);
 
     const page = yield* client.get(spec.name, PageSchema(spec.item), `/act_${account}/insights`, {
-      level: "ad",
-      time_increment: "1",
-      time_range: JSON.stringify({ since: options.day, until: options.day }),
+      level: spec.level ?? "ad",
+      ...(spec.attributionWindows === undefined
+        ? {}
+        : {
+            action_attribution_windows: JSON.stringify(spec.attributionWindows),
+          }),
+      time_increment: spec.monthly ? "all_days" : "1",
+      time_range: JSON.stringify({ since: options.day, until: options.until ?? options.day }),
       fields: Object.keys(spec.item.fields)
         .filter((name) => !breakdowns.has(name))
         .join(","),
@@ -44,7 +53,12 @@ export const readDay = <A extends InsightsItem, Row extends object>(
           item,
           JSON.stringify([
             account,
-            item.ad_id,
+            {
+              account,
+              campaign: item.campaign_id,
+              adset: item.adset_id,
+              ad: item.ad_id,
+            }[spec.level ?? "ad"],
             item.date_start,
             ...spec.breakdowns.map((name) => item[name]),
           ]),

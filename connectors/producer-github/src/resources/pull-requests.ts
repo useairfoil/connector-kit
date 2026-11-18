@@ -22,7 +22,14 @@ import {
 } from "./shared";
 
 const toRow = (
-  { updated_at, labels, assignees, requested_reviewers, ...rest }: PullRequestObject,
+  {
+    updated_at,
+    labels,
+    assignees,
+    requested_reviewers,
+    requested_teams,
+    ...rest
+  }: PullRequestObject,
   repository_id: bigint,
 ): PullRequest => ({
   ...rest,
@@ -31,11 +38,12 @@ const toRow = (
   labels: labels ?? [],
   assignees: assignees ?? [],
   requested_reviewers: requested_reviewers ?? [],
+  requested_teams: requested_teams ?? [],
 });
 
 // A webhook can leave a list out, so read the pull request again.
-const hasLists = ({ assignees, requested_reviewers }: PullRequestObject) =>
-  assignees !== undefined && requested_reviewers !== undefined;
+const hasLists = ({ assignees, requested_reviewers, requested_teams }: PullRequestObject) =>
+  assignees !== undefined && requested_reviewers !== undefined && requested_teams !== undefined;
 
 export const pullRequestSpec: RepoResourceSpec<PullRequestObject, PullRequest> = {
   path: "pulls",

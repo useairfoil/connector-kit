@@ -10,6 +10,8 @@ export const webhookEvents = {
   status: "status",
   workflow_run: "workflow_run",
   workflow_job: "workflow_job",
+  label: "label",
+  milestone: "milestone",
   release: "release",
 } as const;
 
@@ -26,5 +28,7 @@ export const webhookSubscriptions = [
   { resource: "commit_statuses", types: [webhookEvents.status] },
   { resource: "workflow_runs", types: [webhookEvents.workflow_run] },
   { resource: "workflow_jobs", types: [webhookEvents.workflow_job] },
+  { resource: "labels", types: [webhookEvents.label] },
+  { resource: "milestones", types: [webhookEvents.milestone] },
   { resource: "releases", types: [webhookEvents.release] },
 ];

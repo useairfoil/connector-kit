@@ -3,6 +3,8 @@ import { Resource } from "@useairfoil/connector-kit";
 import type { LinearClientService } from "../client/client";
 
 import {
+  InitiativeHistoryObjectSchema,
+  InitiativeHistorySchema,
   InitiativeLabelObjectSchema,
   InitiativeLabelSchema,
   InitiativeObjectSchema,
@@ -20,6 +22,7 @@ import {
   checkList,
   listSources,
   listSpec,
+  nestedSpec,
   rowsOf,
   webhookList,
 } from "./pages";
@@ -134,3 +137,27 @@ export const makeInitiativeToProjects = (client: LinearClientService) =>
     backfill: backfillList(client, initiativeToProjectSpec),
     changes: changesList(client, initiativeToProjectSpec),
   });
+
+export const makeInitiativeHistory = (client: LinearClientService) => {
+  const spec = nestedSpec(client, {
+    parents: "initiatives",
+    parent: "initiative",
+    connection: "history",
+    fields: "id created_at: createdAt updated_at: updatedAt archived_at: archivedAt entries",
+    item: InitiativeHistoryObjectSchema,
+    row: (entry, initiative) => ({
+      ...entry,
+      initiative_id: initiative.id,
+      version: entry.updated_at,
+    }),
+  });
+  return Resource.entity({
+    name: "initiative_history",
+    rowSchema: InitiativeHistorySchema,
+    version: "version",
+
+    check: checkList(client, spec),
+    backfill: backfillList(client, spec),
+    changes: changesList(client, spec),
+  });
+};

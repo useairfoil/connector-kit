@@ -59,5 +59,38 @@ export const setupRows = ({ now }: Demo.DemoContext) => {
     })),
   }));
 
-  return { products };
+  const locations = ["Main warehouse", "Downtown shop"].map((name, i) => ({
+    id: gid("Location", i + 1),
+    name,
+    isActive: true,
+    fulfillsOnlineOrders: i === 0,
+    createdAt: created,
+    updatedAt: now,
+  }));
+  const inventoryItems = products.flatMap((product) =>
+    product.variants.map((variant) => ({
+      id: gid("InventoryItem", variant.legacyResourceId),
+      sku: variant.sku,
+      tracked: true,
+      requiresShipping: true,
+      updatedAt: created,
+      variantIds: [variant.id],
+    })),
+  );
+  const inventoryLevels = inventoryItems.flatMap((item, i) =>
+    locations.map((location, j) => ({
+      id: gid("InventoryLevel", 2 * i + j + 1),
+      inventoryItemId: item.id,
+      isActive: true,
+      location: { id: location.id },
+      updatedAt: now,
+      quantities: [{ name: "available", quantity: 20 + ((i + j) % 20) }],
+    })),
+  );
+  return {
+    products,
+    locations,
+    inventory_items: inventoryItems,
+    inventory_levels: inventoryLevels,
+  };
 };

@@ -8,12 +8,36 @@ import { makeTimeZones, parseAccounts } from "./resources/accounts";
 import { insightsEntity } from "./resources/insights/resource";
 import {
   adInsights,
+  accountDaily,
+  accountMonthly,
+  campaignDaily,
+  campaignMonthly,
+  adSetDaily,
+  adSetMonthly,
   adInsightsAgeGender,
   adInsightsCountry,
   adInsightsPlatform,
 } from "./resources/insights/specs";
-import { adAccountsResource, ads, adSets, campaigns, listSources } from "./resources/objects";
-import { AdSchema, AdSetSchema, CampaignSchema } from "./schemas/objects";
+import {
+  adAccountsResource,
+  adActivities,
+  adCreatives,
+  ads,
+  adSets,
+  campaigns,
+  customAudiences,
+  customConversions,
+  listSources,
+} from "./resources/objects";
+import {
+  AdActivitySchema,
+  AdCreativeSchema,
+  AdSchema,
+  AdSetSchema,
+  CampaignSchema,
+  CustomAudienceSchema,
+  CustomConversionSchema,
+} from "./schemas/objects";
 export { FacebookAdsConfigDef, manifest } from "./manifest";
 export type { FacebookAdsConfig } from "./manifest";
 
@@ -49,6 +73,36 @@ export const make = Effect.fnUntraced(function* (config: FacebookAdsConfig) {
       Resource.entity(insightsEntity(insights, adInsightsAgeGender)),
       Resource.entity(insightsEntity(insights, adInsightsCountry)),
       Resource.entity(insightsEntity(insights, adInsightsPlatform)),
+      Resource.entity(insightsEntity(insights, accountDaily)),
+      Resource.entity(insightsEntity(insights, accountMonthly)),
+      Resource.entity(insightsEntity(insights, campaignDaily)),
+      Resource.entity(insightsEntity(insights, campaignMonthly)),
+      Resource.entity(insightsEntity(insights, adSetDaily)),
+      Resource.entity(insightsEntity(insights, adSetMonthly)),
+      Resource.entity({
+        name: adActivities.name,
+        rowSchema: AdActivitySchema,
+        version: "version",
+        ...listSources(client, accounts, adActivities),
+      }),
+      Resource.entity({
+        name: adCreatives.name,
+        rowSchema: AdCreativeSchema,
+        version: "version",
+        ...listSources(client, accounts, adCreatives),
+      }),
+      Resource.entity({
+        name: customAudiences.name,
+        rowSchema: CustomAudienceSchema,
+        version: "version",
+        ...listSources(client, accounts, customAudiences),
+      }),
+      Resource.entity({
+        name: customConversions.name,
+        rowSchema: CustomConversionSchema,
+        version: "version",
+        ...listSources(client, accounts, customConversions),
+      }),
     ],
   });
 });

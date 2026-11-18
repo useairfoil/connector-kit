@@ -18,12 +18,18 @@ import {
 } from "./shared";
 
 /** One group is one company with its contacts, deals, tickets, activity, and billing. */
-export const companyRows = (index: number, context: Demo.DemoContext): Rows => {
+export const companyRows = (index: number, context: Demo.DemoContext) => {
   const { faker, now } = context;
   const { at, between } = clock(context);
 
   const rows: Rows = {
     companies: [],
+    projects: [],
+    appointments: [],
+    courses: [],
+    listings: [],
+    services: [],
+
     contacts: [],
     deals: [],
     line_items: [],
@@ -53,6 +59,37 @@ export const companyRows = (index: number, context: Demo.DemoContext): Rows => {
   const domain = `${name.toLowerCase().replaceAll(/[^a-z]+/g, "")}.example.com`;
   const employees = faker.helpers.arrayElement([12, 45, 120, 380, 1_200, 5_000]);
   const created = at(now.getTime() - faker.number.int({ min: 20 * day, max: 700 * day }));
+
+  rows.projects.push({
+    ...record(idOf(81_000_000_000, index), created, created, now, {
+      hs_name: "Reporting rollout",
+      company_name: name,
+    }),
+  });
+  rows.appointments.push({
+    ...record(idOf(82_000_000_000, index), created, created, now, {
+      hs_name: "Set up reporting",
+      company_name: name,
+    }),
+  });
+  rows.courses.push({
+    ...record(idOf(83_000_000_000, index), created, created, now, {
+      hs_name: "Analytics training",
+      company_name: name,
+    }),
+  });
+  rows.listings.push({
+    ...record(idOf(84_000_000_000, index), created, created, now, {
+      hs_name: "Office suite listing",
+      company_name: name,
+    }),
+  });
+  rows.services.push({
+    ...record(idOf(85_000_000_000, index), created, created, now, {
+      hs_name: "Data onboarding",
+      company_name: name,
+    }),
+  });
 
   // Contacts at the company. The first one is the main contact.
   const contacts = Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, (_, n) => {
@@ -251,5 +288,45 @@ export const companyRows = (index: number, context: Demo.DemoContext): Rows => {
     });
   }
 
-  return rows;
+  const commerceLinks = rows.quotes.map((quote, quoteIndex) => {
+    const source = rows.line_items.find((line) =>
+      line.deal_ids.some((id) => quote.deal_ids.includes(id)),
+    );
+    const lineId = idOf(90_000_000_000, index, quoteIndex);
+    if (source)
+      rows.line_items.push({
+        ...source,
+        id: lineId,
+        deal_ids: [],
+        properties: new Map([...source.properties, ["hs_object_id", lineId]]),
+      });
+    return {
+      id: `quotes:${quote.id}`,
+      version: quote.version,
+      object_type: "quotes",
+      object_id: quote.id,
+      links: source ? [{ object_type: "line_items", object_id: lineId, labels: [] }] : [],
+    };
+  });
+  const [first, second] = rows.contacts;
+  const peerLinks =
+    first && second
+      ? [
+          { contact: first, peer: second },
+          { contact: second, peer: first },
+        ].map(({ contact, peer }) => ({
+          id: `contacts:${contact.id}`,
+          version: contact.version,
+          object_type: "contacts",
+          object_id: contact.id,
+          links: [
+            {
+              object_type: "contacts",
+              object_id: peer.id,
+              labels: [{ type_id: 449n, category: "HUBSPOT_DEFINED", label: null }],
+            },
+          ],
+        }))
+      : [];
+  return { ...rows, commerce_links: commerceLinks, peer_links: peerLinks };
 };

@@ -20,7 +20,7 @@ import {
 } from "./shared";
 
 /** One group is one customer with their orders, refunds, and sometimes an open cart. */
-export const customerRows = (index: number, context: Demo.DemoContext): Rows => {
+export const customerRows = (index: number, context: Demo.DemoContext) => {
   const { faker, now } = context;
   const { at } = clock(context);
 
@@ -278,6 +278,7 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
         orderId,
         note: refund === "full" ? "Returned by customer" : "",
         createdAt: refundAt,
+        version: refundAt,
         processedAt: refundAt,
         transactions: [
           {
@@ -408,5 +409,35 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
     updatedAt: lastChange,
   });
 
-  return rows;
+  return {
+    ...rows,
+    order_transactions: rows.orders.map((order) => ({
+      id: order.id.replace("/Order/", "/OrderTransaction/"),
+      orderId: order.id,
+      version: order.updatedAt,
+      createdAt: order.createdAt,
+      kind: "SALE",
+      status: "SUCCESS",
+      gateway: "shopify_payments",
+      amountSet: order.totalPriceSet,
+      parentTransaction: null,
+    })),
+    fulfillment_orders: rows.orders.map((order) => ({
+      id: order.id.replace("/Order/", "/FulfillmentOrder/"),
+      orderId: order.id,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      status: "CLOSED",
+      requestStatus: "ACCEPTED",
+    })),
+    fulfillments: rows.orders.map((order) => ({
+      id: order.id.replace("/Order/", "/Fulfillment/"),
+      orderId: order.id,
+      version: order.updatedAt,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      status: "SUCCESS",
+      trackingInfo: [],
+    })),
+  };
 };

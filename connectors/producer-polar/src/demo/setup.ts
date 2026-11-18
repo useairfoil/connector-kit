@@ -1,9 +1,25 @@
 import type { Demo } from "@useairfoil/connector-kit";
 
+import type { Benefit } from "../resources/benefits";
+import type { CheckoutLink } from "../resources/checkout-links";
+import type { CustomField } from "../resources/custom-fields";
 import type { Discount } from "../resources/discounts";
+import type { Meter } from "../resources/meters";
 import type { Product } from "../resources/products";
 
-import { catalog, day, discountId, discounts, organizationId, priceId, productId } from "./shared";
+import {
+  benefitId,
+  catalog,
+  day,
+  discountId,
+  discounts,
+  meterEvent,
+  meterId,
+  organizationId,
+  priceId,
+  productId,
+  uuid,
+} from "./shared";
 
 /** The catalog of products and discounts, written once before any customer. */
 export const setupRows = ({ now }: Demo.DemoContext) => {
@@ -75,5 +91,81 @@ export const setupRows = ({ now }: Demo.DemoContext) => {
     products: [],
   }));
 
-  return { products, discounts: discountRows };
+  const stamp = { version: created, created_at: created, modified_at: null };
+
+  const meters: Array<Meter> = [
+    {
+      ...stamp,
+      id: meterId,
+      name: "API requests",
+      unit: "scalar",
+      custom_label: null,
+      custom_multiplier: null,
+      filter: JSON.stringify({
+        conjunction: "and",
+        clauses: [{ property: "name", operator: "eq", value: meterEvent }],
+      }),
+      aggregation: JSON.stringify({ func: "count" }),
+      organization_id: organizationId,
+      archived_at: null,
+      metadata: "{}",
+    },
+  ];
+
+  const benefits: Array<Benefit> = [
+    {
+      ...stamp,
+      id: benefitId,
+      type: "license_keys",
+      description: "Lifetime license key",
+      selectable: true,
+      deletable: true,
+      is_deleted: false,
+      visibility: "public",
+      organization_id: organizationId,
+      properties: JSON.stringify({ prefix: "LIFE", limit_activations: 3, limit_usage: null }),
+      metadata: "{}",
+    },
+  ];
+
+  const customFields: Array<CustomField> = [
+    {
+      ...stamp,
+      id: uuid(13, 0),
+      organization_id: organizationId,
+      type: "text",
+      slug: "company",
+      name: "Company",
+      properties: JSON.stringify({ form_label: "Company name" }),
+      metadata: "{}",
+    },
+  ];
+
+  const checkoutLinks: Array<CheckoutLink> = catalog.map((item, index) => ({
+    ...stamp,
+    id: uuid(14, index),
+    organization_id: organizationId,
+    label: item.name,
+    payment_processor: "stripe",
+    success_url: "https://example.com/thanks",
+    return_url: null,
+    trial_interval: item.trialDays > 0 ? "day" : null,
+    trial_interval_count: item.trialDays > 0 ? item.trialDays : null,
+    allow_discount_codes: true,
+    require_billing_address: false,
+    discount_id: null,
+    seats: null,
+    units: null,
+    products: [{ id: productId(index) }],
+    metadata: "{}",
+  }));
+
+  return {
+    products,
+    discounts: discountRows,
+    meters,
+    benefits,
+    custom_fields: customFields,
+    checkout_links: checkoutLinks,
+  };
 };

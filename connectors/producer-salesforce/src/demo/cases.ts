@@ -29,6 +29,19 @@ export const caseRows = (
       ? at(opened.getTime() + faker.number.int({ min: hour, max: 5 * day }))
       : null;
 
+    const target = new Date(opened.getTime() + 48 * hour);
+    add(
+      "case_milestones",
+      sobject(sfid("557", index, k), opened, closedCase ?? opened, now, {
+        CaseId: caseId,
+        StartDate: datetime(opened),
+        TargetDate: datetime(target),
+        CompletionDate: closedCase === null ? null : datetime(closedCase),
+        IsCompleted: closedCase !== null,
+        IsViolated: (closedCase ?? now) > target,
+      }),
+    );
+
     const subject = faker.helpers.arrayElement([
       "Dashboard won't load",
       "Connector sync failing",

@@ -57,6 +57,24 @@ const crmCursor = JSON.stringify({
 // Custom object types start from the CRM cursor on their first run.
 const customObjectsCursor = JSON.stringify({ types: {}, initial: crmCursor });
 
+const recordedResources = manifest.resources.filter(
+  ({ name }) =>
+    ![
+      "commerce_links",
+      "peer_links",
+      "segment_memberships",
+      "marketing_events",
+      "marketing_event_participation",
+      "deal_property_history",
+
+      "projects",
+      "appointments",
+      "courses",
+      "listings",
+      "services",
+    ].includes(name),
+);
+
 describe.skipIf(!canRun)("HubSpot API (vcr)", () => {
   // Live clock: the rate limiter waits on it, so recording takes minutes.
   it.live(
@@ -64,14 +82,16 @@ describe.skipIf(!canRun)("HubSpot API (vcr)", () => {
     () =>
       Effect.gen(function* () {
         const check = yield* ConnectorApp.check(HubSpotConnector.HubSpotConnector, connectorLayer, {
-          resources: manifest.resources.map((resource) => resource.name),
+          resources: recordedResources.map((resource) => resource.name),
         });
         const connector = yield* HubSpotConnector.HubSpotConnector.pipe(
           Effect.provide(connectorLayer),
         );
 
         const results: Record<string, unknown> = {};
-        for (const resource of connector.resources) {
+        for (const resource of connector.resources.filter(({ name }) =>
+          recordedResources.some((resource) => resource.name === name),
+        )) {
           const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
           const changes = yield* Effect.fromOption(Option.fromNullishOr(resource.changes));
 

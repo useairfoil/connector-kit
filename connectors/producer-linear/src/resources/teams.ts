@@ -1,16 +1,24 @@
 import { Resource } from "@useairfoil/connector-kit";
+import { DateTime, Effect, Schema } from "effect";
 
 import type { LinearClientService } from "../client/client";
 
+import { Timestamp } from "../schemas/shared";
 import {
+  CustomViewObjectSchema,
+  CustomViewSchema,
   CycleObjectSchema,
   CycleSchema,
   ExternalUserObjectSchema,
   ExternalUserSchema,
+  SlaRuleSchema,
   TeamMembershipObjectSchema,
   TeamMembershipSchema,
   TeamObjectSchema,
   TeamSchema,
+  TeamSlaRulesSchema,
+  TemplateObjectSchema,
+  TemplateSchema,
   UserObjectSchema,
   UserSchema,
   WorkflowStateObjectSchema,
@@ -22,6 +30,7 @@ import {
   checkList,
   listSources,
   listSpec,
+  readAllSources,
   rowsOf,
   webhookList,
 } from "./pages";
@@ -137,4 +146,85 @@ export const makeCycles = (client: LinearClientService) =>
     backfill: backfillList(client, cycleSpec),
     changes: changesList(client, cycleSpec),
     webhook: webhookList(client, cycleSpec),
+  });
+
+const slaRulesSpec = (client: LinearClientService) =>
+  listSpec({
+    connection: "teams",
+    fields: "id updated_at: updatedAt",
+    item: Schema.Struct({ id: Schema.String, updated_at: Timestamp }),
+    updatedAt: (team) => team.updated_at,
+    // Rules have no update time, so the version is the read time.
+    rows: (teams) =>
+      Effect.forEach(teams, ({ id }) =>
+        Effect.gen(function* () {
+          const { rules } = yield* client.query(
+            Schema.Struct({ rules: Schema.Array(SlaRuleSchema) }),
+            `query SlaConfigurations($id: String!) {
+  rules: slaConfigurations(teamId: $id) {
+    id name conditions removes_sla: removesSla sla sla_type: slaType start_mode: startMode
+  }
+}`,
+            { id },
+          );
+          return { id, version: yield* DateTime.nowAsDate, rules };
+        }),
+      ),
+  });
+
+export const makeTeamSlaRules = (client: LinearClientService) =>
+  Resource.entity({
+    name: "team_sla_rules",
+    rowSchema: TeamSlaRulesSchema,
+    version: "version",
+    ...listSources(client, slaRulesSpec(client)),
+  });
+
+const viewAndTemplateFields = `id created_at: createdAt updated_at: updatedAt archived_at: archivedAt
+    name description team_id: team { id }`;
+
+/** `templates` has no paging and already includes archived templates. */
+export const makeTemplates = (client: LinearClientService) => {
+  const read = client
+    .query(
+      Schema.Struct({ templates: Schema.Array(TemplateObjectSchema) }),
+      `query Templates {
+  templates {
+    ${viewAndTemplateFields} type template_data: templateData content has_form_fields: hasFormFields
+  }
+}`,
+    )
+    .pipe(
+      Effect.map(({ templates }) =>
+        templates.map((template) => ({ ...template, version: template.updated_at })),
+      ),
+    );
+  return Resource.entity({
+    name: "templates",
+    rowSchema: TemplateSchema,
+    version: "version",
+    ...readAllSources(Effect.asVoid(read), read),
+  });
+};
+
+const customViewSpec = listSpec({
+  connection: "customViews",
+  fields: `${viewAndTemplateFields} model_name: modelName owner_id: owner { id }
+    creator_id: creator { id } shared filter_data: filterData
+    project_filter_data: projectFilterData initiative_filter_data: initiativeFilterData
+    feed_item_filter_data: feedItemFilterData`,
+  item: CustomViewObjectSchema,
+  updatedAt: (view) => view.updated_at,
+  rows: rowsOf((view) => ({ ...view, version: view.updated_at })),
+});
+
+export const makeCustomViews = (client: LinearClientService) =>
+  Resource.entity({
+    name: "custom_views",
+    rowSchema: CustomViewSchema,
+    version: "version",
+
+    check: checkList(client, customViewSpec),
+    backfill: backfillList(client, customViewSpec),
+    changes: changesList(client, customViewSpec),
   });

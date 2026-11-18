@@ -1,5 +1,5 @@
 import { Iceberg } from "@useairfoil/connector-kit";
-import { Schema } from "effect";
+import { Schema, Struct } from "effect";
 
 import {
   ActorSchema,
@@ -14,6 +14,15 @@ import {
   fetched,
   fetchedVersion,
 } from "./shared";
+
+const Debrief = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Debrief ID." })),
+  start_at: Timestamp.pipe(Schema.annotateKey({ description: "Scheduled start." })),
+  end_at: Timestamp.pipe(Schema.annotateKey({ description: "Scheduled end." })),
+});
+const debriefs = Optional(Schema.Array(Debrief)).pipe(
+  Schema.annotateKey({ description: "Scheduled incident debriefs." }),
+);
 
 export const IncidentSchema = Schema.Struct({
   ...common("Incident"),
@@ -102,6 +111,7 @@ export const IncidentSchema = Schema.Struct({
   postmortem_document_url: Optional(Schema.String).pipe(
     Schema.annotateKey({ description: "Post-mortem document URL." }),
   ),
+  debriefs,
   has_debrief: Optional(Schema.Boolean).pipe(
     Schema.annotateKey({ description: "Whether a debrief is scheduled." }),
   ),
@@ -215,6 +225,7 @@ export const IncidentObjectSchema = Schema.Struct({
   postmortem_document_ids: Optional(Schema.Array(Schema.String)),
   postmortem_document_url: Optional(Schema.String),
   has_debrief: Optional(Schema.Boolean),
+  debriefs,
   incident_role_assignments: Schema.Array(
     Schema.Struct({
       role: Schema.Struct({ id: Schema.String, name: Schema.String, role_type: Schema.String }),
@@ -484,7 +495,7 @@ export const CallSessionSchema = Schema.Struct({
   started_at: Timestamp.pipe(Schema.annotateKey({ description: "Time the call started." })),
   ended_at: Optional(Timestamp).pipe(Schema.annotateKey({ description: "Time the call ended." })),
 })
-  .annotate({ description: "incident.io incident calls. Transcripts aren't synced." })
+  .annotate({ description: "incident.io incident calls." })
   .pipe(Iceberg.identifier("id"));
 
 export type CallSession = Schema.Schema.Type<typeof CallSessionSchema>;
@@ -495,6 +506,24 @@ export const CallSessionObjectSchema = Schema.Struct({
   started_at: Timestamp,
   ended_at: Optional(Timestamp),
 });
+
+export const CallTranscriptEntrySchema = Schema.Struct({
+  ...fetched("Transcript entry"),
+  incident_id: Schema.String.pipe(Schema.annotateKey({ description: "Incident." })),
+  call_session_id: Schema.String.pipe(Schema.annotateKey({ description: "Call session." })),
+  participant_name: Schema.String.pipe(Schema.annotateKey({ description: "Who spoke." })),
+  timestamp: Timestamp.pipe(Schema.annotateKey({ description: "Time it was said." })),
+  content: Schema.String.pipe(Schema.annotateKey({ description: "What was said." })),
+  medium: Schema.String.pipe(Schema.annotateKey({ description: "How, such as spoken." })),
+})
+  .annotate({ description: "incident.io Scribe transcripts of incident calls." })
+  .pipe(Iceberg.identifier("id"));
+
+export type CallTranscriptEntry = Schema.Schema.Type<typeof CallTranscriptEntrySchema>;
+
+export const CallTranscriptEntryObjectSchema = CallTranscriptEntrySchema.mapFields((fields) =>
+  Struct.omit(fields, ["version", "incident_id", "call_session_id"]),
+);
 
 export const ParticipantWorkloadSchema = Schema.Struct({
   id: Schema.String.pipe(

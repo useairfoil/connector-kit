@@ -117,3 +117,90 @@ export const AdInsightsPlatformSchema = Schema.Struct({ ...common, ...platform, 
   .pipe(Iceberg.identifier("id"));
 
 export type AdInsightsPlatform = Schema.Schema.Type<typeof AdInsightsPlatformSchema>;
+
+const nativeMetrics = {
+  impressions: count("Times the ads were on screen."),
+  reach: count("People reached in this reporting period."),
+  frequency: amount("Average impressions per person reached."),
+  unique_clicks: count("People who clicked at least once in this period."),
+  spend: amount("Amount spent in the account currency."),
+};
+
+const AttributionActions = Schema.optional(
+  Schema.Array(
+    Schema.Struct({
+      action_type: Schema.String.pipe(Schema.annotateKey({ description: "Meta action type." })),
+      value: Schema.optional(Schema.FiniteFromString).pipe(
+        Schema.annotateKey({ description: "Action count or value." }),
+      ),
+      "1d_click": Schema.optional(Schema.FiniteFromString).pipe(
+        Schema.annotateKey({ description: "Value attributed within one day of a click." }),
+      ),
+      "7d_click": Schema.optional(Schema.FiniteFromString).pipe(
+        Schema.annotateKey({ description: "Value attributed within seven days of a click." }),
+      ),
+      "1d_view": Schema.optional(Schema.FiniteFromString).pipe(
+        Schema.annotateKey({ description: "Value attributed within one day of a view." }),
+      ),
+    }),
+  ),
+);
+
+const nativeActivity = {
+  outbound_clicks: actions("Clicks that took people away from Meta."),
+  unique_outbound_clicks: actions("People who clicked an external link."),
+  video_p95_watched_actions: actions("Video plays to 95%."),
+  video_thruplay_watched_actions: actions("Video plays that reached the ThruPlay threshold."),
+  video_avg_time_watched_actions: actions("Average time watched in seconds."),
+  actions: AttributionActions.pipe(
+    Schema.annotateKey({ description: "Action counts by attribution window." }),
+  ),
+  action_values: AttributionActions.pipe(
+    Schema.annotateKey({ description: "Action values by attribution window." }),
+  ),
+};
+
+const nativeIds = {
+  account_id: Schema.String.pipe(Schema.annotateKey({ description: "Meta ad account ID." })),
+  account_currency: text("Currency of the spend amount."),
+};
+
+export const AccountInsightsApiSchema = Schema.Struct({
+  ...nativeIds,
+  ...nativeMetrics,
+  ...nativeActivity,
+  date_start: Schema.String,
+  date_stop: Schema.String,
+});
+export const CampaignInsightsApiSchema = AccountInsightsApiSchema.mapFields((fields) => ({
+  ...fields,
+  campaign_id: Schema.String,
+}));
+export const AdSetInsightsApiSchema = CampaignInsightsApiSchema.mapFields((fields) => ({
+  ...fields,
+  adset_id: Schema.String,
+}));
+
+export const NativeInsightsSchema = Schema.Struct({
+  id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Account, reporting entity, and period start." }),
+  ),
+  version,
+  ...nativeIds,
+  campaign_id: text("Campaign ID when the report is scoped to a campaign or ad set."),
+  adset_id: text("Ad set ID when the report is scoped to an ad set."),
+  date_start: Schema.String.pipe(
+    Schema.annotateKey({ description: "First calendar day of the reporting period." }),
+  ),
+  date_stop: Schema.String.pipe(
+    Schema.annotateKey({ description: "Last calendar day of the reporting period." }),
+  ),
+  ...nativeMetrics,
+  ...nativeActivity,
+})
+  .annotate({
+    description:
+      "Reach, frequency, unique clicks, and spend at the requested Meta reporting level.",
+  })
+  .pipe(Iceberg.identifier("id"));
+export type NativeInsights = typeof NativeInsightsSchema.Type;

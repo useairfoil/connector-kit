@@ -2,6 +2,7 @@ import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
 import {
+  ActorSchema,
   Json,
   Long,
   Named,
@@ -471,3 +472,128 @@ export const AlertAttributeObjectSchema = AlertAttributeSchema.mapFields((fields
 export const NotificationPauseObjectSchema = NotificationPauseSchema.mapFields((fields) =>
   Struct.omit(fields, ["version"]),
 );
+
+export const AlertTagSchema = Schema.Struct({
+  ...fetched("Alert tag"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Tag name." })),
+})
+  .annotate({ description: "incident.io active tags that alerts can carry." })
+  .pipe(Iceberg.identifier("id"));
+
+export type AlertTag = Schema.Schema.Type<typeof AlertTagSchema>;
+
+export const AlertTagObjectSchema = AlertTagSchema.mapFields((fields) =>
+  Struct.omit(fields, ["version"]),
+);
+
+export const CallRouteSchema = Schema.Struct({
+  ...common("Call route"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Call route name." })),
+  current_state: Schema.String.pipe(
+    Schema.annotateKey({ description: "Provisioning state, such as active." }),
+  ),
+  country_code: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Country of the route's number." }),
+  ),
+  custom_language: Schema.String.pipe(
+    Schema.annotateKey({ description: "Language of the voice prompts." }),
+  ),
+  phone_number: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Number callers dial." }),
+  ),
+  phone_number_type: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Kind of number, such as toll_free." }),
+  ),
+  responder_caller_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Number responders see when called." }),
+  ),
+  use_caller_allowlist: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether only allowed callers get through." }),
+  ),
+  path: Json.pipe(Schema.annotateKey({ description: "Who gets paged, as JSON." })),
+  options: Json.pipe(Schema.annotateKey({ description: "Phone menu, as JSON." })),
+})
+  .annotate({ description: "incident.io call routes. Allowed callers aren't synced." })
+  .pipe(Iceberg.identifier("id"));
+
+export type CallRoute = Schema.Schema.Type<typeof CallRouteSchema>;
+
+export const CallRouteObjectSchema = CallRouteSchema.mapFields((fields) =>
+  Struct.omit(fields, ["version"]),
+);
+
+export const PayConfigSchema = Schema.Struct({
+  ...common("Pay config"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Pay config name." })),
+  currency: Schema.String.pipe(Schema.annotateKey({ description: "ISO 4217 currency." })),
+  timezone: Schema.String.pipe(Schema.annotateKey({ description: "Time zone of the rules." })),
+  base_rate_cents: Long.pipe(
+    Schema.annotateKey({ description: "Rate in the lowest currency unit, when no rule applies." }),
+  ),
+  rate_time_unit: Schema.String.pipe(Schema.annotateKey({ description: "hour, day, or week." })),
+  weekly_rules: Json.pipe(Schema.annotateKey({ description: "Weekly rules, as JSON." })),
+  one_off_rules: Json.pipe(
+    Schema.annotateKey({ description: "Rules for single windows, such as holidays, as JSON." }),
+  ),
+  published_at: Optional(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time a published report first used it." }),
+  ),
+})
+  .annotate({ description: "incident.io on-call pay configs." })
+  .pipe(Iceberg.identifier("id"));
+
+export type PayConfig = Schema.Schema.Type<typeof PayConfigSchema>;
+
+export const PayConfigObjectSchema = PayConfigSchema.mapFields((fields) =>
+  Struct.omit(fields, ["version"]),
+);
+
+export const PayReportSchema = Schema.Struct({
+  ...common("Pay report"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Pay report name." })),
+  start_date: Schema.String.pipe(
+    Schema.annotateKey({ description: "First day covered, as yyyy-mm-dd." }),
+  ),
+  end_date: Schema.String.pipe(
+    Schema.annotateKey({ description: "Last day covered, as yyyy-mm-dd." }),
+  ),
+  schedule_ids: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Schedules covered." }),
+  ),
+  status: Schema.String.pipe(Schema.annotateKey({ description: "How far generation got." })),
+  overlapping_shifts: Schema.String.pipe(
+    Schema.annotateKey({ description: "How time on several schedules at once was paid." }),
+  ),
+  unpaid_shifts: Schema.String.pipe(
+    Schema.annotateKey({ description: "Whether shifts priced at zero are included." }),
+  ),
+  total_duration_seconds: Optional(Long).pipe(
+    Schema.annotateKey({ description: "Time on call across all shifts." }),
+  ),
+  total_pay_by_currency: Schema.optional(Json).pipe(
+    Schema.annotateKey({ description: "Total owed in the lowest unit of each currency, as JSON." }),
+  ),
+  creator_user_id: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "User who asked for it." }),
+  ),
+  error_code: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Why it couldn't be generated." }),
+  ),
+  error_message: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "What went wrong, for a failed report." }),
+  ),
+  published_at: Optional(Timestamp).pipe(
+    Schema.annotateKey({ description: "Time it was published." }),
+  ),
+})
+  .annotate({ description: "incident.io on-call pay reports." })
+  .pipe(Iceberg.identifier("id"));
+
+export type PayReport = Schema.Schema.Type<typeof PayReportSchema>;
+
+export const PayReportObjectSchema = PayReportSchema.mapFields((fields) => ({
+  ...Struct.omit(fields, ["version", "creator_user_id"]),
+  creator: Optional(ActorSchema),
+}));
+
+export type PayReportObject = Schema.Schema.Type<typeof PayReportObjectSchema>;

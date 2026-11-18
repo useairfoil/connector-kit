@@ -5,19 +5,27 @@ import { Duration } from "effect";
 import type { CheckRun } from "../schemas/check-runs";
 import type { CommitStatus } from "../schemas/commit-statuses";
 import type { Commit } from "../schemas/commits";
+import type { Deployment, DeploymentStatus } from "../schemas/deployments";
 import type { IssueComment } from "../schemas/issue-comments";
+import type { IssueLinks } from "../schemas/issue-links";
+import type { IssueTimeline } from "../schemas/issue-timeline";
 import type { Issue } from "../schemas/issues";
+import type { ProjectItem } from "../schemas/projects";
 import type { PullRequestCommit } from "../schemas/pull-request-commits";
+import type { PullRequestFile } from "../schemas/pull-request-files";
 import type { PullRequestReviewComment } from "../schemas/pull-request-review-comments";
 import type { PullRequestReview } from "../schemas/pull-request-reviews";
 import type { PullRequest } from "../schemas/pull-requests";
 import type { Release } from "../schemas/releases";
+import type { WorkflowArtifact } from "../schemas/workflow-artifacts";
+import type { WorkflowAttempt } from "../schemas/workflow-attempts";
 import type { WorkflowJob } from "../schemas/workflow-jobs";
 import type { WorkflowRun } from "../schemas/workflow-runs";
 
 export const day = Duration.toMillis(Duration.days(1));
 export const minute = Duration.toMillis(Duration.minutes(1));
 export const org = "acme-labs";
+export const demoProjectId = 123_000n;
 
 export type Account = { readonly id: bigint; readonly login: string; readonly type: string };
 
@@ -53,12 +61,21 @@ type RepositoryItem = (typeof repositories)[number];
 
 export const repositoryId = (r: number) => BigInt(700_000_000 + r);
 
-export const labels = [
+const labels = [
   { id: 6_100_000_001n, name: "bug" },
   { id: 6_100_000_002n, name: "enhancement" },
   { id: 6_100_000_003n, name: "documentation" },
   { id: 6_100_000_004n, name: "good first issue" },
 ];
+
+export const labelsForRepository = (r: number) =>
+  labels.map((label) => ({ ...label, id: label.id + BigInt(r) * 10n }));
+
+export const milestoneForRepository = (r: number) => ({
+  id: 6_200_000_001n + BigInt(r),
+  number: 1n,
+  title: "First release",
+});
 
 export const verbs = ["Fix", "Add", "Improve", "Update", "Remove", "Refactor", "Support"] as const;
 
@@ -87,15 +104,23 @@ export const clock = ({ faker, now }: Demo.DemoContext) => {
 
 export type Rows = {
   readonly issues: Array<Issue>;
+  readonly issue_timeline: Array<IssueTimeline>;
+  readonly issue_links: Array<IssueLinks>;
+  readonly project_items: Array<ProjectItem>;
   readonly pull_requests: Array<PullRequest>;
   readonly issue_comments: Array<IssueComment>;
   readonly pull_request_reviews: Array<PullRequestReview>;
   readonly pull_request_review_comments: Array<PullRequestReviewComment>;
   readonly pull_request_commits: Array<PullRequestCommit>;
+  readonly pull_request_files: Array<PullRequestFile>;
   readonly commits: Array<Commit>;
   readonly check_runs: Array<CheckRun>;
   readonly commit_statuses: Array<CommitStatus>;
   readonly workflow_runs: Array<WorkflowRun>;
+  readonly workflow_attempts: Array<WorkflowAttempt>;
+  readonly workflow_artifacts: Array<WorkflowArtifact>;
   readonly workflow_jobs: Array<WorkflowJob>;
   readonly releases: Array<Release>;
+  readonly deployments: Array<Deployment>;
+  readonly deployment_statuses: Array<DeploymentStatus>;
 };

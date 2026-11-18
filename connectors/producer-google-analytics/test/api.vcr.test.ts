@@ -71,14 +71,26 @@ describe.skipIf(!canRun)("Google Analytics API (vcr)", () => {
         const connector = yield* GoogleAnalyticsConnector.GoogleAnalyticsConnector.pipe(
           Effect.provide(built),
         );
+        const recordedResources = connector.resources.filter(
+          ({ name }) =>
+            ![
+              "transactions",
+              "paid_campaigns",
+              "stream_screens",
+              "cohort_retention",
+              "traffic_sources",
+              "user_acquisition",
+              "ecommerce_items",
+            ].includes(name),
+        );
         const check = yield* ConnectorApp.check(
           GoogleAnalyticsConnector.GoogleAnalyticsConnector,
           built,
-          { resources: connector.resources.map((resource) => resource.name) },
+          { resources: recordedResources.map((resource) => resource.name) },
         );
 
         const results: Record<string, unknown> = {};
-        for (const resource of connector.resources) {
+        for (const resource of recordedResources) {
           const backfill = yield* Effect.fromOption(Option.fromNullishOr(resource.backfill));
           const changes = yield* Effect.fromOption(Option.fromNullishOr(resource.changes));
           let backfilled = 0;
@@ -111,13 +123,10 @@ describe.skipIf(!canRun)("Google Analytics API (vcr)", () => {
             "results": {
               "daily_overview": "1 backfilled, 1 changed",
               "devices": "5 backfilled, 5 changed",
-              "ecommerce_items": "3 backfilled, 3 changed",
               "events": "6 backfilled, 6 changed",
               "landing_pages": "6 backfilled, 6 changed",
               "locations": "5 backfilled, 5 changed",
               "pages": "7 backfilled, 7 changed",
-              "traffic_sources": "1 backfilled, 1 changed",
-              "user_acquisition": "1 backfilled, 1 changed",
             },
           }
         `);

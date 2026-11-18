@@ -94,11 +94,12 @@ describe("resources", () => {
           "date": "2026-10-19",
           "engaged_sessions": "5n",
           "event_count": "37n",
-          "id": "["559759765","2026-10-19","newsletter","email","october_launch","Email"]",
+          "id": "["559759765","2026-10-19","newsletter","email","october-2026","october_launch","Email"]",
           "key_events": 2.5,
           "new_users": "2n",
           "property_id": "559759765",
           "screen_page_views": "14n",
+          "session_campaign_id": "october-2026",
           "session_campaign_name": "october_launch",
           "session_default_channel_group": "Email",
           "session_medium": "email",
@@ -256,6 +257,27 @@ describe("resources", () => {
           ],
         }
       `);
+    }),
+  );
+
+  it.effect("reads a first-session cohort only after the full retention window", () =>
+    Effect.gen(function* () {
+      const { backfill, requests } = yield* getResource(
+        "cohort_retention",
+        (_, request) => report(request, [["cohort_0", "0007", "15", "50"]]),
+        { GA_START_DATE: "2026-10-07" },
+      );
+      const page = yield* backfill.fetch({ cutoff });
+      expect(plain(page.rows)).toMatchObject([
+        {
+          date: "2026-10-07",
+          day_offset: "0007",
+          active_users: "15n",
+          total_users: "50n",
+        },
+      ]);
+      expect(page.hasMore).toBe(false);
+      expect(yield* requests).toEqual(["cohort_retention 2026-10-07..2026-10-07 +0"]);
     }),
   );
 });

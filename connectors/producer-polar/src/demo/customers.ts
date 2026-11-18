@@ -5,6 +5,7 @@ import type { Address } from "../resources/shared";
 
 import {
   addMonths,
+  benefitId,
   catalog,
   type CatalogItem,
   clock,
@@ -13,10 +14,14 @@ import {
   discountId,
   discounts,
   hour,
+  licenseProduct,
+  meterEvent,
+  meterId,
   organizationId,
   priceId,
   productId,
   type Rows,
+  teamSeats,
   uuid,
 } from "./shared";
 
@@ -25,7 +30,22 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
   const { faker, now } = context;
   const { at } = clock(context);
 
-  const rows: Rows = { customers: [], checkouts: [], orders: [], subscriptions: [], refunds: [] };
+  const rows: Rows = {
+    customers: [],
+    checkouts: [],
+    orders: [],
+    subscriptions: [],
+    refunds: [],
+    payments: [],
+    disputes: [],
+    usage_events: [],
+    customer_meters: [],
+    customer_members: [],
+    customer_seats: [],
+    benefit_grants: [],
+    license_keys: [],
+    license_activations: [],
+  };
 
   const customerId = uuid(3, index);
   const team = faker.datatype.boolean({ probability: 0.2 });
@@ -91,6 +111,47 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
 
     lastChange = new Date(Math.max(lastChange.getTime(), (modified ?? input.created).getTime()));
 
+    const paymentId = uuid(9, index, n);
+    rows.payments.push({
+      id: paymentId,
+      version: input.created,
+      created_at: input.created,
+      modified_at: null,
+      status: "succeeded",
+      amount: total,
+      currency: "usd",
+      processor: "stripe",
+      method: "card",
+      trigger: input.reason === "subscription_cycle" ? "subscription_cycle" : "purchase",
+      decline_reason: null,
+      decline_message: null,
+      organization_id: organizationId,
+      checkout_id: input.checkoutId,
+      order_id: orderId,
+      processor_metadata: "{}",
+      method_metadata: JSON.stringify({ brand: "visa", last4: "4242" }),
+    });
+    if (n === 0 && index % 13 === 0 && total > 0 && refundShare === 0) {
+      const openedAt = at(input.created.getTime() + day);
+      rows.disputes.push({
+        id: uuid(10, index, n),
+        version: openedAt,
+        created_at: openedAt,
+        modified_at: null,
+        status: "needs_response",
+        resolved: false,
+        closed: false,
+        amount: total,
+        tax_amount: tax,
+        currency: "usd",
+        reason: "product_not_received",
+        evidence_due_by: new Date(openedAt.getTime() + 7 * day),
+        past_due: false,
+        order_id: orderId,
+        payment_id: paymentId,
+        case_id: null,
+      });
+    }
     rows.orders.push({
       id: orderId,
       version: modified ?? input.created,
@@ -314,6 +375,7 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
     if (modified) lastChange = new Date(Math.max(lastChange.getTime(), modified.getTime()));
 
     rows.subscriptions.push({
+      prices: [{ id: priceId(itemIndex) }],
       id: subscriptionId,
       version: modified ?? checkoutCreated,
       created_at: checkoutCreated,
@@ -351,10 +413,126 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
           ])
         : null,
       customer_cancellation_comment: null,
-      seats: null,
+      seats: item.name === "Team" ? teamSeats : null,
       units: null,
       metadata: "{}",
       custom_field_data: "{}",
+    });
+  }
+
+  const memberId = uuid(15, index);
+  rows.customer_members.push({
+    id: memberId,
+    version: created,
+    created_at: created,
+    modified_at: null,
+    customer_id: customerId,
+    email,
+    name,
+    external_id: null,
+    role: "owner",
+  });
+
+  for (const subscription of rows.subscriptions.filter(({ seats }) => seats !== null)) {
+    rows.customer_seats.push({
+      id: uuid(16, index, rows.customer_seats.length),
+      version: subscription.created_at,
+      created_at: subscription.created_at,
+      modified_at: null,
+      subscription_id: subscription.id,
+      order_id: null,
+      status: "claimed",
+      customer_id: customerId,
+      member_id: memberId,
+      email,
+      customer_email: email,
+      invitation_token_expires_at: null,
+      claimed_at: subscription.created_at,
+      revoked_at: null,
+      seat_metadata: null,
+    });
+  }
+
+  for (const order of rows.orders.filter(
+    ({ product_id }) => product_id === productId(licenseProduct),
+  )) {
+    const n = rows.license_keys.length;
+    const keyId = uuid(17, index, n);
+    rows.benefit_grants.push({
+      id: uuid(18, index, n),
+      version: order.created_at,
+      created_at: order.created_at,
+      modified_at: null,
+      benefit_id: benefitId,
+      customer_id: customerId,
+      member_id: memberId,
+      order_id: order.id,
+      subscription_id: null,
+      is_granted: true,
+      is_revoked: false,
+      granted_at: order.created_at,
+      revoked_at: null,
+    });
+    rows.license_keys.push({
+      id: keyId,
+      version: order.created_at,
+      created_at: order.created_at,
+      modified_at: null,
+      organization_id: organizationId,
+      customer_id: customerId,
+      member_id: memberId,
+      benefit_id: benefitId,
+      display_key: `****-${keyId.slice(-4).toUpperCase()}`,
+      status: "granted",
+      limit_activations: 3,
+      usage: 0,
+      limit_usage: null,
+      validations: 1,
+      last_validated_at: order.created_at,
+      expires_at: null,
+    });
+    rows.license_activations.push({
+      id: uuid(19, index, n),
+      version: order.created_at,
+      created_at: order.created_at,
+      modified_at: null,
+      license_key_id: keyId,
+      label: `${firstName}'s laptop`,
+      meta: "{}",
+    });
+  }
+
+  if (rows.subscriptions.length > 0) {
+    const calls = (index % 5) + 1;
+    for (let n = 0; n < calls; n++) {
+      const timestamp = at(created.getTime() + (n + 1) * day);
+      rows.usage_events.push({
+        id: uuid(20, index, n),
+        version: timestamp,
+        timestamp,
+        organization_id: organizationId,
+        customer_id: customerId,
+        external_customer_id: null,
+        member_id: memberId,
+        external_member_id: null,
+        parent_id: null,
+        name: meterEvent,
+        source: "user",
+        label: null,
+        metadata: JSON.stringify({ endpoint: "/v1/search" }),
+      });
+    }
+    const lastCall = rows.usage_events.at(-1)?.timestamp ?? created;
+    rows.customer_meters.push({
+      id: uuid(21, index),
+      version: lastCall,
+      created_at: created,
+      modified_at: lastCall,
+      customer_id: customerId,
+      meter_id: meterId,
+      consumed_units: calls,
+      credited_units: 0,
+      balance: -calls,
     });
   }
 

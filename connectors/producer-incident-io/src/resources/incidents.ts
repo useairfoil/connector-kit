@@ -13,6 +13,9 @@ import {
   type CallSession,
   CallSessionObjectSchema,
   CallSessionSchema,
+  CallTranscriptEntryObjectSchema,
+  type CallTranscriptEntry,
+  CallTranscriptEntrySchema,
   type Incident,
   type IncidentAlert,
   IncidentAlertObjectSchema,
@@ -98,6 +101,7 @@ const toIncidentRow = (incident: IncidentObject): Incident => ({
   postmortem_document_ids: incident.postmortem_document_ids ?? [],
   postmortem_document_url: incident.postmortem_document_url,
   has_debrief: incident.has_debrief,
+  debriefs: incident.debriefs,
   role_assignments: incident.incident_role_assignments.map(({ role, assignee }) => ({
     role_id: role.id,
     role_name: role.name,
@@ -365,6 +369,31 @@ export const makeIncidents = (client: IncidentIoClientService) => {
       return sessions.map((session) => ({ ...session, version }));
     });
 
+  const readTranscripts: ReadFor<CallTranscriptEntry> = (incident_id) =>
+    Effect.gen(function* () {
+      const sessions = yield* readCallSessions(incident_id);
+      const version = yield* DateTime.nowAsDate;
+      const bySession = yield* Effect.forEach(sessions, (session) =>
+        listAll(client, {
+          path: "/v2/call_transcript_entries",
+          key: "call_transcript_entries",
+          item: CallTranscriptEntryObjectSchema,
+          params: { call_session_id: session.id, page_size: "250" },
+          emptyIfMissing: true,
+        }).pipe(
+          Effect.map((entries) =>
+            entries.map((entry) => ({
+              ...entry,
+              call_session_id: session.id,
+              incident_id,
+              version,
+            })),
+          ),
+        ),
+      );
+      return bySession.flat();
+    });
+
   const readWorkloads: ReadFor<ParticipantWorkload> = (incidentId) =>
     Effect.gen(function* () {
       const version = yield* DateTime.nowAsDate;
@@ -488,6 +517,15 @@ export const makeIncidents = (client: IncidentIoClientService) => {
     ...roleGated(readCallSessions),
   });
 
+  // Needs the `call_transcripts_viewer` role. Read a day back, like workloads,
+  // in case a transcript lands after the incident's last change.
+  const CallTranscripts = Resource.entity({
+    name: "incident_call_transcripts",
+    rowSchema: CallTranscriptEntrySchema,
+    version: "version",
+    ...roleGated(readTranscripts, Duration.days(1)),
+  });
+
   // Needs the workload roles. incident.io updates workload now and then, so the
   // last figures can come after an incident closes. Read a day back.
   const Workloads = Resource.entity({
@@ -542,7 +580,7 @@ export const makeIncidents = (client: IncidentIoClientService) => {
   });
 
   return {
-    resources: [Incidents, ...lists, CallSessions, Workloads] as const,
+    resources: [Incidents, ...lists, CallSessions, CallTranscripts, Workloads] as const,
     // Incident events read these again.
     webhookTargets: [Incidents, ...lists],
     feed,

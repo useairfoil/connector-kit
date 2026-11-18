@@ -46,5 +46,9 @@ export const manifest = Manifest.define({
     { name: "locations", capabilities },
     { name: "devices", capabilities },
     { name: "ecommerce_items", capabilities },
+    { name: "transactions", capabilities },
+    { name: "paid_campaigns", capabilities },
+    { name: "stream_screens", capabilities },
+    { name: "cohort_retention", capabilities },
   ],
 });

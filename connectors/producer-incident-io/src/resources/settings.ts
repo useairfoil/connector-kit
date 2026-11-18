@@ -1,5 +1,5 @@
-import { Resource } from "@useairfoil/connector-kit";
-import { DateTime, Effect } from "effect";
+import { Cursor, Fetch, Resource } from "@useairfoil/connector-kit";
+import { DateTime, Effect, Option, Schema, Struct } from "effect";
 
 import type { IncidentIoClientService } from "../client/client";
 
@@ -11,6 +11,8 @@ import {
   IncidentRoleObjectSchema,
   IncidentRoleSchema,
   IncidentStatusObjectSchema,
+  IncidentTemplateObjectSchema,
+  IncidentTemplateSchema,
   IncidentStatusSchema,
   IncidentTimestampObjectSchema,
   IncidentTimestampSchema,
@@ -24,14 +26,19 @@ import {
   PolicySchema,
   SeverityObjectSchema,
   SeveritySchema,
+  StatusPageAvailabilityObjectSchema,
+  StatusPageAvailabilitySchema,
   StatusPageComponentObjectSchema,
   StatusPageComponentSchema,
+  StatusPageGroupSchema,
   StatusPageIncidentObjectSchema,
+  StatusPageIncidentLinksSchema,
   StatusPageIncidentSchema,
   StatusPageMaintenanceObjectSchema,
   StatusPageMaintenanceSchema,
   StatusPageObjectSchema,
   StatusPageSchema,
+  StatusPageStructureObjectSchema,
   TeamObjectSchema,
   TeamSchema,
   UserObjectSchema,
@@ -42,8 +49,8 @@ import {
   WorkflowRunSchema,
   WorkflowSchema,
 } from "../schemas/settings";
-import { WebhookTargetSchema } from "../schemas/shared";
-import { findOne, listAll, listSources } from "./pages";
+import { Ref, WebhookTargetSchema } from "../schemas/shared";
+import { findOne, hourly, listAll, listSources } from "./pages";
 
 export const makeUsers = (client: IncidentIoClientService) =>
   Resource.entity({
@@ -218,6 +225,21 @@ export const makeCustomFieldOptions = (client: IncidentIoClientService) =>
     ),
   });
 
+export const makeIncidentTemplates = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "incident_templates",
+    rowSchema: IncidentTemplateSchema,
+    version: "version",
+    ...listSources(
+      listAll(client, {
+        path: "/v1/incident_templates",
+        key: "incident_templates",
+        item: IncidentTemplateObjectSchema,
+        params: { page_size: "250" },
+      }).pipe(Effect.map((items) => items.map((item) => ({ ...item, version: item.updated_at })))),
+    ),
+  });
+
 export const makeWorkflows = (client: IncidentIoClientService) =>
   Resource.entity({
     name: "workflows",
@@ -353,6 +375,172 @@ export const makeStatusPageMaintenances = (client: IncidentIoClientService) =>
           }),
         );
         return maintenances.flat().map((maintenance) => ({ ...maintenance, version }));
+      }),
+    ),
+  });
+
+const readStructures = (client: IncidentIoClientService) =>
+  listStatusPages(client).pipe(
+    Effect.flatMap((pages) =>
+      Effect.forEach(pages, (page) =>
+        client.get(StatusPageStructureObjectSchema, `/v2/status_page_structures/${page.id}`).pipe(
+          Effect.map(({ current_structure }) => ({
+            status_page_id: page.id,
+            items: current_structure.items.flatMap(({ sub_page, ...item }) => [
+              { ...item, sub_page_id: null },
+              ...(sub_page?.items ?? []).map((subItem) => ({
+                ...subItem,
+                sub_page_id: sub_page?.id,
+              })),
+            ]),
+          })),
+        ),
+      ),
+    ),
+  );
+
+export const makeStatusPageGroups = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "status_page_groups",
+    rowSchema: StatusPageGroupSchema,
+    version: "version",
+    ...listSources(
+      Effect.gen(function* () {
+        const version = yield* DateTime.nowAsDate;
+        const structures = yield* readStructures(client);
+        return structures.flatMap(({ status_page_id, items }) =>
+          items.flatMap(({ group, sub_page_id }) =>
+            group
+              ? [
+                  {
+                    ...Struct.omit(group, ["components"]),
+                    version,
+                    status_page_id,
+                    sub_page_id,
+                    component_ids: group.components.map((component) => component.component_id),
+                  },
+                ]
+              : [],
+          ),
+        );
+      }),
+    ),
+  });
+
+const readAvailability = (client: IncidentIoClientService, start: DateTime.Utc) =>
+  Effect.gen(function* () {
+    const version = yield* DateTime.nowAsDate;
+    const structures = yield* readStructures(client);
+    const rows = yield* Effect.forEach(structures, ({ status_page_id, items }) => {
+      const componentIds = new Set(
+        items.flatMap(({ component, group }) =>
+          [...(component ? [component] : []), ...(group?.components ?? [])].map(
+            (item) => item.component_id,
+          ),
+        ),
+      );
+      return Effect.forEach(componentIds, (componentId) =>
+        client
+          .get(
+            Schema.Struct({ availability: StatusPageAvailabilityObjectSchema }),
+            `/v2/status_pages/${status_page_id}/components/${componentId}/availability`,
+            {
+              start_at: DateTime.formatIso(start),
+              end_at: DateTime.formatIso(DateTime.add(start, { days: 1 })),
+            },
+          )
+          .pipe(
+            Effect.map(({ availability }) => ({
+              ...availability,
+              id: `${status_page_id}:${componentId}:${DateTime.formatIsoDateUtc(start)}`,
+              version,
+            })),
+          ),
+      );
+    });
+    return rows.flat();
+  });
+
+const startOfDay = (time: string) => DateTime.startOf(DateTime.makeUnsafe(time), "day");
+
+// Backfill reads the last whole day before the cutoff. Changes then read each
+// day once it's over.
+export const makeStatusPageAvailability = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "status_page_availability",
+    rowSchema: StatusPageAvailabilitySchema,
+    version: "version",
+    check: DateTime.now.pipe(
+      Effect.flatMap((now) =>
+        readAvailability(client, DateTime.subtract(DateTime.startOf(now, "day"), { days: 1 })),
+      ),
+      Effect.asVoid,
+    ),
+    backfill: Fetch.page({
+      pageCursor: Cursor.string(),
+      cutoff: Cursor.isoDateTime(),
+      fetch: ({ cutoff }) =>
+        readAvailability(client, DateTime.subtract(startOfDay(String(cutoff)), { days: 1 })).pipe(
+          Effect.map((rows) => ({ rows, hasMore: false })),
+        ),
+    }),
+    changes: Fetch.changes({
+      cursor: Cursor.string(),
+      interval: hourly,
+      // The first cursor is the backfill cutoff.
+      fetch: ({ cursor }) =>
+        Effect.gen(function* () {
+          const start = startOfDay(String(cursor));
+          const today = DateTime.startOf(yield* DateTime.now, "day");
+          if (!DateTime.isLessThan(start, today)) return { rows: [], cursor: String(cursor) };
+          const end = DateTime.add(start, { days: 1 });
+          return {
+            rows: yield* readAvailability(client, start),
+            cursor: DateTime.formatIso(end),
+            hasMore: DateTime.isLessThan(end, today),
+          };
+        }),
+    }),
+  });
+
+export const makeStatusPageIncidentLinks = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "status_page_incident_links",
+    rowSchema: StatusPageIncidentLinksSchema,
+    version: "version",
+    ...listSources(
+      Effect.gen(function* () {
+        const version = yield* DateTime.nowAsDate;
+        const pages = yield* listStatusPages(client);
+        const links = yield* Effect.forEach(pages, (page) =>
+          listAll(client, {
+            path: "/v2/status_page_incidents",
+            key: "status_page_incidents",
+            item: Ref,
+            params: { status_page_id: page.id, page_size: "250" },
+          }).pipe(
+            Effect.flatMap((incidents) =>
+              Effect.forEach(incidents, (incident) =>
+                client
+                  .find(
+                    Schema.Struct({ incidents: StatusPageIncidentLinksSchema.fields.incidents }),
+                    `/v1/status-pages/${page.id}/incidents/${incident.id}/response-incidents`,
+                  )
+                  .pipe(
+                    Effect.map(
+                      Option.map(({ incidents }) => ({
+                        id: incident.id,
+                        version,
+                        status_page_id: page.id,
+                        incidents,
+                      })),
+                    ),
+                  ),
+              ),
+            ),
+          ),
+        );
+        return links.flat().flatMap(Option.toArray);
       }),
     ),
   });

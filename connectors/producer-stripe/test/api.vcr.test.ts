@@ -11,7 +11,8 @@ import type { StripeResourceSpec } from "../src/resources/shared";
 import { StripeClient, StripeConnector, StripeEventSchema } from "../src/index";
 import { chargeSpec } from "../src/resources/charges";
 import { customerSpec } from "../src/resources/customers";
-import { invoiceSpec } from "../src/resources/invoices";
+import { invoicePaymentSpec } from "../src/resources/invoice-payments";
+import { makeInvoiceSpec } from "../src/resources/invoices";
 import { priceSpec } from "../src/resources/prices";
 import { productSpec } from "../src/resources/products";
 import { refundSpec } from "../src/resources/refunds";
@@ -106,8 +107,9 @@ describe.skipIf(!canRun)("Stripe API (vcr)", () => {
         yield* readOne(client, productSpec),
         yield* readOne(client, priceSpec),
         yield* readOne(client, makeSubscriptionSpec(client)),
-        yield* readOne(client, invoiceSpec),
+        yield* readOne(client, makeInvoiceSpec(client)),
         yield* readOne(client, chargeSpec),
+        yield* readOne(client, invoicePaymentSpec),
         yield* readOne(client, refundSpec),
       ];
       const missing = yield* client.retrieve(customerSpec.objectSchema, "customers/cus_missing");
@@ -157,6 +159,11 @@ describe.skipIf(!canRun)("Stripe API (vcr)", () => {
             },
             {
               "fetchedSameObject": true,
+              "path": "invoice_payments",
+              "rowSameObject": true,
+            },
+            {
+              "fetchedSameObject": true,
               "path": "refunds",
               "rowSameObject": true,
             },
@@ -175,22 +182,34 @@ describe.skipIf(!canRun)("Stripe API (vcr)", () => {
       );
       const feed = yield* Effect.fromOption(Option.fromNullishOr(connector.changes));
 
+      const selected = new Set([
+        "customers",
+        "products",
+        "prices",
+        "subscriptions",
+        "invoices",
+        "charges",
+        "invoice_payments",
+        "refunds",
+      ]);
       const result = yield* feed.fetch({
         cursor: "2026-10-03T15:00:00.000Z",
-        selected: new Set(feed.resources.map((resource) => resource.name)),
+        selected,
       });
 
       expect({
         cursor: result.cursor,
         hasMore: result.hasMore,
         rows: Object.fromEntries(
-          Object.entries(result.rows).map(([name, rows]) => [
-            name,
-            {
-              rows: rows?.length ?? 0,
-              deleted: rows?.filter((row) => row._deleted === true).length ?? 0,
-            },
-          ]),
+          Object.entries(result.rows)
+            .filter(([name]) => selected.has(name))
+            .map(([name, rows]) => [
+              name,
+              {
+                rows: rows?.length ?? 0,
+                deleted: rows?.filter((row) => row._deleted === true).length ?? 0,
+              },
+            ]),
         ),
       }).toMatchInlineSnapshot(`
         {
@@ -204,6 +223,10 @@ describe.skipIf(!canRun)("Stripe API (vcr)", () => {
             "customers": {
               "deleted": 1,
               "rows": 9,
+            },
+            "invoice_payments": {
+              "deleted": 0,
+              "rows": 3,
             },
             "invoices": {
               "deleted": 0,

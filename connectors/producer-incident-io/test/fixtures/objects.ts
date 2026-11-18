@@ -1570,6 +1570,514 @@ export const examples = {
       },
     ],
   },
+  "/v2/call_routes": {
+    call_routes: [
+      {
+        allowed_callers: [
+          {
+            id: "01FCNDV6P870EA6S7TK1DSYDG0",
+            name: "Regulator duty desk",
+            phone_number: "+15551234567",
+          },
+        ],
+        country_code: "US",
+        created_at: "2021-08-17T13:28:57.801578Z",
+        current_state: "active",
+        custom_language: "en-US",
+        id: "01FCNDV6P870EA6S7TK1DSYDG0",
+        name: "Regulator urgent request",
+        options: [
+          {
+            digit: "1",
+            id: "01FCNDV6P870EA6S7TK1DSYDG0",
+            path: [
+              {
+                id: "01FCNDV6P870EA6S7TK1DSYDG0",
+                level: {
+                  targets: [
+                    {
+                      id: "lawrencejones",
+                      schedule_mode: "currently_on_call",
+                      selected_rota_id: "01FCNDV6P870EA6S7TK1DSYDG0",
+                      type: "schedule",
+                      urgency: "high",
+                    },
+                  ],
+                },
+                type: "level",
+                voicemail: {
+                  greeting_text:
+                    "Sorry, no one is available to take your call. Please leave a message after the tone. This call will be recorded.",
+                },
+              },
+            ],
+            prompt: "For an urgent production outage, press 1",
+          },
+        ],
+        path: [
+          {
+            id: "01FCNDV6P870EA6S7TK1DSYDG0",
+            level: {
+              targets: [
+                {
+                  id: "lawrencejones",
+                  schedule_mode: "currently_on_call",
+                  selected_rota_id: "01FCNDV6P870EA6S7TK1DSYDG0",
+                  type: "schedule",
+                  urgency: "high",
+                },
+              ],
+            },
+            type: "level",
+            voicemail: {
+              greeting_text:
+                "Sorry, no one is available to take your call. Please leave a message after the tone. This call will be recorded.",
+            },
+          },
+        ],
+        phone_number: "+15551234567",
+        phone_number_type: "toll_free",
+        responder_caller_id: "route_number",
+        updated_at: "2021-08-17T13:28:57.801578Z",
+        use_caller_allowlist: true,
+      },
+    ],
+  },
+  "/v1/incident_templates": {
+    incident_templates: [
+      {
+        created_at: "2021-08-17T13:28:57.801578Z",
+        expressions: [
+          {
+            else_branch: {
+              result: {
+                array_value: [
+                  {
+                    literal: "SEV123",
+                    reference: "incident.severity",
+                  },
+                ],
+                value: {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              },
+            },
+            label: "Team Slack channel",
+            operations: [
+              {
+                branches: {
+                  branches: [
+                    {
+                      condition_groups: [
+                        {
+                          conditions: [
+                            {
+                              operation: {
+                                label: "Lawrence Jones",
+                                value: "01FCQSP07Z74QMMYPDDGQB9FTG",
+                              },
+                              param_bindings: [
+                                {
+                                  array_value: [
+                                    {
+                                      literal: "SEV123",
+                                      reference: "incident.severity",
+                                    },
+                                  ],
+                                  value: {
+                                    literal: "SEV123",
+                                    reference: "incident.severity",
+                                  },
+                                },
+                              ],
+                              subject: {
+                                label: "Priority",
+                                reference: "alert.priority",
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                      result: {
+                        array_value: [
+                          {
+                            literal: "SEV123",
+                            reference: "incident.severity",
+                          },
+                        ],
+                        value: {
+                          literal: "SEV123",
+                          reference: "incident.severity",
+                        },
+                      },
+                    },
+                  ],
+                  returns: {
+                    array: true,
+                    type: "IncidentStatus",
+                  },
+                },
+                cast: {
+                  returns: {
+                    array: true,
+                    type: "IncidentStatus",
+                  },
+                },
+                concatenate: {
+                  reference: "1235",
+                  reference_label: "Teams",
+                },
+                filter: {
+                  condition_groups: [
+                    {
+                      conditions: [
+                        {
+                          operation: {
+                            label: "Lawrence Jones",
+                            value: "01FCQSP07Z74QMMYPDDGQB9FTG",
+                          },
+                          param_bindings: [
+                            {
+                              array_value: [
+                                {
+                                  literal: "SEV123",
+                                  reference: "incident.severity",
+                                },
+                              ],
+                              value: {
+                                literal: "SEV123",
+                                reference: "incident.severity",
+                              },
+                            },
+                          ],
+                          subject: {
+                            label: "Priority",
+                            reference: "alert.priority",
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+                navigate: {
+                  reference: "1235",
+                  reference_label: "Teams",
+                },
+                operation_type: "navigate",
+                parse: {
+                  returns: {
+                    array: true,
+                    type: "IncidentStatus",
+                  },
+                  source: 'metadata.annotations["github.com/repo"]',
+                },
+                returns: {
+                  array: true,
+                  type: "IncidentStatus",
+                },
+              },
+            ],
+            reference: "abc123",
+            returns: {
+              array: true,
+              type: "IncidentStatus",
+            },
+            root_reference: "incident.status",
+          },
+        ],
+        id: "01FCNDV6P870EA6S7TK1DSYDG0",
+        name: "Payments incidents",
+        template: {
+          custom_fields: [
+            {
+              binding: {
+                array_value: [
+                  {
+                    literal: "SEV123",
+                    reference: "incident.severity",
+                  },
+                ],
+                value: {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              },
+              custom_field_id: "01FCNDV6P870EA6S7TK1DSYDG0",
+              merge_strategy: "first-wins",
+            },
+          ],
+          incident_mode: {
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+          },
+          incident_type: {
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+          },
+          name: {
+            autogenerated: false,
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+          },
+          severity: {
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+            merge_strategy: "first-wins",
+          },
+          start_in_triage: {
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+          },
+          summary: {
+            autogenerated: false,
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+          },
+          workspace: {
+            binding: {
+              array_value: [
+                {
+                  literal: "SEV123",
+                  reference: "incident.severity",
+                },
+              ],
+              value: {
+                literal: "SEV123",
+                reference: "incident.severity",
+              },
+            },
+          },
+        },
+        updated_at: "2021-08-17T13:28:57.801578Z",
+      },
+    ],
+  },
+  "/v2/pay_configs": {
+    pay_configs: [
+      {
+        base_rate_cents: 1200,
+        created_at: "2021-08-17T13:28:57.801578Z",
+        currency: "GBP",
+        id: "01G0J1EXE7AXZ2C93K61WBPYEH",
+        name: "Engineering on-call",
+        one_off_rules: [
+          {
+            end_at: "2021-08-17T13:28:57.801578Z",
+            id: "01G0J1EXE7AXZ2C93K61WBPYEH",
+            name: "Christmas day",
+            rate_cents: 4800,
+            start_at: "2021-08-17T13:28:57.801578Z",
+          },
+        ],
+        published_at: "2021-08-17T13:28:57.801578Z",
+        rate_time_unit: "hour",
+        timezone: "Europe/London",
+        updated_at: "2021-08-17T13:28:57.801578Z",
+        weekly_rules: [
+          {
+            end_time: "17:00",
+            id: "01G0J1EXE7AXZ2C93K61WBPYEH",
+            rate_cents: 2400,
+            start_time: "09:00",
+            weekdays: ["monday"],
+          },
+        ],
+      },
+    ],
+  },
+  "/v2/pay_reports": {
+    pay_reports: [
+      {
+        created_at: "2026-04-01T09:00:00Z",
+        creator: {
+          api_key: {
+            id: "01FCNDV6P870EA6S7TK1DSYDG0",
+            name: "My test API key",
+          },
+        },
+        end_date: "2026-03-31",
+        id: "01G0J1EXE7AXZ2C93K61WBPYEH",
+        name: "March 2026",
+        overlapping_shifts: "paid_per_schedule",
+        published_at: "2026-04-01T09:00:00Z",
+        schedule_ids: ["01FCNDV6P870EA6S7TK1DSYDG0"],
+        start_date: "2026-03-01",
+        status: "complete",
+        total_duration_seconds: 3600,
+        total_pay_by_currency: {
+          GBP: 2400,
+        },
+        unpaid_shifts: "included",
+        updated_at: "2026-04-01T09:00:00Z",
+      },
+    ],
+  },
+  "/v2/call_transcript_entries": {
+    call_transcript_entries: [
+      {
+        content: "I think we should roll back the deploy.",
+        id: "01FCNDV6P870EA6S7TK1DSYDG0",
+        medium: "spoken",
+        participant_name: "Alice Smith",
+        timestamp: "2021-08-17T13:28:57.801578Z",
+      },
+    ],
+  },
+  "/v2/status_page_structures/01FCNDV6P870EA6S7TK1DSYDG0": {
+    current_structure: {
+      items: [
+        {
+          component: {
+            component_id: "01FCNDV6P870EA6S7TK1DSYDG1",
+            display_uptime: true,
+            hidden: false,
+            name: "App",
+          },
+          group: {
+            components: [
+              {
+                component_id: "01FCNDV6P870EA6S7TK1DSYDG1",
+                display_uptime: true,
+                hidden: false,
+                name: "App",
+              },
+            ],
+            description: "Services hosted in our EU data center",
+            display_aggregated_uptime: true,
+            hidden: false,
+            id: "01FCNDV6P870EA6S7TK1DSYDG1",
+            name: "EU Data center",
+          },
+          sub_page: {
+            id: "01FCNDV6P870EA6S7TK1DSYDG1",
+            items: [
+              {
+                component: {
+                  component_id: "01FCNDV6P870EA6S7TK1DSYDG1",
+                  display_uptime: true,
+                  hidden: false,
+                  name: "App",
+                },
+                group: {
+                  components: [
+                    {
+                      component_id: "01FCNDV6P870EA6S7TK1DSYDG1",
+                      display_uptime: true,
+                      hidden: false,
+                      name: "App",
+                    },
+                  ],
+                  description: "Services hosted in our EU data center",
+                  display_aggregated_uptime: true,
+                  hidden: false,
+                  id: "01FCNDV6P870EA6S7TK1DSYDG1",
+                  name: "EU Data center",
+                },
+              },
+            ],
+            name: "United Kingdom",
+          },
+        },
+      ],
+    },
+    display_uptime_mode: "chart_and_percentage",
+    management_meta: {
+      annotations: {
+        "incident.io/terraform/version": "3.0.0",
+      },
+      managed_by: "terraform",
+      source_url: "https://github.com/my-company/infrastructure",
+    },
+  },
+  "/v2/status_pages/01FCNDV6P870EA6S7TK1DSYDG0/components/01FCNDV6P870EA6S7TK1DSYDG1/availability":
+    {
+      availability: {
+        availability_percent: "99.94",
+        component_id: "01FCNDV6P870EA6S7TK1DSYDG1",
+        data_available_since: "2025-06-01T00:00:00Z",
+        end_at: "2026-02-01T00:00:00Z",
+        start_at: "2026-01-01T00:00:00Z",
+        status_page_id: "01FCNDV6P870EA6S7TK1DSYDG0",
+      },
+    },
+  "/v1/status-pages/01FCNDV6P870EA6S7TK1DSYDG0/incidents/01FCNDV6P870EA6S7TK1DSYDG0/response-incidents":
+    {
+      incidents: [
+        {
+          id: "01FDAG4SAH3GYPT98WGR2N7W91",
+          linked_at: "2021-08-17T13:28:57.801578Z",
+        },
+      ],
+    },
+  "/v2/alert_tags": {
+    alert_tags: [{ id: "01GW2G3V0S59R238FAHPDS1R66", name: "noisy" }],
+    pagination_meta: {},
+  },
+  "/v1/postmortem_documents/{id}/content": {
+    markdown:
+      "# Incident Postmortem\n\n## Summary\n\nThis incident was investigated by Alice Smith and affected the API Gateway service.\n\n## Timeline\n\n### 2024-06-15 (UTC)\n\n* [10:30] **Alert fired**\n* [10:35] **Incident declared**\n\n## Follow-ups\n\n* **Add monitoring** - Assignee: Alice Smith\n",
+  },
   "/v2/alert_sources": {
     alert_sources: [
       {

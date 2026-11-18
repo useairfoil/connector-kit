@@ -38,6 +38,8 @@ export type ReportRequest = {
   readonly endDate: string;
   readonly limit: number;
   readonly offset: number;
+  /** Reads a daily first-session cohort from day 0 to this day instead. */
+  readonly cohortEndOffset?: number | undefined;
 };
 
 export type GoogleAnalyticsClientService = {
@@ -104,11 +106,24 @@ export const make = Effect.fnUntraced(function* (
 
   const runReport = (name: string, request: ReportRequest) =>
     Effect.gen(function* () {
+      const dateRange = { startDate: request.startDate, endDate: request.endDate };
       const response = yield* client
         .execute(
           HttpClientRequest.post(url).pipe(
             HttpClientRequest.bodyJsonUnsafe({
-              dateRanges: [{ startDate: request.startDate, endDate: request.endDate }],
+              // A cohort report takes its days from the cohort, not `dateRanges`.
+              ...(request.cohortEndOffset === undefined
+                ? { dateRanges: [dateRange] }
+                : {
+                    cohortSpec: {
+                      cohorts: [{ dimension: "firstSessionDate", dateRange }],
+                      cohortsRange: {
+                        granularity: "DAILY",
+                        startOffset: 0,
+                        endOffset: request.cohortEndOffset,
+                      },
+                    },
+                  }),
               dimensions: request.dimensions.map((dimension) => ({ name: dimension })),
               metrics: request.metrics.map((metric) => ({ name: metric })),
               // Sort by every dimension so offset pages stay stable.

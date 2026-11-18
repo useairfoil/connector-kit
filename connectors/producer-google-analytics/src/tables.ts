@@ -1,6 +1,7 @@
 import type { Schema } from "effect";
 
 import {
+  CohortRetentionSchema,
   DailyOverviewSchema,
   DeviceSchema,
   EcommerceItemSchema,
@@ -8,7 +9,10 @@ import {
   LandingPageSchema,
   LocationSchema,
   PageSchema,
+  PaidCampaignSchema,
+  StreamScreenSchema,
   TrafficSourceSchema,
+  TransactionSchema,
   UserAcquisitionSchema,
 } from "./schemas/reports";
 
@@ -22,4 +26,8 @@ export const tableSchemas: Readonly<Record<string, Schema.Top>> = {
   locations: LocationSchema,
   devices: DeviceSchema,
   ecommerce_items: EcommerceItemSchema,
+  transactions: TransactionSchema,
+  paid_campaigns: PaidCampaignSchema,
+  stream_screens: StreamScreenSchema,
+  cohort_retention: CohortRetentionSchema,
 };

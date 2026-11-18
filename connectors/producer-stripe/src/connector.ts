@@ -4,13 +4,28 @@ import { Config, Context, Effect, Layer, Redacted } from "effect";
 import type { StripeConfig, StripeWebhookConfig } from "./manifest";
 
 import * as StripeClient from "./client/client";
+import { makeBalanceTransactions } from "./resources/balance-transactions";
+import { billingMeterSpec, makeBillingMeters } from "./resources/billing-meters";
 import { chargeSpec, makeCharges } from "./resources/charges";
+import { makeCheckoutSessionSpec, makeCheckoutSessions } from "./resources/checkout-sessions";
+import { couponSpec, makeCoupons } from "./resources/coupons";
+import { makeCreditNoteSpec, makeCreditNotes } from "./resources/credit-notes";
 import { customerSpec, makeCustomers } from "./resources/customers";
-import { invoiceSpec, makeInvoices } from "./resources/invoices";
+import { disputeSpec, makeDisputes } from "./resources/disputes";
+import { invoicePaymentSpec, makeInvoicePayments } from "./resources/invoice-payments";
+import { makeInvoiceSpec, makeInvoices } from "./resources/invoices";
+import { makeMeterSummaries } from "./resources/meter-summaries";
+import { makePaymentIntents, paymentIntentSpec } from "./resources/payment-intents";
+import { makePayoutSpec, makePayouts } from "./resources/payouts";
 import { makePrices, priceSpec } from "./resources/prices";
 import { makeProducts, productSpec } from "./resources/products";
+import { makePromotionCodes, promotionCodeSpec } from "./resources/promotion-codes";
 import { makeRefunds, refundSpec } from "./resources/refunds";
 import { changesInterval, readEventWindow, rowsForWindow } from "./resources/shared";
+import {
+  makeSubscriptionSchedules,
+  subscriptionScheduleSpec,
+} from "./resources/subscription-schedules";
 import { makeSubscriptionSpec, makeSubscriptions } from "./resources/subscriptions";
 import { makeWebhookRoute } from "./webhook/route";
 export { manifest, StripeConfigDef } from "./manifest";
@@ -24,16 +39,51 @@ const build = Effect.gen(function* () {
   const Prices = makePrices(client);
   const subscriptionSpec = makeSubscriptionSpec(client);
   const Subscriptions = makeSubscriptions(client, subscriptionSpec);
-  const Invoices = makeInvoices(client);
+  const invoiceSpec = makeInvoiceSpec(client);
+  const Invoices = makeInvoices(client, invoiceSpec);
   const Charges = makeCharges(client);
+  const InvoicePayments = makeInvoicePayments(client);
   const Refunds = makeRefunds(client);
+
+  const PaymentIntents = makePaymentIntents(client);
+  const payoutSpec = makePayoutSpec(client);
+  const Payouts = makePayouts(client, payoutSpec);
+  const Disputes = makeDisputes(client);
+  const creditNoteSpec = makeCreditNoteSpec(client);
+  const CreditNotes = makeCreditNotes(client, creditNoteSpec);
+  const checkoutSessionSpec = makeCheckoutSessionSpec(client);
+  const CheckoutSessions = makeCheckoutSessions(client, checkoutSessionSpec);
+  const SubscriptionSchedules = makeSubscriptionSchedules(client);
+  const Coupons = makeCoupons(client);
+  const PromotionCodes = makePromotionCodes(client);
+  const BillingMeters = makeBillingMeters(client);
+
+  const stripeResources = [
+    Customers,
+    Products,
+    Prices,
+    Subscriptions,
+    Invoices,
+    Charges,
+    InvoicePayments,
+    Refunds,
+    PaymentIntents,
+    Payouts,
+    Disputes,
+    CreditNotes,
+    CheckoutSessions,
+    SubscriptionSchedules,
+    Coupons,
+    PromotionCodes,
+    BillingMeters,
+  ] as const;
 
   const connector = Connector.define({
     name: "producer-stripe",
     title: "Stripe",
-    resources: [Customers, Products, Prices, Subscriptions, Invoices, Charges, Refunds],
+    resources: [...stripeResources, makeBalanceTransactions(client), makeMeterSummaries(client)],
     changes: Fetch.feed({
-      resources: [Customers, Products, Prices, Subscriptions, Invoices, Charges, Refunds],
+      resources: stripeResources,
       cursor: Cursor.string(),
       interval: changesInterval,
       fetch: ({ cursor, selected }) =>
@@ -54,7 +104,35 @@ const build = Effect.gen(function* () {
               ),
               invoices: when(Invoices, rowsForWindow(client, invoiceSpec, window.events)),
               charges: when(Charges, rowsForWindow(client, chargeSpec, window.events)),
+              invoice_payments: when(
+                InvoicePayments,
+                rowsForWindow(client, invoicePaymentSpec, window.events),
+              ),
               refunds: when(Refunds, rowsForWindow(client, refundSpec, window.events)),
+              payment_intents: when(
+                PaymentIntents,
+                rowsForWindow(client, paymentIntentSpec, window.events),
+              ),
+              payouts: when(Payouts, rowsForWindow(client, payoutSpec, window.events)),
+              disputes: when(Disputes, rowsForWindow(client, disputeSpec, window.events)),
+              credit_notes: when(CreditNotes, rowsForWindow(client, creditNoteSpec, window.events)),
+              checkout_sessions: when(
+                CheckoutSessions,
+                rowsForWindow(client, checkoutSessionSpec, window.events),
+              ),
+              subscription_schedules: when(
+                SubscriptionSchedules,
+                rowsForWindow(client, subscriptionScheduleSpec, window.events),
+              ),
+              coupons: when(Coupons, rowsForWindow(client, couponSpec, window.events)),
+              promotion_codes: when(
+                PromotionCodes,
+                rowsForWindow(client, promotionCodeSpec, window.events),
+              ),
+              billing_meters: when(
+                BillingMeters,
+                rowsForWindow(client, billingMeterSpec, window.events),
+              ),
             },
             { concurrency: "unbounded" },
           );
@@ -76,7 +154,17 @@ const build = Effect.gen(function* () {
             { resource: Subscriptions, eventTypes: subscriptionSpec.eventTypes },
             { resource: Invoices, eventTypes: invoiceSpec.eventTypes },
             { resource: Charges, eventTypes: chargeSpec.eventTypes },
+            { resource: InvoicePayments, eventTypes: invoicePaymentSpec.eventTypes },
             { resource: Refunds, eventTypes: refundSpec.eventTypes },
+            { resource: PaymentIntents, eventTypes: paymentIntentSpec.eventTypes },
+            { resource: Payouts, eventTypes: payoutSpec.eventTypes },
+            { resource: Disputes, eventTypes: disputeSpec.eventTypes },
+            { resource: CreditNotes, eventTypes: creditNoteSpec.eventTypes },
+            { resource: CheckoutSessions, eventTypes: checkoutSessionSpec.eventTypes },
+            { resource: SubscriptionSchedules, eventTypes: subscriptionScheduleSpec.eventTypes },
+            { resource: Coupons, eventTypes: couponSpec.eventTypes },
+            { resource: PromotionCodes, eventTypes: promotionCodeSpec.eventTypes },
+            { resource: BillingMeters, eventTypes: billingMeterSpec.eventTypes },
           ],
         }),
       ]),

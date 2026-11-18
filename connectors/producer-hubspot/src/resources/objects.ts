@@ -4,6 +4,11 @@ import { Duration, Effect } from "effect";
 import type { HubSpotClientService } from "../client/client";
 
 import {
+  AppointmentSchema,
+  ProjectSchema,
+  CourseSchema,
+  ListingSchema,
+  ServiceSchema,
   CallSchema,
   CartSchema,
   CommercePaymentSchema,
@@ -193,3 +198,13 @@ export const makeCrmResources = (client: HubSpotClientService) =>
       rowSchema: DealSplitSchema,
     }).pipe(Effect.map(Resource.entity)),
   });
+
+/** CRM objects with no webhook route yet. They only come from polling. */
+export const makeAdditionalCrmResources = (client: HubSpotClientService) =>
+  Effect.all([
+    crmEntity(client, { ...plain, name: "projects", rowSchema: ProjectSchema }),
+    crmEntity(client, { ...plain, name: "appointments", rowSchema: AppointmentSchema }),
+    crmEntity(client, { ...plain, name: "courses", rowSchema: CourseSchema }),
+    crmEntity(client, { ...plain, name: "listings", rowSchema: ListingSchema }),
+    crmEntity(client, { ...plain, name: "services", rowSchema: ServiceSchema }),
+  ]).pipe(Effect.map((entities) => entities.map(Resource.entity)));

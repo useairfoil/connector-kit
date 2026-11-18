@@ -1,4 +1,4 @@
-import { type ConnectorError, Resource } from "@useairfoil/connector-kit";
+import { ConnectorError, Cursor, Fetch, Resource } from "@useairfoil/connector-kit";
 import { Array as Arr, DateTime, Duration, Effect, Option, Schema, Stream } from "effect";
 
 import type { IncidentIoClientService } from "../client/client";
@@ -18,6 +18,10 @@ import {
   AlertSchema,
   AlertSourceObjectSchema,
   AlertSourceSchema,
+  AlertTagObjectSchema,
+  AlertTagSchema,
+  CallRouteObjectSchema,
+  CallRouteSchema,
   type Escalation,
   EscalationObjectSchema,
   EscalationPathObjectSchema,
@@ -27,6 +31,12 @@ import {
   MaintenanceWindowSchema,
   NotificationPauseObjectSchema,
   NotificationPauseSchema,
+  PayConfigObjectSchema,
+  PayConfigSchema,
+  type PayReport,
+  type PayReportObject,
+  PayReportObjectSchema,
+  PayReportSchema,
   type Schedule,
   ScheduleEntryObjectSchema,
   ScheduleObjectSchema,
@@ -135,6 +145,25 @@ export const makeAlertSources = (client: IncidentIoClientService) =>
           version,
           owning_team_ids: source.owning_team_ids ?? [],
         }));
+      }),
+    ),
+  });
+
+export const makeAlertTags = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "alert_tags",
+    rowSchema: AlertTagSchema,
+    version: "version",
+    ...listSources(
+      Effect.gen(function* () {
+        const version = yield* DateTime.nowAsDate;
+        const tags = yield* listAll(client, {
+          path: "/v2/alert_tags",
+          key: "alert_tags",
+          item: AlertTagObjectSchema,
+          params: { page_size: "250" },
+        });
+        return tags.map((tag) => ({ ...tag, version }));
       }),
     ),
   });
@@ -279,40 +308,43 @@ export const makeSchedules = (client: IncidentIoClientService) =>
     },
   });
 
-/** Shifts that have ended, with overrides applied. */
 const readShifts = (
   client: IncidentIoClientService,
   scheduleId: string,
+  window?: { readonly start: DateTime.Utc; readonly end: DateTime.Utc },
 ): Effect.Effect<ReadonlyArray<ScheduleShift>, ConnectorError> =>
   Effect.gen(function* () {
-    const now = yield* DateTime.now;
-    const version = DateTime.toDateUtc(now);
+    const end = window?.end ?? (yield* DateTime.now);
+    const start = window?.start ?? DateTime.subtractDuration(end, shiftWindow);
+    const version = DateTime.toDateUtc(end);
     // The next page goes in `entry_window_start`, with the same end.
-    const entries = yield* Stream.paginate(
-      DateTime.formatIso(DateTime.subtractDuration(now, shiftWindow)),
-      (start) =>
-        client
-          .get(
-            Schema.Struct({
-              schedule_entries: Schema.Struct({ final: Schema.Array(ScheduleEntryObjectSchema) }),
-              pagination_meta: Optional(PaginationMetaSchema),
-            }),
-            "/v2/schedule_entries",
-            {
-              schedule_id: scheduleId,
-              entry_window_start: start,
-              entry_window_end: DateTime.formatIso(now),
-            },
-          )
-          .pipe(
-            Effect.map(
-              ({ schedule_entries, pagination_meta }) =>
-                [schedule_entries.final, Option.fromNullishOr(pagination_meta?.after)] as const,
-            ),
+    const entries = yield* Stream.paginate(DateTime.formatIso(start), (after) =>
+      client
+        .get(
+          Schema.Struct({
+            schedule_entries: Schema.Struct({ final: Schema.Array(ScheduleEntryObjectSchema) }),
+            pagination_meta: Optional(PaginationMetaSchema),
+          }),
+          "/v2/schedule_entries",
+          {
+            schedule_id: scheduleId,
+            entry_window_start: after,
+            entry_window_end: DateTime.formatIso(end),
+          },
+        )
+        .pipe(
+          Effect.map(
+            ({ schedule_entries, pagination_meta }) =>
+              [schedule_entries.final, Option.fromNullishOr(pagination_meta?.after)] as const,
           ),
+        ),
     ).pipe(Stream.runCollect);
     return entries
-      .filter((entry) => entry.end_at.getTime() <= version.getTime())
+      .filter(
+        (entry) =>
+          entry.end_at.getTime() <= version.getTime() &&
+          (!window || entry.end_at.getTime() >= DateTime.toEpochMillis(start)),
+      )
       .map(({ user, ...entry }) => {
         // The spec says `fingerprint` stays the same for a shift across reads.
         const shift =
@@ -328,6 +360,62 @@ const readShifts = (
       });
   });
 
+const ShiftCursorSchema = Schema.fromJsonString(
+  Schema.Struct({ schedule_id: Schema.String, start: Schema.DateTimeUtcFromString }),
+);
+
+const shiftCursorError = (cause: Schema.SchemaError) =>
+  new ConnectorError({ message: "Invalid schedule shift cursor", cause });
+
+// Backfill reads each schedule from the time it was made, a week per page.
+const backfillShifts = (client: IncidentIoClientService) =>
+  Fetch.page({
+    pageCursor: Cursor.string(),
+    cutoff: Cursor.isoDateTime(),
+    fetch: ({ cutoff, pageCursor }) =>
+      Effect.gen(function* () {
+        const end = DateTime.makeUnsafe(String(cutoff));
+        const position =
+          typeof pageCursor === "string"
+            ? yield* Schema.decodeUnknownEffect(ShiftCursorSchema)(pageCursor).pipe(
+                Effect.mapError(shiftCursorError),
+              )
+            : undefined;
+        // In ID order, so a schedule deleted mid-backfill doesn't lose our place.
+        const schedules = (yield* listSchedules(client))
+          .filter((schedule) => schedule.created_at.getTime() < DateTime.toEpochMillis(end))
+          .toSorted((a, b) => a.id.localeCompare(b.id));
+        const schedule = position
+          ? schedules.find(({ id }) => id >= position.schedule_id)
+          : schedules[0];
+        if (!schedule) return { rows: [], hasMore: false };
+        const start =
+          position?.schedule_id === schedule.id
+            ? position.start
+            : DateTime.fromDateUnsafe(schedule.created_at);
+        const through = DateTime.min(DateTime.addDuration(start, shiftWindow), end);
+        const rows = yield* readShifts(client, schedule.id, { start, end: through });
+        const following = schedules.find(({ id }) => id > schedule.id);
+        const next = DateTime.isLessThan(through, end)
+          ? { schedule_id: schedule.id, start: through }
+          : following && {
+              schedule_id: following.id,
+              start: DateTime.fromDateUnsafe(following.created_at),
+            };
+        return {
+          rows,
+          hasMore: next !== undefined,
+          ...(next
+            ? {
+                nextPageCursor: yield* Schema.encodeEffect(ShiftCursorSchema)(next).pipe(
+                  Effect.mapError(shiftCursorError),
+                ),
+              }
+            : {}),
+        };
+      }),
+  });
+
 export const makeScheduleShifts = (client: IncidentIoClientService) =>
   Resource.entity({
     name: "schedule_shifts",
@@ -341,6 +429,7 @@ export const makeScheduleShifts = (client: IncidentIoClientService) =>
         Effect.map(Arr.flatten),
       ),
     ),
+    backfill: backfillShifts(client),
     webhook: {
       schema: WebhookTargetSchema,
       handler: ({ payload }) => readShifts(client, payload.id),
@@ -414,5 +503,56 @@ export const makeMaintenanceWindows = (client: IncidentIoClientService) =>
           })),
         ),
       ),
+    ),
+  });
+
+export const makeCallRoutes = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "call_routes",
+    rowSchema: CallRouteSchema,
+    version: "version",
+    ...listSources(
+      listAll(client, {
+        path: "/v2/call_routes",
+        key: "call_routes",
+        item: CallRouteObjectSchema,
+        params: { page_size: "250" },
+      }).pipe(Effect.map((items) => items.map((item) => ({ ...item, version: item.updated_at })))),
+    ),
+  });
+
+export const makePayConfigs = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "pay_configs",
+    rowSchema: PayConfigSchema,
+    version: "version",
+    ...listSources(
+      listAll(client, {
+        path: "/v2/pay_configs",
+        key: "pay_configs",
+        item: PayConfigObjectSchema,
+        params: { page_size: "250" },
+      }).pipe(Effect.map((items) => items.map((item) => ({ ...item, version: item.updated_at })))),
+    ),
+  });
+
+const toPayReport = ({ creator, ...report }: PayReportObject): PayReport => ({
+  ...report,
+  version: report.updated_at,
+  creator_user_id: creator?.user?.id,
+});
+
+export const makePayReports = (client: IncidentIoClientService) =>
+  Resource.entity({
+    name: "pay_reports",
+    rowSchema: PayReportSchema,
+    version: "version",
+    ...listSources(
+      listAll(client, {
+        path: "/v2/pay_reports",
+        key: "pay_reports",
+        item: PayReportObjectSchema,
+        params: { page_size: "50" },
+      }).pipe(Effect.map((reports) => reports.map(toPayReport))),
     ),
   });

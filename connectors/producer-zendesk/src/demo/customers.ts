@@ -31,6 +31,9 @@ export const customerRows = (index: number, context: Demo.DemoContext): Rows => 
     ticket_comments: [],
     ticket_field_history: [],
     ticket_metric_events: [],
+    ticket_audits: [],
+    talk_calls: [],
+    talk_legs: [],
     satisfaction_ratings: [],
     survey_responses: [],
   };

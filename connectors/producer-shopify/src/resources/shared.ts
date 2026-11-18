@@ -1,5 +1,8 @@
-import { SchemaTransformation } from "effect";
+import { type ConnectorError, Cursor, Fetch } from "@useairfoil/connector-kit";
+import { DateTime, Duration, Effect, SchemaTransformation } from "effect";
 import * as Schema from "effect/Schema";
+
+import type { ShopifyApiClientService } from "../api/client";
 
 export const PageInfoSchema = Schema.Struct({
   hasNextPage: Schema.Boolean,
@@ -298,3 +301,91 @@ query ${name}($first: Int!, $after: String) {
 `;
 
 export type PageInfo = Schema.Schema.Type<typeof PageInfoSchema>;
+
+export const nextCursor = (pageInfo: PageInfo): string | undefined =>
+  pageInfo.hasNextPage ? (pageInfo.endCursor ?? undefined) : undefined;
+
+export const followQuery = (
+  name: string,
+  parent: string,
+  edge: string,
+  fields: string,
+  args = "",
+) => `#graphql
+query ${name}($id: ID!, $first: Int!, $after: String) {
+  node: ${parent}(id: $id) {
+    connection: ${edge}(first: $first, after: $after${args}) {
+      nodes { ${fields} }
+      ${PageInfoFields}
+    }
+  }
+}
+`;
+
+export const readVersion = Schema.Date.pipe(
+  Schema.annotateKey({ description: "Time Shopify was read." }),
+);
+
+type RowPage<Row> = { readonly rows: ReadonlyArray<Row>; readonly next: string | undefined };
+
+export const withReadVersion = <Row extends object>({ rows, next }: RowPage<Row>) =>
+  Effect.map(DateTime.nowAsDate, (version) => ({
+    rows: rows.map((row) => ({ ...row, version })),
+    next,
+  }));
+
+/**
+ * Backfill and changes for tables without webhooks. Changes read every page
+ * again. The first cursor is the backfill cutoff, so page cursors get a prefix.
+ */
+export const pollPages = <Row extends object>(
+  pageSize: number,
+  read: (first: number, after?: string) => Effect.Effect<RowPage<Row>, ConnectorError>,
+  interval = Duration.hours(1),
+) => ({
+  check: read(1).pipe(Effect.asVoid),
+  backfill: Fetch.page({
+    pageCursor: Cursor.string(),
+    cutoff: Cursor.isoDateTime(),
+    fetch: ({ pageCursor }) =>
+      read(pageSize, typeof pageCursor === "string" ? pageCursor : undefined).pipe(
+        Effect.map(({ rows, next }) => ({
+          rows,
+          nextPageCursor: next,
+          hasMore: next !== undefined,
+        })),
+      ),
+  }),
+  changes: Fetch.changes({
+    cursor: Cursor.string(),
+    interval,
+    fetch: ({ cursor }) =>
+      read(
+        pageSize,
+        typeof cursor === "string" && cursor.startsWith("page:") ? cursor.slice(5) : undefined,
+      ).pipe(
+        Effect.map(({ rows, next }) => ({
+          rows,
+          cursor: next === undefined ? "" : `page:${next}`,
+          hasMore: next !== undefined,
+        })),
+      ),
+  }),
+});
+
+export const readItems =
+  <A>(
+    api: Pick<ShopifyApiClientService, "fetchGraphQL">,
+    operationName: string,
+    query: string,
+    node: Schema.Decoder<A>,
+  ) =>
+  (first: number, after?: string) =>
+    api
+      .fetchGraphQL({
+        operationName,
+        query,
+        schema: Schema.Struct({ items: connection(node) }),
+        variables: { first, after },
+      })
+      .pipe(Effect.map(({ items }) => ({ rows: items.nodes, next: nextCursor(items.pageInfo) })));

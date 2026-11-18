@@ -1,7 +1,7 @@
 import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
-import { Json, Long, Optional, Ref, Timestamp, common, fetched } from "./shared";
+import { Json, Long, Optional, Ref, Timestamp, common, fetched, fetchedVersion } from "./shared";
 
 const withoutVersion = <Fields extends Schema.Struct.Fields & { readonly version: unknown }>(
   fields: Fields,
@@ -180,6 +180,23 @@ export type CustomFieldOption = Schema.Schema.Type<typeof CustomFieldOptionSchem
 
 export const CustomFieldOptionObjectSchema = CustomFieldOptionSchema.mapFields(withoutVersion);
 
+export const IncidentTemplateSchema = Schema.Struct({
+  ...common("Incident template"),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Template name." })),
+  template: Json.pipe(
+    Schema.annotateKey({ description: "Values new incidents start with, as JSON." }),
+  ),
+  expressions: Schema.optional(Json).pipe(
+    Schema.annotateKey({ description: "Expressions the values use, as JSON." }),
+  ),
+})
+  .annotate({ description: "incident.io templates for new incidents." })
+  .pipe(Iceberg.identifier("id"));
+
+export type IncidentTemplate = Schema.Schema.Type<typeof IncidentTemplateSchema>;
+
+export const IncidentTemplateObjectSchema = IncidentTemplateSchema.mapFields(withoutVersion);
+
 export const WorkflowSchema = Schema.Struct({
   ...fetched("Workflow"),
   name: Schema.String.pipe(Schema.annotateKey({ description: "Workflow name." })),
@@ -350,6 +367,96 @@ export type StatusPageMaintenance = Schema.Schema.Type<typeof StatusPageMaintena
 
 export const StatusPageMaintenanceObjectSchema =
   StatusPageMaintenanceSchema.mapFields(withoutVersion);
+
+export const StatusPageGroupSchema = Schema.Struct({
+  ...fetched("Status page group"),
+  status_page_id: Schema.String.pipe(Schema.annotateKey({ description: "Status page." })),
+  sub_page_id: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Sub-page it's on, if any." }),
+  ),
+  name: Schema.String.pipe(Schema.annotateKey({ description: "Group name." })),
+  description: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Group description." }),
+  ),
+  hidden: Schema.Boolean.pipe(Schema.annotateKey({ description: "Whether it's hidden." })),
+  display_aggregated_uptime: Schema.Boolean.pipe(
+    Schema.annotateKey({ description: "Whether it shows one uptime for all its components." }),
+  ),
+  component_ids: Schema.Array(Schema.String).pipe(
+    Schema.annotateKey({ description: "Components in the group, in page order." }),
+  ),
+})
+  .annotate({ description: "incident.io groups of components on status pages." })
+  .pipe(Iceberg.identifier("id"));
+
+export type StatusPageGroup = Schema.Schema.Type<typeof StatusPageGroupSchema>;
+
+const StructureComponentSchema = Schema.Struct({ component_id: Schema.String });
+
+const StructureGroupSchema = Schema.Struct({
+  id: Schema.String,
+  name: Schema.String,
+  description: Optional(Schema.String),
+  hidden: Schema.Boolean,
+  display_aggregated_uptime: Schema.Boolean,
+  components: Schema.Array(StructureComponentSchema),
+});
+
+const StructureItemSchema = Schema.Struct({
+  component: Optional(StructureComponentSchema),
+  group: Optional(StructureGroupSchema),
+});
+
+export const StatusPageStructureObjectSchema = Schema.Struct({
+  current_structure: Schema.Struct({
+    items: Schema.Array(
+      StructureItemSchema.mapFields((fields) => ({
+        ...fields,
+        sub_page: Optional(
+          Schema.Struct({ id: Schema.String, items: Schema.Array(StructureItemSchema) }),
+        ),
+      })),
+    ),
+  }),
+});
+
+export const StatusPageAvailabilitySchema = Schema.Struct({
+  id: Schema.String.pipe(Schema.annotateKey({ description: "Component ID and UTC day." })),
+  version: fetchedVersion,
+  status_page_id: Schema.String.pipe(Schema.annotateKey({ description: "Status page." })),
+  component_id: Schema.String.pipe(Schema.annotateKey({ description: "Component." })),
+  start_at: Timestamp.pipe(Schema.annotateKey({ description: "Start of the day." })),
+  end_at: Timestamp.pipe(Schema.annotateKey({ description: "End of the day." })),
+  data_available_since: Timestamp.pipe(
+    Schema.annotateKey({ description: "Time data starts. Earlier time isn't counted." }),
+  ),
+  availability_percent: Optional(Schema.String).pipe(
+    Schema.annotateKey({ description: "Percent of the day it was up, such as 99.94." }),
+  ),
+})
+  .annotate({ description: "incident.io availability of status page components, per UTC day." })
+  .pipe(Iceberg.identifier("id"));
+
+export type StatusPageAvailability = Schema.Schema.Type<typeof StatusPageAvailabilitySchema>;
+
+export const StatusPageAvailabilityObjectSchema = StatusPageAvailabilitySchema.mapFields((fields) =>
+  Struct.omit(fields, ["id", "version"]),
+);
+
+export const StatusPageIncidentLinksSchema = Schema.Struct({
+  ...fetched("Status page incident"),
+  status_page_id: Schema.String.pipe(Schema.annotateKey({ description: "Status page." })),
+  incidents: Schema.Array(
+    Schema.Struct({
+      id: Schema.String.pipe(Schema.annotateKey({ description: "Incident." })),
+      linked_at: Timestamp.pipe(Schema.annotateKey({ description: "Time it was linked." })),
+    }),
+  ).pipe(Schema.annotateKey({ description: "Incidents linked to it." })),
+})
+  .annotate({ description: "incident.io incidents linked to status page incidents." })
+  .pipe(Iceberg.identifier("id"));
+
+export type StatusPageIncidentLinks = Schema.Schema.Type<typeof StatusPageIncidentLinksSchema>;
 
 export const PolicySchema = Schema.Struct({
   ...common("Policy"),

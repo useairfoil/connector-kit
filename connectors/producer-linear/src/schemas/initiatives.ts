@@ -2,6 +2,7 @@ import { Iceberg } from "@useairfoil/connector-kit";
 import { Schema, Struct } from "effect";
 
 import {
+  JsonText,
   Long,
   OptionalRef,
   OptionalString,
@@ -152,4 +153,22 @@ export type InitiativeToProject = Schema.Schema.Type<typeof InitiativeToProjectS
 
 export const InitiativeToProjectObjectSchema = InitiativeToProjectSchema.mapFields((fields) =>
   Struct.omit(fields, ["version"]),
+);
+
+export const InitiativeHistorySchema = Schema.Struct({
+  ...common("History entry"),
+  initiative_id: Schema.String.pipe(
+    Schema.annotateKey({ description: "Initiative that changed." }),
+  ),
+  entries: JsonText.pipe(
+    Schema.annotateKey({ description: "Recorded changes and their times, as JSON." }),
+  ),
+})
+  .annotate({ description: "Linear initiative history." })
+  .pipe(Iceberg.identifier("id"));
+
+export type InitiativeHistory = Schema.Schema.Type<typeof InitiativeHistorySchema>;
+
+export const InitiativeHistoryObjectSchema = InitiativeHistorySchema.mapFields((fields) =>
+  Struct.omit(fields, ["version", "initiative_id"]),
 );

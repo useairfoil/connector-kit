@@ -30,6 +30,7 @@ export const TrafficSourceSchema = Schema.Struct({
   ...common,
   session_source: dimension("Source of the session, such as google."),
   session_medium: dimension("Medium of the session, such as organic."),
+  session_campaign_id: dimension("ID of the marketing campaign for the session."),
   session_campaign_name: dimension("Campaign of the session."),
   session_default_channel_group: dimension("Default channel group of the session."),
   sessions: count("Sessions that started."),
@@ -52,6 +53,7 @@ export const UserAcquisitionSchema = Schema.Struct({
   ...common,
   first_user_source: dimension("Source that first brought the user."),
   first_user_medium: dimension("Medium that first brought the user."),
+  first_user_campaign_id: dimension("ID of the marketing campaign that first acquired the user."),
   first_user_campaign_name: dimension("Campaign that first brought the user."),
   first_user_default_channel_group: dimension("Default channel group that first brought the user."),
   new_users: count("Users who came for the first time."),
@@ -157,6 +159,8 @@ export const EcommerceItemSchema = Schema.Struct({
   items_viewed: count("Units viewed."),
   items_added_to_cart: count("Units added to carts."),
   items_purchased: count("Units purchased."),
+  items_checked_out: count("Units included in checkout events."),
+  item_refund_amount: amount("Refunded item revenue, without tax and shipping."),
   item_revenue: amount("Revenue from the item, without tax and shipping."),
   currency_code: currencyCode,
 })
@@ -166,3 +170,61 @@ export const EcommerceItemSchema = Schema.Struct({
   .pipe(Iceberg.identifier("id"));
 
 export type EcommerceItem = Schema.Schema.Type<typeof EcommerceItemSchema>;
+
+export const TransactionSchema = Schema.Struct({
+  ...common,
+  transaction_id: dimension("Transaction ID sent with a purchase or refund."),
+  ecommerce_purchases: count("Purchase events."),
+  purchase_revenue: amount("Purchase revenue less refunds."),
+  refund_amount: amount("Refund amount."),
+  currency_code: currencyCode,
+})
+  .annotate({ description: "Google Analytics purchases and refunds per day and transaction ID." })
+  .pipe(Iceberg.identifier("id"));
+
+export type Transaction = Schema.Schema.Type<typeof TransactionSchema>;
+
+export const PaidCampaignSchema = Schema.Struct({
+  ...common,
+  customer_id: dimension("Linked Google Ads customer ID."),
+  campaign_id: dimension("Google Ads campaign ID."),
+  ad_group_id: dimension("Google Ads ad group ID."),
+  sessions: count("Sessions."),
+  advertiser_ad_cost: amount("Reported ad cost."),
+  advertiser_ad_clicks: count("Reported ad clicks."),
+  advertiser_ad_impressions: count("Reported ad impressions."),
+  currency_code: currencyCode,
+})
+  .annotate({
+    description: "Google Analytics performance by day and linked Google Ads campaign and ad group.",
+  })
+  .pipe(Iceberg.identifier("id"));
+
+export type PaidCampaign = Schema.Schema.Type<typeof PaidCampaignSchema>;
+
+export const StreamScreenSchema = Schema.Struct({
+  ...common,
+  stream_id: dimension("Analytics data stream ID."),
+  stream_name: dimension("Analytics data stream name."),
+  platform: dimension("Web, iOS, or Android."),
+  screen_class: dimension("Screen class or page path."),
+  screen_page_views: count("Screen and page views."),
+  active_users: count("Active users."),
+})
+  .annotate({ description: "Google Analytics views per day, stream, and screen class." })
+  .pipe(Iceberg.identifier("id"));
+
+export type StreamScreen = Schema.Schema.Type<typeof StreamScreenSchema>;
+
+export const CohortRetentionSchema = Schema.Struct({
+  ...common,
+  day_offset: dimension("Days after the first session, such as 0007."),
+  active_users: count("Users in the cohort who were active that day."),
+  total_users: count("Users whose first session was on `date`."),
+})
+  .annotate({
+    description: "Google Analytics users by first-session day, active on each of the next 7 days.",
+  })
+  .pipe(Iceberg.identifier("id"));
+
+export type CohortRetention = Schema.Schema.Type<typeof CohortRetentionSchema>;

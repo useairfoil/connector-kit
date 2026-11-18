@@ -1,62 +1,31 @@
 # Stripe producer
 
-## Current scope
+- Auth: restricted API key.
+- Webhooks: `POST /webhooks/stripe`.
+- Changes: one Events API feed for all resources, every 5 min.
+- API version: `Stripe-Version: STRIPE_API_VERSION` on every call.
+  [Changelog](https://docs.stripe.com/changelog).
 
-- Resources: `customers`, `products`, `prices`, `subscriptions`, `invoices`,
-  `charges`, and `refunds`
-- Backfill: Stripe list endpoints
-- Changes: one Stripe Events API feed for all resources, every 5 minutes
-- Webhooks: `POST /webhooks/stripe`
+## Rules
 
-## Stripe rules
+- Use the `stripe` package only for things with no request, like the webhook
+  signature.
+- Objects have no reliable update time, events come in any order, and event
+  payloads use old API versions. So always fetch the object again. Never build
+  a row from the event payload.
+- `customer.deleted`, `product.deleted`, `price.deleted`, `invoice.deleted`
+  write a delete row without a fetch. A delete wins over other events for the
+  same object in a batch.
+- `customer.subscription.deleted` means canceled. Fetch it and keep it.
+- Stripe filters at most 20 event types, we need more. So the feed reads all
+  events and routes by type. Some events like `invoice.upcoming` have no
+  object ID.
+- Balance transactions have no update event. Once a day, changes list them
+  again from the oldest pending one. First run looks back 90 days.
+- Meter events can come up to 35 days late. Meter summaries read the last 36
+  days again daily. Ended subscriptions are skipped.
+- Subscriptions embed max 20 items. Page the rest when `has_more`.
 
-- Send `Stripe-Version: STRIPE_API_VERSION` on every request.
-- Every API request goes through the Effect `HttpClient` in `src/client`, so
-  VCR records it. Use the `stripe` package only for helpers that make no
-  requests, such as webhook signatures.
-- Lists use `limit=100` and `starting_after`. Backfill filters on
-  `created[lte]`.
-- All requests share one rate limiter. `429` and other transient responses
-  are retried with backoff. Every request has a timeout.
-- Verify `Stripe-Signature` against the raw body with
-  `Stripe.webhooks.constructEvent`.
+## VCR
 
-Stripe objects have no reliable update time, Stripe does not order events, and
-event payloads use old API versions. So rows are always fetched again, and the
-version is the request time. Never map an event payload into a row.
-
-`customer.deleted`, `product.deleted`, `price.deleted`, and `invoice.deleted`
-write a delete row without fetching, because the object is gone. A delete wins
-over other events for the same object in a batch.
-`customer.subscription.deleted` means canceled: fetch the subscription and keep
-it.
-
-Changes use one Connector Kit feed (`Fetch.feed` in `connector.ts`). Stripe
-filters on at most 20 event types and we use more, so the feed reads every
-event and routes it by type. Resources that aren't selected skip their object
-fetches. Some events have no object ID, such as `invoice.upcoming`, so only
-events a resource handles must have one.
-
-The feed reads fixed time windows. A run reads up to 20 pages, saves the window
-end and last event in the cursor, and sets `hasMore` so the next run starts
-right away.
-
-Subscriptions embed their items. Stripe embedded all 20 items, the maximum, in
-a sandbox, but `toRow` still pages the rest when `has_more` is true.
-
-Keep nested objects nested, with Stripe's field names. Decode enum fields as
-strings, so a new Stripe value does not stop the resource.
-
-Do not loosen a schema only to pass a fixture.
-
-When adding a resource, check its restricted key permission, list filters,
-event types, delete behavior, and nullable fields in the API
-reference. Add a read-only config check.
-
-Record VCR against a sandbox without test clocks. Remove customer details from
-the cassette.
-
-To upgrade the API version, read the
-[Stripe changelog](https://docs.stripe.com/changelog) for the resources and
-events we use. Update `STRIPE_API_VERSION` and the README. Then re-record the
-VCR cassette.
+Sandbox without test clocks. Remove customer details.

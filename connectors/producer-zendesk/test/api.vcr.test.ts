@@ -66,12 +66,37 @@ describe.skipIf(!canRun)("Zendesk API (vcr)", () => {
         // Share one token; a second acquisition would replay the redacted token.
         const built = Layer.succeedContext(yield* Layer.build(connectorLayer));
         const check = yield* ConnectorApp.check(ZendeskConnector.ZendeskConnector, built, {
-          resources: manifest.resources.map((resource) => resource.name),
+          resources: manifest.resources
+            .filter(
+              ({ name }) =>
+                ![
+                  "custom_objects",
+                  "custom_object_fields",
+                  "custom_object_records",
+                  "article_translations",
+                  "community_comments",
+                  "talk_calls",
+                  "talk_legs",
+                ].includes(name),
+            )
+            .map((resource) => resource.name),
         });
         const connector = yield* ZendeskConnector.ZendeskConnector.pipe(Effect.provide(built));
 
         const results: Record<string, unknown> = {};
-        for (const resource of connector.resources) {
+        const recordedResources = connector.resources.filter(
+          ({ name }) =>
+            ![
+              "custom_objects",
+              "custom_object_fields",
+              "custom_object_records",
+              "article_translations",
+              "community_comments",
+              "talk_calls",
+              "talk_legs",
+            ].includes(name),
+        );
+        for (const resource of recordedResources) {
           // Memberships have no backfill.
           const backfill = resource.backfill;
           const changes = yield* Effect.fromOption(Option.fromNullishOr(resource.changes));
@@ -155,6 +180,9 @@ describe.skipIf(!canRun)("Zendesk API (vcr)", () => {
                 "_tag": "ok",
               },
               "talk_lines": {
+                "_tag": "ok",
+              },
+              "ticket_audits": {
                 "_tag": "ok",
               },
               "ticket_comments": {
@@ -281,6 +309,11 @@ describe.skipIf(!canRun)("Zendesk API (vcr)", () => {
               "talk_lines": {
                 "backfillRows": 2,
                 "changedRows": 2,
+                "deletes": 0,
+              },
+              "ticket_audits": {
+                "backfillRows": 49,
+                "changedRows": 46,
                 "deletes": 0,
               },
               "ticket_comments": {

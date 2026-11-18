@@ -144,6 +144,7 @@ export const fromRefundNode = (
   note: node.note ?? "",
   createdAt: node.createdAt,
   processedAt: node.processedAt,
+  version: node.processedAt,
   transactions: nested.transactions.map((transaction) => ({
     id: transaction.id,
     kind: transaction.kind,
@@ -191,6 +192,18 @@ export const OrderRefundsQuery = pageQuery(
 
 export const GraphQLOrderRefundsDataSchema = Schema.Struct({
   orders: connection(
+    Schema.Struct({ id: Schema.String, refunds: Schema.Array(GraphQLRefundNodeSchema) }),
+  ),
+});
+
+export const RefundsForOrderQuery = `#graphql
+query AirfoilRefundsForOrder($id: ID!) {
+  order(id: $id) { id refunds { ${RefundFields} } }
+}
+`;
+
+export const GraphQLRefundsForOrderSchema = Schema.Struct({
+  order: Schema.NullOr(
     Schema.Struct({ id: Schema.String, refunds: Schema.Array(GraphQLRefundNodeSchema) }),
   ),
 });

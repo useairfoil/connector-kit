@@ -9,6 +9,7 @@ import {
 } from "./schemas/customers";
 import { DocumentSchema } from "./schemas/documents";
 import {
+  InitiativeHistorySchema,
   InitiativeLabelSchema,
   InitiativeRelationSchema,
   InitiativeSchema,
@@ -21,8 +22,11 @@ import {
   IssueLabelSchema,
   IssueRelationSchema,
   IssueSchema,
+  IssueStateSpanSchema,
 } from "./schemas/issues";
 import {
+  ProjectExternalLinkSchema,
+  ProjectHistorySchema,
   ProjectLabelSchema,
   ProjectMilestoneSchema,
   ProjectRelationSchema,
@@ -32,16 +36,20 @@ import {
 } from "./schemas/projects";
 import {
   IssueToReleaseSchema,
+  ReleaseHistorySchema,
   ReleaseNoteSchema,
   ReleasePipelineSchema,
   ReleaseSchema,
   ReleaseStageSchema,
 } from "./schemas/releases";
 import {
+  CustomViewSchema,
   CycleSchema,
   ExternalUserSchema,
   TeamMembershipSchema,
   TeamSchema,
+  TeamSlaRulesSchema,
+  TemplateSchema,
   UserSchema,
   WorkflowStateSchema,
 } from "./schemas/teams";
@@ -80,4 +88,12 @@ export const tableSchemas: Readonly<Record<string, Schema.Top>> = {
   release_pipelines: ReleasePipelineSchema,
   release_stages: ReleaseStageSchema,
   issue_to_releases: IssueToReleaseSchema,
+  issue_state_spans: IssueStateSpanSchema,
+  project_history: ProjectHistorySchema,
+  project_external_links: ProjectExternalLinkSchema,
+  initiative_history: InitiativeHistorySchema,
+  release_history: ReleaseHistorySchema,
+  templates: TemplateSchema,
+  custom_views: CustomViewSchema,
+  team_sla_rules: TeamSlaRulesSchema,
 };

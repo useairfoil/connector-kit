@@ -42,6 +42,7 @@ export const issueRows = (index: number, context: Demo.DemoContext): Rows => {
   const rows: Rows = {
     issues: [],
     issue_history: [],
+    issue_state_spans: [],
     comments: [],
     issue_relations: [],
     attachments: [],
@@ -128,6 +129,15 @@ export const issueRows = (index: number, context: Demo.DemoContext): Rows => {
   if (outcome === "Todo") changes.push({ at: later(created, 60_000, 3 * day), from: 1, to: 2 });
 
   changes.forEach((change, h) => {
+    rows.issue_state_spans.push({
+      id: uuid(31, index, h),
+      issue_id: id,
+      state_id: stateId(t, change.to),
+      started_at: change.at,
+      ended_at: changes[h + 1]?.at ?? null,
+      version: changes[h + 1]?.at ?? change.at,
+    });
+
     rows.issue_history.push({
       id: uuid(30, index, h),
       ...stamp(change.at, change.at),
@@ -311,6 +321,8 @@ export const issueRows = (index: number, context: Demo.DemoContext): Rows => {
     sla_type: null,
     sla_started_at: null,
     sla_breaches_at: null,
+    sla_medium_risk_at: null,
+    sla_high_risk_at: null,
     customer_ticket_count: BigInt(rows.customer_needs.length),
     integration_source_type: null,
     trashed: false,

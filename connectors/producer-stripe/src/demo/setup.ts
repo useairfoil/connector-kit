@@ -1,7 +1,10 @@
 import type { Demo } from "@useairfoil/connector-kit";
 
+import type { BillingMeter } from "../schemas/billing-meters";
+import type { Coupon } from "../schemas/coupons";
 import type { Price } from "../schemas/prices";
 import type { Product } from "../schemas/products";
+import type { PromotionCode } from "../schemas/promotion-codes";
 
 import { catalog, day, priceId, priceOptions, productId, seconds, unitAmount } from "./shared";
 
@@ -55,5 +58,40 @@ export const setupRows = ({ now }: Demo.DemoContext) => {
     })),
   );
 
-  return { products: productRows, prices: priceRows };
+  const coupon: Coupon = {
+    id: "coupon_demo_welcome",
+    version: now,
+    created,
+    name: "Welcome discount",
+    duration: "once",
+    percent_off: 15,
+    times_redeemed: 0n,
+    valid: true,
+  };
+  const promotion: PromotionCode = {
+    id: "promo_demo_welcome",
+    version: now,
+    created,
+    code: "WELCOME15",
+    active: true,
+    times_redeemed: 0n,
+    promotion: { type: "coupon", coupon: coupon.id },
+  };
+  const meter: BillingMeter = {
+    id: "mtr_demo_api_calls",
+    version: now,
+    created,
+    updated: created,
+    display_name: "API calls",
+    event_name: "api_call",
+    status: "active",
+    default_aggregation: { formula: "sum" },
+  };
+  return {
+    products: productRows,
+    prices: priceRows,
+    coupons: [coupon],
+    promotion_codes: [promotion],
+    billing_meters: [meter],
+  };
 };

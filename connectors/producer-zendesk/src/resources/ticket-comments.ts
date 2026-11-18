@@ -9,18 +9,12 @@ import {
   type TicketComment,
   TicketCommentSchema,
   type TicketEvent,
-  TicketEventSchema,
+  TicketEventPageSchema,
   isCommentEvent,
   isRedactionEvent,
 } from "../schemas/comments";
 import { timeExport } from "./exports";
 import { listAll } from "./pages";
-
-const TicketEventPageSchema = Schema.Struct({
-  ticket_events: Schema.Array(TicketEventSchema),
-  end_time: Schema.NullOr(Schema.Number),
-  end_of_stream: Schema.Boolean,
-});
 
 const toRow = (comment: CommentObject, event: TicketEvent): TicketComment => ({
   ...comment,

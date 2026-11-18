@@ -1,13 +1,17 @@
 import { Resource } from "@useairfoil/connector-kit";
-import { Effect, Schema, SchemaTransformation, Struct } from "effect";
+import { Duration, Effect, Schema, SchemaTransformation, Struct } from "effect";
 
 import type { ZendeskClientService } from "../client/client";
 
 import {
   ArticleObjectSchema,
   ArticleSchema,
+  ArticleTranslationObjectSchema,
+  ArticleTranslationSchema,
   CategoryObjectSchema,
   CategorySchema,
+  CommunityCommentObjectSchema,
+  CommunityCommentSchema,
   CommunityPostObjectSchema,
   CommunityPostSchema,
   CommunityTopicObjectSchema,
@@ -15,8 +19,9 @@ import {
   SectionObjectSchema,
   SectionSchema,
 } from "../schemas/help-center";
+import { Long } from "../schemas/shared";
 import { timeExport } from "./exports";
-import { listAll, listSources } from "./pages";
+import { listAll, listSources, readPage } from "./pages";
 
 const ArticlePage = {
   articles: Schema.Array(ArticleObjectSchema),
@@ -55,6 +60,34 @@ export const makeArticles = (client: ZendeskClientService) =>
       rows: (page) =>
         Effect.succeed(
           page.articles.map((article) => ({ ...article, version: article.updated_at })),
+        ),
+    }),
+  });
+
+export const makeArticleTranslations = (client: ZendeskClientService) =>
+  Resource.entity({
+    name: "article_translations",
+    rowSchema: ArticleTranslationSchema,
+    version: "version",
+    ...timeExport({
+      client,
+      path: "/help_center/incremental/articles",
+      schema: ArticlePageSchema,
+      rows: (page) =>
+        Effect.forEach(page.articles, (article) =>
+          listAll(client, {
+            path: `/help_center/articles/${article.id}/translations`,
+            key: "translations",
+            item: ArticleTranslationObjectSchema,
+            // Articles deleted since the export have no translations.
+            emptyIfMissing: true,
+          }),
+        ).pipe(
+          Effect.map((translations) =>
+            translations
+              .flat()
+              .map((translation) => ({ ...translation, version: translation.updated_at })),
+          ),
         ),
     }),
   });
@@ -122,5 +155,54 @@ export const makeCommunityTopics = (client: ZendeskClientService) =>
       }).pipe(
         Effect.map((topics) => topics.map((topic) => ({ ...topic, version: topic.updated_at }))),
       ),
+    ),
+  });
+
+// Comments have no export, so every post's comments are read each day.
+export const makeCommunityComments = (client: ZendeskClientService) =>
+  Resource.entity({
+    name: "community_comments",
+    rowSchema: CommunityCommentSchema,
+    version: "version",
+    ...listSources(
+      listAll(client, {
+        path: "/community/posts",
+        key: "posts",
+        item: Schema.Struct({ id: Long }),
+      }).pipe(
+        Effect.flatMap((posts) =>
+          Effect.forEach(posts, ({ id }) =>
+            listAll(client, {
+              path: `/community/posts/${id}/comments`,
+              key: "comments",
+              item: CommunityCommentObjectSchema,
+              emptyIfMissing: true,
+            }),
+          ),
+        ),
+        Effect.map((comments) =>
+          comments.flat().map((comment) => ({ ...comment, version: comment.updated_at })),
+        ),
+      ),
+      Duration.days(1),
+    ),
+    check: readPage(client, {
+      path: "/community/posts",
+      key: "posts",
+      item: Schema.Struct({ id: Long }),
+      params: { "page[size]": "1" },
+    }).pipe(
+      Effect.flatMap(({ items }) =>
+        Effect.forEach(items, ({ id }) =>
+          readPage(client, {
+            path: `/community/posts/${id}/comments`,
+            key: "comments",
+            item: CommunityCommentObjectSchema,
+            params: { "page[size]": "1" },
+            emptyIfMissing: true,
+          }),
+        ),
+      ),
+      Effect.asVoid,
     ),
   });

@@ -103,6 +103,27 @@ const summary = (result: Effect.Success<ReturnType<typeof post>>, keys: Readonly
 });
 
 describe("webhook", () => {
+  it.effect("deletes repository labels and milestones by ID", () =>
+    Effect.gen(function* () {
+      const label = yield* post("label", event("deleted", { label: { id: 42 }, repository }), {
+        expected: 1,
+      });
+      const milestone = yield* post(
+        "milestone",
+        event("deleted", { milestone: { id: 43 }, repository }),
+        { expected: 1 },
+      );
+      expect(summary(label, ["id", "_deleted"])).toMatchObject({
+        status: 200,
+        rows: [{ resource: "labels", id: "42n", _deleted: true }],
+      });
+      expect(summary(milestone, ["id", "_deleted"])).toMatchObject({
+        status: 200,
+        rows: [{ resource: "milestones", id: "43n", _deleted: true }],
+      });
+    }),
+  );
+
   it.effect("rejects bad and missing signatures", () =>
     Effect.gen(function* () {
       const body = event("labeled", { issue });
@@ -232,7 +253,7 @@ describe("webhook", () => {
                 "assignees": [],
                 "body": "",
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "labels": [],
                 "requested_reviewers": [],
                 "resource": "pull_requests",
@@ -316,7 +337,7 @@ describe("webhook", () => {
             "rows": [
               {
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "labels": [],
                 "requested_reviewers": [
                   {
@@ -570,7 +591,7 @@ describe("webhook", () => {
             "rows": [
               {
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "resource": "pull_requests",
                 "state": "closed",
                 "version": "2026-10-05T22:05:25.000Z",
@@ -589,7 +610,7 @@ describe("webhook", () => {
             "rows": [
               {
                 "id": "4751110848n",
-                "keys": 22,
+                "keys": 23,
                 "resource": "pull_requests",
                 "state": "closed",
                 "version": "2026-10-05T22:05:25.000Z",
