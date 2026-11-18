@@ -4,6 +4,12 @@
 
 <!-- Start content -->
 
+## 0.10.1
+
+### Patch Changes
+
+- f64079a: Allow up to four minutes for a hosted credential check, so it can wait out provider rate limits.
+
 ## 0.10.0
 
 ### Minor Changes

@@ -4,6 +4,23 @@
 
 <!-- Start content -->
 
+## 0.2.1
+
+### Patch Changes
+
+- f0a85af: Sync HubSpot projects, appointments, courses, listings, and services.
+- 677384a: Keep association labels and type IDs.
+- f0a85af: Sync links between HubSpot commerce records.
+
+  Sync links between companies and between contacts.
+
+  Sync segment filters and membership.
+
+  Sync marketing events and participation, and deal stage and owner history.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.2.0
 
 ### Minor Changes

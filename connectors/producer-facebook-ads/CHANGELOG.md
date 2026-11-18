@@ -4,6 +4,21 @@
 
 <!-- Start content -->
 
+## 0.1.3
+
+### Patch Changes
+
+- f0a85af: Sync daily and monthly Meta insights by account, campaign, and ad set.
+
+  Sync ad activity, creatives, custom audiences, and custom conversions.
+
+  Keep outbound clicks, video metrics, and attributed action counts and values.
+
+  Keep ad set targeting and attribution settings.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.1.2
 
 ### Patch Changes

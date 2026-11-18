@@ -4,6 +4,18 @@
 
 <!-- Start content -->
 
+## 0.1.3
+
+### Patch Changes
+
+- f0a85af: Sync Salesforce file metadata and record links, enhanced notes, forecasts, and case milestones.
+
+  Sync Salesforce Knowledge versions and translations.
+
+- 677384a: Sync stage, status, and priority lookups. Include custom object history.
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.1.2
 
 ### Patch Changes

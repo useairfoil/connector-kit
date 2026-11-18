@@ -4,6 +4,18 @@
 
 <!-- Start content -->
 
+## 0.2.1
+
+### Patch Changes
+
+- 677384a: Sync paid invoice payments. Keep all invoice lines, discounts, and taxes.
+- f0a85af: Sync Stripe balance transactions, payouts, payment intents, disputes, credit notes, checkout sessions, subscription schedules, coupons, promotion codes, and billing meters. Keep price tiers and invoice line sources.
+
+  Backfill and refresh daily usage summaries by customer and meter.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.2.0
 
 ### Minor Changes

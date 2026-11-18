@@ -4,6 +4,19 @@
 
 <!-- Start content -->
 
+## 0.1.3
+
+### Patch Changes
+
+- f0a85af: Add Google Analytics transaction, Google Ads campaign, and stream reports.
+
+  Sync daily cohort retention through day seven.
+
+  Keep campaign IDs, item checkout counts, and item refund amounts.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.1.2
 
 ### Patch Changes

@@ -4,6 +4,21 @@
 
 <!-- Start content -->
 
+## 0.1.3
+
+### Patch Changes
+
+- f0a85af: Sync Zendesk custom object definitions, fields, and records.
+
+  Sync article translations, community comments, and ticket audits.
+
+  Sync Talk calls and call legs where export access is enabled.
+
+  Keep ticket CCs and followers.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.1.2
 
 ### Patch Changes

@@ -4,6 +4,19 @@
 
 <!-- Start content -->
 
+## 0.5.1
+
+### Patch Changes
+
+- 3ac28ac: Wait for Polar's `Retry-After` on rate limits instead of timing out. The request timeout now covers each attempt, not the waits between them.
+- f0a85af: Sync Polar payments and disputes. Support both webhook secret formats and retain order item service dates.
+
+  Sync usage events, meters, benefits, checkout links, custom fields, seats, members, and license metadata.
+
+- 677384a: Keep price IDs on subscriptions.
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.5.0
 
 ### Minor Changes
