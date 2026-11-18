@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/connector-kit",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",

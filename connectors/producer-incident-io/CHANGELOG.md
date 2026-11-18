@@ -4,6 +4,15 @@
 
 <!-- Start content -->
 
+## 0.2.2
+
+### Patch Changes
+
+- 21ebfbd: Expose resource descriptions in connector manifests using the same text as table comments.
+  Add `Iceberg.resolveDescription(schema)` to read schema description annotations.
+- Updated dependencies [21ebfbd]
+  - @useairfoil/connector-kit@0.11.0
+
 ## 0.2.1
 
 ### Patch Changes
