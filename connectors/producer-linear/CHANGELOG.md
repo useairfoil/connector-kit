@@ -4,6 +4,23 @@
 
 <!-- Start content -->
 
+## 0.2.1
+
+### Patch Changes
+
+- 405c087: Wait for Linear's `Retry-After` on rate limits instead of timing out. The request timeout now covers each attempt, not the waits between them.
+- f0a85af: Sync issue time in status and project, initiative, and release history, plus templates and saved views.
+
+  Page through project teams and members.
+
+  Sync SLA rules by team.
+
+  Keep issue SLA risk times and project external links.
+
+- 677384a: Track release changes in issue history.
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.2.0
 
 ### Minor Changes

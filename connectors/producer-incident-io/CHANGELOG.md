@@ -4,6 +4,23 @@
 
 <!-- Start content -->
 
+## 0.2.1
+
+### Patch Changes
+
+- f0a85af: Sync incident.io alert tags and in-app post-mortem Markdown.
+
+  Sync call routes, incident templates, and on-call pay settings and reports.
+
+  Keep debrief dates and read Scribe transcript entries.
+
+  Sync status page groups, daily component availability, and links to internal incidents.
+
+  Backfill older on-call shifts in seven-day windows.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.2.0
 
 ### Minor Changes

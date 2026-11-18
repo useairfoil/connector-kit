@@ -4,6 +4,22 @@
 
 <!-- Start content -->
 
+## 0.2.1
+
+### Patch Changes
+
+- 677384a: Sync repository labels and milestones.
+- f0a85af: Sync pull request files by revision along with issue timelines, deployments, and deployment statuses.
+
+  Sync branches, tags, workflow definitions, artifacts and attempts, and issue links.
+
+  Sync organization projects, fields, and items.
+
+  Keep pull request requested teams.
+
+- Updated dependencies [f64079a]
+  - @useairfoil/connector-kit@0.10.1
+
 ## 0.2.0
 
 ### Minor Changes
