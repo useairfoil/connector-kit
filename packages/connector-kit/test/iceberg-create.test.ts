@@ -11,6 +11,7 @@ type Catalog = Parameters<typeof ensureTable>[1]["catalog"];
 const unexpectedCatalog: Catalog = {
   loadTable: () => Effect.die("Unexpected load"),
   createTable: () => Effect.die("Unexpected create"),
+  namespaceExists: () => Effect.die("Unexpected namespace check"),
   createNamespaceIfNotExists: () => Effect.die("Unexpected namespace creation"),
 };
 
@@ -134,6 +135,46 @@ describe("Iceberg table creation", () => {
           "Table identifier fields do not match. Recreate the table or revert the schema change.",
         ]
       `);
+    }),
+  );
+
+  it.effect("creates each missing layer of a nested namespace in order", () =>
+    Effect.gen(function* () {
+      const request = yield* Iceberg.makeCreateTableRequest(Row, {
+        name: "rows",
+        location,
+      });
+      const stored = metadata(request.schema);
+      const nestedIdentifier = { namespace: ["default", "my", "namespace"], name: "rows" };
+      const existing = new Set(["default"]);
+      const checked: string[][] = [];
+      const created: string[][] = [];
+      let tableCreated = false;
+
+      const catalog: Catalog = {
+        loadTable: () => (tableCreated ? Effect.succeed(stored) : Effect.fail({ status: 404 })),
+        namespaceExists: ({ namespace }) => {
+          checked.push([...namespace]);
+          return Effect.succeed(existing.has(namespace.join(".")));
+        },
+        createNamespaceIfNotExists: ({ namespace }) => {
+          created.push([...namespace]);
+          existing.add(namespace.join("."));
+          return Effect.succeed(undefined);
+        },
+        createTable: () => {
+          tableCreated = true;
+          return Effect.succeed(stored);
+        },
+      };
+
+      yield* ensureTable(Row, { catalog, identifier: nestedIdentifier, location });
+
+      expect(checked).toEqual([["default"], ["default", "my"]]);
+      expect(created).toEqual([
+        ["default", "my"],
+        ["default", "my", "namespace"],
+      ]);
     }),
   );
 });

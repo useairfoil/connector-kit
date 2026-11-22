@@ -1,5 +1,7 @@
 import type {
+  CreateTableRequest,
   IcebergType,
+  NamespaceIdentifier,
   StructField,
   TableIdentifier,
   TableMetadata,
@@ -16,13 +18,23 @@ import { IcebergSchemaError } from "../iceberg/error";
 import { compileTable, makeCreateRequest } from "../iceberg/table";
 import { retryCatalogRequest, type TableRetryOptions } from "./retry";
 
-type Catalog = Effect.Success<
-  ReturnType<CatalogManager.CatalogManagerService["getIcebergCatalog"]>
->;
+type CatalogError = { readonly status?: number };
+
+type TableCatalog = {
+  readonly loadTable: (id: TableIdentifier) => Effect.Effect<TableMetadata, CatalogError>;
+  readonly createTable: (
+    namespace: NamespaceIdentifier,
+    request: CreateTableRequest,
+  ) => Effect.Effect<TableMetadata, CatalogError>;
+  readonly namespaceExists: (id: NamespaceIdentifier) => Effect.Effect<boolean, CatalogError>;
+  readonly createNamespaceIfNotExists: (
+    id: NamespaceIdentifier,
+  ) => Effect.Effect<unknown, CatalogError>;
+};
 
 type TableOptions = {
   readonly retry?: TableRetryOptions;
-  readonly catalog: Pick<Catalog, "loadTable" | "createTable" | "createNamespaceIfNotExists">;
+  readonly catalog: TableCatalog;
   readonly identifier: TableIdentifier;
   readonly location?: string | undefined;
   readonly properties?: Readonly<Record<string, string>> | undefined;
@@ -191,6 +203,24 @@ export const ensureTableFromEngine = (
     }),
   ).pipe(Effect.mapError(tableError));
 
+const ensureNamespace = (
+  namespace: ReadonlyArray<string>,
+  catalog: Pick<TableCatalog, "namespaceExists" | "createNamespaceIfNotExists">,
+  request: <A>(effect: Effect.Effect<A, CatalogError>) => Effect.Effect<A, CatalogError>,
+) =>
+  Effect.gen(function* () {
+    let missing = false;
+    for (let i = 1; i <= namespace.length; i++) {
+      const current = namespace.slice(0, i);
+      if (!missing) {
+        const exists = yield* request(catalog.namespaceExists({ namespace: current }));
+        if (exists) continue;
+        missing = true;
+      }
+      yield* request(catalog.createNamespaceIfNotExists({ namespace: current }));
+    }
+  });
+
 /** Loads a table, creating it when it is missing. */
 export const ensureTable = (
   schema: Schema.Top,
@@ -198,16 +228,13 @@ export const ensureTable = (
 ): Effect.Effect<TableSchema, ConnectorError> =>
   Effect.gen(function* () {
     const table = yield* compileTable(schema);
-    const request = <A>(
-      effect: Effect.Effect<A, Effect.Error<ReturnType<Catalog["loadConfig"]>>>,
-    ) => retryCatalogRequest(effect, options.retry);
+    const request = <A>(effect: Effect.Effect<A, CatalogError>) =>
+      retryCatalogRequest(effect, options.retry);
     const metadata = yield* request(options.catalog.loadTable(options.identifier)).pipe(
       Effect.catchIf(
         (error) => error.status === 404,
         () =>
-          request(
-            options.catalog.createNamespaceIfNotExists({ namespace: options.identifier.namespace }),
-          )
+          ensureNamespace(options.identifier.namespace, options.catalog, request)
             .pipe(
               Effect.andThen(
                 request(

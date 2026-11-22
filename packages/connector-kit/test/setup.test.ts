@@ -76,6 +76,15 @@ describe("setup command", () => {
           .loadTable({ ...identifier, name: "unused" })
           .pipe(Effect.flip);
         expect(missing.status).toBe(404);
+
+        const nested = { namespace: ["setup", "my", "namespace"], name: "events" };
+        yield* run([], { events: Row }, nested);
+        expect(yield* catalog.namespaceExists({ namespace: ["setup", "my"] })).toBe(true);
+        expect(yield* catalog.namespaceExists({ namespace: ["setup", "my", "namespace"] })).toBe(
+          true,
+        );
+        const nestedTable = yield* catalog.loadTable(nested);
+        expect(nestedTable["format-version"]).toBe(3);
       }).pipe(
         Effect.provide(FetchHttpClient.layer),
         Effect.provide(TestEngine.container),
