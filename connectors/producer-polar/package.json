@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/producer-polar",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",

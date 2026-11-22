@@ -4,6 +4,12 @@
 
 <!-- Start content -->
 
+## 0.11.1
+
+### Patch Changes
+
+- 6f77858: Create missing parent layers of nested namespaces in order during table setup.
+
 ## 0.11.0
 
 ### Minor Changes
