@@ -10,12 +10,14 @@ export const FacebookAdsConfigDef = Manifest.defineConfig({
   }),
   adAccountIds: Manifest.string({
     runtimeKey: "FACEBOOK_ADS_ACCOUNT_IDS",
+    label: "Ad account IDs",
     description: "Comma-separated ad account IDs, with or without `act_`.",
+    placeholder: "act_123,act_456",
   }),
   startDate: Manifest.optional(
-    Manifest.string({
+    Manifest.date({
       runtimeKey: "FACEBOOK_ADS_START_DATE",
-      description: "First day of insights to backfill, as YYYY-MM-DD. Defaults to 2 years back.",
+      description: "First day of insights to backfill. Defaults to 2 years back.",
     }),
   ),
   lookbackDays: Manifest.number({

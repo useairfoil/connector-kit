@@ -8,6 +8,7 @@ const connectionFields = {
   apiKey: Manifest.secret({
     runtimeKey: "STRIPE_API_KEY",
     description: "Stripe restricted API key with read access to the synced resources and events.",
+    placeholder: "rk_live_...",
   }),
   rateLimitPerSecond: Manifest.number({
     runtimeKey: "STRIPE_RATE_LIMIT_PER_SECOND",
@@ -22,6 +23,7 @@ const webhookFields = {
   webhookSecret: Manifest.secret({
     runtimeKey: "STRIPE_WEBHOOK_SECRET",
     description: "Signing secret of the Stripe webhook endpoint.",
+    placeholder: "whsec_...",
   }),
 };
 

@@ -8,7 +8,8 @@ import { CustomObjectSchema, KnowledgeVersionSchema, objectSchema } from "./sche
 export const SalesforceConfigDef = Manifest.defineConfig({
   domain: Manifest.string({
     runtimeKey: "SALESFORCE_DOMAIN",
-    description: "My Domain host of the org, such as acme.my.salesforce.com.",
+    description: "My Domain host of the org.",
+    placeholder: "acme.my.salesforce.com",
   }),
   clientId: Manifest.string({
     runtimeKey: "SALESFORCE_CLIENT_ID",
