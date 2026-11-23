@@ -1,12 +1,18 @@
 import { Config, Option, Redacted, Schema, Struct } from "effect";
 
 import { isPlatformRuntimeKey } from "../runtime-config/constants";
+import { DateString } from "./date-schema";
 import { makeNumberSchema, type NumberConstraints } from "./number-schema";
 
-type ConfigFieldSpecBase = {
+type FieldText = {
+  readonly label?: string;
+  readonly description?: string;
+  readonly placeholder?: string;
+};
+
+type ConfigFieldSpecBase = FieldText & {
   readonly runtimeKey: string;
   readonly required: boolean;
-  readonly description?: string;
 };
 
 type ConfigFieldDefinition = ConfigFieldSpecBase &
@@ -21,6 +27,13 @@ type ConfigFieldDefinition = ConfigFieldSpecBase &
         readonly type: "string";
         readonly secret: true;
         readonly default?: never;
+        readonly values?: never;
+        readonly multiline?: boolean;
+      }
+    | {
+        readonly type: "date";
+        readonly secret: false;
+        readonly default?: string;
         readonly values?: never;
       }
     | {
@@ -54,10 +67,15 @@ export type ConfigField<A> = {
   readonly spec: ConfigFieldDefinition;
 };
 
-type FieldBaseOptions = {
+type FieldBaseOptions = FieldText & {
   readonly runtimeKey: string;
-  readonly description?: string;
 };
+
+const fieldText = (options: FieldText): FieldText => ({
+  ...(options.label !== undefined ? { label: options.label } : {}),
+  ...(options.description !== undefined ? { description: options.description } : {}),
+  ...(options.placeholder !== undefined ? { placeholder: options.placeholder } : {}),
+});
 
 type FieldOptions<A extends string | number | boolean = string | number | boolean> =
   FieldBaseOptions &
@@ -117,10 +135,36 @@ export const string = (options: FieldOptions<string>): ConfigField<string> => ({
     type: "string",
     required: options.required ?? true,
     secret: false,
-    ...(options.description !== undefined ? { description: options.description } : {}),
+    ...fieldText(options),
     ...(options.default !== undefined ? { default: options.default } : {}),
   },
 });
+
+/**
+ * Defines a calendar day as a `YYYY-MM-DD` string, optionally with a default.
+ * The day has no time zone: the connector decides which zone it means, and
+ * converts it to its API's format.
+ * `decodeConfig` checks the format. At runtime it loads like a string, so the
+ * connector can report a bad value with its own error.
+ */
+export const date = (options: FieldOptions<string>): ConfigField<string> => {
+  const defaultValue =
+    options.default === undefined
+      ? undefined
+      : Schema.decodeUnknownSync(DateString)(options.default);
+
+  return {
+    config: withDefault(Config.NonEmptyString(options.runtimeKey), defaultValue),
+    spec: {
+      runtimeKey: options.runtimeKey,
+      type: "date",
+      required: options.required ?? true,
+      secret: false,
+      ...fieldText(options),
+      ...(defaultValue !== undefined ? { default: defaultValue } : {}),
+    },
+  };
+};
 
 /** Defines a finite number with optional integer, minimum, and default constraints. */
 export const number = (options: NumberFieldOptions): ConfigField<number> => {
@@ -135,7 +179,7 @@ export const number = (options: NumberFieldOptions): ConfigField<number> => {
       type: "number",
       required: options.required ?? true,
       secret: false,
-      ...(options.description !== undefined ? { description: options.description } : {}),
+      ...fieldText(options),
       ...(defaultValue !== undefined ? { default: defaultValue } : {}),
       ...(options.integer !== undefined ? { integer: options.integer } : {}),
       ...(options.minimum !== undefined ? { minimum: options.minimum } : {}),
@@ -151,7 +195,7 @@ export const boolean = (options: FieldOptions<boolean>): ConfigField<boolean> =>
     type: "boolean",
     required: options.required ?? true,
     secret: false,
-    ...(options.description !== undefined ? { description: options.description } : {}),
+    ...fieldText(options),
     ...(options.default !== undefined ? { default: options.default } : {}),
   },
 });
@@ -167,14 +211,17 @@ export const select = <const Values extends readonly [string, ...Array<string>]>
     required: options.required ?? true,
     secret: false,
     values: options.values,
-    ...(options.description !== undefined ? { description: options.description } : {}),
+    ...fieldText(options),
     ...(options.default !== undefined ? { default: options.default } : {}),
   },
 });
 
-/** Defines a required, non-empty secret decoded as `Redacted<string>`. */
+/**
+ * Defines a required, non-empty secret decoded as `Redacted<string>`.
+ * Set `multiline` for values with line breaks, such as PEM keys.
+ */
 export const secret = (
-  options: FieldBaseOptions & { readonly required?: true },
+  options: FieldBaseOptions & { readonly required?: true; readonly multiline?: boolean },
 ): ConfigField<Redacted.Redacted<string>> => ({
   config: Config.schema(Schema.Redacted(Schema.NonEmptyString), options.runtimeKey),
   spec: {
@@ -182,7 +229,8 @@ export const secret = (
     type: "string",
     required: options.required ?? true,
     secret: true,
-    ...(options.description !== undefined ? { description: options.description } : {}),
+    ...fieldText(options),
+    ...(options.multiline !== undefined ? { multiline: options.multiline } : {}),
   },
 });
 

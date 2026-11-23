@@ -425,6 +425,27 @@ describe("connector manifests", () => {
     }),
   );
 
+  it.effect("decodes date fields as YYYY-MM-DD strings", () =>
+    Effect.gen(function* () {
+      const manifest = Manifest.define({
+        name: "producer-dates",
+        title: "Dates",
+        config: Manifest.defineConfig({
+          startDate: Manifest.optional(Manifest.date({ runtimeKey: "START_DATE" })),
+        }).spec,
+        resources: [{ name: "items", capabilities: ["backfill"] }],
+      });
+
+      const valid = yield* Manifest.decodeConfig(manifest, { startDate: "2026-01-31" });
+      const empty = yield* Manifest.decodeConfig(manifest, { startDate: "" });
+      const invalid = yield* Effect.exit(Manifest.decodeConfig(manifest, { startDate: "hello" }));
+
+      expect(valid).toEqual({ startDate: "2026-01-31" });
+      expect(empty).toEqual({});
+      expect(Exit.isFailure(invalid)).toBe(true);
+    }),
+  );
+
   it.effect("exposes a standard-schema compatible validator", () =>
     Effect.gen(function* () {
       const standardSchema = Schema.toStandardSchemaV1(Manifest.configSchema(formManifest));
