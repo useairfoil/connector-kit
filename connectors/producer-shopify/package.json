@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/producer-shopify",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",

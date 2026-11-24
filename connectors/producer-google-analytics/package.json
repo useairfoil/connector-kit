@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/producer-google-analytics",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",
