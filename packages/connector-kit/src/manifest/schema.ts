@@ -3,6 +3,7 @@ import { Predicate, Schema, SchemaTransformation, type Types } from "effect";
 import type { ConfigFieldSpec } from "./config";
 import type { ConnectorManifest } from "./manifest";
 
+import { DateString } from "./date-schema";
 import { makeNumberSchema } from "./number-schema";
 
 type FieldValueOf<Field extends ConfigFieldSpec> = Field["type"] extends "number"
@@ -75,6 +76,8 @@ const baseFieldSchema = (field: ConfigFieldSpec): Schema.Codec<unknown, unknown>
       return BooleanFromForm;
     case "select":
       return Schema.Literals(field.values);
+    case "date":
+      return DateString;
     case "string":
       return Schema.NonEmptyString;
   }

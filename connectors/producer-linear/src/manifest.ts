@@ -7,7 +7,8 @@ import { webhookSubscriptions } from "./webhook/events";
 const connectionFields = {
   apiKey: Manifest.secret({
     runtimeKey: "LINEAR_API_KEY",
-    description: "Linear personal API key with Read permission, for example lin_api_...",
+    description: "Linear personal API key with Read permission.",
+    placeholder: "lin_api_...",
   }),
 };
 

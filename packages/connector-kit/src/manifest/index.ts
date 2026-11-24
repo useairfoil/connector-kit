@@ -1,5 +1,6 @@
 export {
   boolean,
+  date,
   define as defineConfig,
   number,
   optional,

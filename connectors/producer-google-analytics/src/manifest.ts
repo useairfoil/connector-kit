@@ -15,11 +15,12 @@ export const GoogleAnalyticsConfigDef = Manifest.defineConfig({
   privateKey: Manifest.secret({
     runtimeKey: "GA_PRIVATE_KEY",
     description: "`private_key` from the service account's JSON key.",
+    multiline: true,
   }),
   startDate: Manifest.optional(
-    Manifest.string({
+    Manifest.date({
       runtimeKey: "GA_START_DATE",
-      description: "First day to backfill, as YYYY-MM-DD. Defaults to 2 years back.",
+      description: "First day to backfill. Defaults to 2 years back.",
     }),
   ),
   lookbackDays: Manifest.number({

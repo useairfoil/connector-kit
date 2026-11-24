@@ -7,6 +7,7 @@ export const ZendeskConfigDef = Manifest.defineConfig({
   subdomain: Manifest.string({
     runtimeKey: "ZENDESK_SUBDOMAIN",
     description: "Zendesk subdomain, for example acme for acme.zendesk.com.",
+    placeholder: "acme",
   }),
   clientId: Manifest.string({
     runtimeKey: "ZENDESK_CLIENT_ID",

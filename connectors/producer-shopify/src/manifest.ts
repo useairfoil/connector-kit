@@ -7,7 +7,8 @@ import { webhookSubscriptions } from "./webhook-events";
 const connectionFields = {
   shopDomain: Manifest.string({
     runtimeKey: "SHOPIFY_SHOP_DOMAIN",
-    description: "Shopify shop domain, for example example.myshopify.com.",
+    description: "Shopify shop domain.",
+    placeholder: "example.myshopify.com",
   }),
   clientId: Manifest.string({
     runtimeKey: "SHOPIFY_CLIENT_ID",

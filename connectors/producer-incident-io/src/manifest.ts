@@ -7,14 +7,16 @@ import { webhookSubscriptions } from "./webhook/events";
 const connectionFields = {
   apiKey: Manifest.secret({
     runtimeKey: "INCIDENT_IO_API_KEY",
-    description: "incident.io API key with read-only roles, for example inc_...",
+    description: "incident.io API key with read-only roles.",
+    placeholder: "inc_...",
   }),
 };
 
 const webhookFields = {
   webhookSecret: Manifest.secret({
     runtimeKey: "INCIDENT_IO_WEBHOOK_SECRET",
-    description: "Signing secret of the incident.io webhook endpoint, for example whsec_...",
+    description: "Signing secret of the incident.io webhook endpoint.",
+    placeholder: "whsec_...",
   }),
 };
 
