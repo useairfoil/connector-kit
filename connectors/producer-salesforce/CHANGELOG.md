@@ -4,6 +4,14 @@
 
 <!-- Start content -->
 
+## 0.1.6
+
+### Patch Changes
+
+- 6edd431: Add a `date` config field, a `multiline` option for secrets, and optional `label` and `placeholder` on config fields. Connectors use them for start dates, the Google Analytics private key, and example values.
+- Updated dependencies [6edd431]
+  - @useairfoil/connector-kit@0.12.0
+
 ## 0.1.5
 
 ### Patch Changes
