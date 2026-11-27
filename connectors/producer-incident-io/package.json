@@ -1,6 +1,6 @@
 {
   "name": "@useairfoil/producer-incident-io",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "repository": "useairfoil/connector-kit",
   "files": [
     "dist",
