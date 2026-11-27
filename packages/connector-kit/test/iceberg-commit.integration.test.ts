@@ -20,7 +20,7 @@ describe.skip("Iceberg REST table creation", () => {
         const uri = yield* engine.uri;
         const icebergRestUri = yield* engine.icebergRestUri;
         const manager = yield* CatalogManager.make({ engineUri: uri });
-        const catalogId = "catalog-field-ids";
+        const catalogId = "0196f8f0-0000-7000-8000-000000000040";
         const namespace = ["schema_ids"];
         const identifier = { namespace, name: "events" };
 

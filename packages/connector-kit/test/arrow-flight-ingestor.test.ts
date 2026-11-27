@@ -38,7 +38,9 @@ const makeManagerLayer = (options: {
   Layer.succeed(CatalogManager.CatalogManager)({
     createCatalog: () => Effect.die("Unexpected createCatalog"),
     getCatalog: () => Effect.die("Unexpected getCatalog"),
+    updateCatalog: () => Effect.die("Unexpected updateCatalog"),
     deleteCatalog: () => Effect.die("Unexpected deleteCatalog"),
+    getTableStatus: () => Effect.die("Unexpected getTableStatus"),
     getIcebergCatalog: () => Effect.die("Ingestion must not access the catalog"),
 
     ingestor: (ingestorOptions) =>

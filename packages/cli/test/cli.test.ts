@@ -34,7 +34,7 @@ describe("airfoil CLI", () => {
       const engine = yield* TestEngine.Instance;
       const uri = yield* engine.uri;
       const icebergRestUri = yield* engine.icebergRestUri;
-      const catalog = "cli-integration";
+      const catalog = "0196f8f0-0000-7000-8000-000000000010";
       const namespace = "analytics.events";
       const table = `${namespace}.clicks`;
 

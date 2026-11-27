@@ -18,8 +18,9 @@ const fixture = Effect.gen(function* () {
   const engine = yield* TestEngine.Instance;
   const uri = yield* engine.uri;
   const manager = yield* CatalogManager.make({ engineUri: uri });
+  const catalogId = "0196f8f0-0000-7000-8000-000000000030";
   yield* manager.createCatalog({
-    id: "setup",
+    id: catalogId,
     rest: {
       uri: yield* engine.icebergRestUri,
       warehouse: "s3://default-catalog",
@@ -32,7 +33,7 @@ const fixture = Effect.gen(function* () {
       },
     },
   });
-  const catalog = yield* manager.getIcebergCatalog("setup");
+  const catalog = yield* manager.getIcebergCatalog(catalogId);
   const identifier = { namespace: ["setup"], name: "events" };
   const run = (
     args: string[] = [],
@@ -47,7 +48,7 @@ const fixture = Effect.gen(function* () {
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
             ENGINE_URI: uri,
-            AIRFOIL_CATALOG: "setup",
+            AIRFOIL_CATALOG: catalogId,
             AIRFOIL_TABLE_BINDINGS: JSON.stringify({ events: table }),
           }),
         ),

@@ -4,7 +4,7 @@ import { Context, type Effect, type Scope } from "effect";
 
 import type { Ingestor, IngestorError, IngestorOptions } from "../ingestor";
 import type { CatalogManagerError } from "./error";
-import type { Catalog, CreateCatalogRequest } from "./schema";
+import type { Catalog, CreateCatalogRequest, TableStatus, UpdateCatalogRequest } from "./schema";
 
 /** Effect service for managing catalog registrations and ingestion. */
 export interface CatalogManagerService {
@@ -21,8 +21,20 @@ export interface CatalogManagerService {
   /** Gets a catalog by its bare ID. */
   readonly getCatalog: (id: string) => Effect.Effect<Catalog, CatalogManagerError>;
 
+  /** Updates mutable properties on an existing catalog registration. */
+  readonly updateCatalog: (
+    id: string,
+    request: UpdateCatalogRequest,
+  ) => Effect.Effect<void, CatalogManagerError>;
+
   /** Deletes a registration by its bare ID; upstream tables are kept. */
   readonly deleteCatalog: (id: string) => Effect.Effect<void, CatalogManagerError>;
+
+  /** Gets persisted ingestion and maintenance status for a resolved table UUID. */
+  readonly getTableStatus: (
+    catalogId: string,
+    tableUuid: string,
+  ) => Effect.Effect<TableStatus, CatalogManagerError>;
 
   /**
    * Connects directly to the registered catalog. The caller needs network access.

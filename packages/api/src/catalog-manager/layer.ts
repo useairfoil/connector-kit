@@ -7,7 +7,12 @@ import type { CatalogManagerOptions } from "./config";
 
 import { make as makeIngestor } from "../ingestor/make";
 import { CatalogManagerError } from "./error";
-import { Catalog, type CreateCatalogRequest } from "./schema";
+import {
+  Catalog,
+  type CreateCatalogRequest,
+  TableStatus,
+  type UpdateCatalogRequest,
+} from "./schema";
 import { CatalogManager, type CatalogManagerService } from "./service";
 
 const ErrorResponse = Schema.Struct({ error: Schema.String });
@@ -45,22 +50,31 @@ export const make = Effect.fnUntraced(function* (
       }),
     );
 
-  const decodeCatalog = (request: HttpClientRequest.HttpClientRequest) =>
+  const decodeJson = <A, RD>(
+    schema: Schema.Codec<A, unknown, RD, never>,
+    request: HttpClientRequest.HttpClientRequest,
+    invalidJsonMessage: string,
+  ) =>
     Effect.scoped(
       execute(request).pipe(
-        Effect.flatMap(HttpClientResponse.schemaBodyJson(Catalog)),
+        Effect.flatMap(HttpClientResponse.schemaBodyJson(schema)),
         Effect.mapError((cause) =>
           cause instanceof CatalogManagerError
             ? cause
             : new CatalogManagerError({
-                message: "Catalog response was not valid JSON",
+                message: invalidJsonMessage,
                 cause,
               }),
         ),
       ),
     );
 
-  const getCatalog = (id: string) => decodeCatalog(HttpClientRequest.get(catalogPath(id)));
+  const getCatalog = (id: string) =>
+    decodeJson(
+      Catalog,
+      HttpClientRequest.get(catalogPath(id)),
+      "Catalog response was not valid JSON",
+    );
 
   return CatalogManager.of({
     ingestor: (options) => makeIngestor(flightClient, options),
@@ -80,8 +94,30 @@ export const make = Effect.fnUntraced(function* (
 
     getCatalog,
 
+    updateCatalog: (id: string, request: UpdateCatalogRequest) =>
+      Effect.scoped(
+        HttpClientRequest.patch(catalogPath(id)).pipe(
+          HttpClientRequest.bodyJson(request),
+          Effect.mapError(
+            (cause) =>
+              new CatalogManagerError({ message: "Failed to encode catalog request", cause }),
+          ),
+          Effect.flatMap(execute),
+          Effect.asVoid,
+        ),
+      ),
+
     deleteCatalog: (id: string) =>
       Effect.scoped(execute(HttpClientRequest.delete(catalogPath(id))).pipe(Effect.as(undefined))),
+
+    getTableStatus: (catalogId: string, tableUuid: string) =>
+      decodeJson(
+        TableStatus,
+        HttpClientRequest.get(
+          `${catalogPath(catalogId)}/by-uuid/${encodeURIComponent(tableUuid)}/status`,
+        ),
+        "Table status response was not valid JSON",
+      ),
 
     getIcebergCatalog: (id: string) =>
       getCatalog(id).pipe(

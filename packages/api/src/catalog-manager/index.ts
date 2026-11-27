@@ -26,9 +26,17 @@ export const createCatalog = (...args: CatalogManagerFnParams<"createCatalog">) 
 export const getCatalog = (...args: CatalogManagerFnParams<"getCatalog">) =>
   CatalogManager.use((service) => service.getCatalog(...args));
 
+/** Updates mutable properties on an existing catalog. */
+export const updateCatalog = (...args: CatalogManagerFnParams<"updateCatalog">) =>
+  CatalogManager.use((service) => service.updateCatalog(...args));
+
 /** Deletes a catalog by its bare ID. */
 export const deleteCatalog = (...args: CatalogManagerFnParams<"deleteCatalog">) =>
   CatalogManager.use((service) => service.deleteCatalog(...args));
+
+/** Gets persisted ingestion and maintenance status for a resolved table UUID. */
+export const getTableStatus = (...args: CatalogManagerFnParams<"getTableStatus">) =>
+  CatalogManager.use((service) => service.getTableStatus(...args));
 
 /** Connects directly to the registered upstream catalog; the caller needs network access. */
 export const getIcebergCatalog = (
