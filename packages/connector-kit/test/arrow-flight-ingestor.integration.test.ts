@@ -36,7 +36,7 @@ describe("Arrow Flight storage-engine connector ingestion", () => {
         const upstream = yield* engine.icebergRestUri;
         const engineUpstream = yield* engine.engineIcebergRestUri;
         const manager = yield* CatalogManager.make({ engineUri: uri });
-        const id = "connector-startup";
+        const id = "0196f8f0-0000-7000-8000-000000000020";
         const storageProperties = {
           "s3.endpoint": "http://seaweedfs:8333",
           "s3.region": "us-east-1",
@@ -52,7 +52,7 @@ describe("Arrow Flight storage-engine connector ingestion", () => {
             properties: storageProperties,
           },
         });
-        const hostCatalogId = `${id}-host`;
+        const hostCatalogId = "0196f8f0-0000-7000-8000-000000000021";
         yield* manager.createCatalog({
           id: hostCatalogId,
           rest: {

@@ -1,9 +1,29 @@
 import { Context, Effect, Layer, Schedule, Schema } from "effect";
 import { FetchHttpClient, HttpClient, HttpClientResponse } from "effect/http";
+import { createServer } from "node:net";
 import { GenericContainer, Network, Wait } from "testcontainers";
 
 const accessKeyId = "devaccesskey";
 const secretAccessKey = "devsecretkey";
+
+const getFreePort = () =>
+  Effect.tryPromise({
+    try: () =>
+      new Promise<number>((resolve, reject) => {
+        const server = createServer();
+        server.once("error", reject);
+        server.listen(0, "127.0.0.1", () => {
+          const address = server.address();
+          if (address === null || typeof address === "string") {
+            server.close(() => reject(new Error("Failed to allocate port")));
+            return;
+          }
+          const { port } = address;
+          server.close((error) => (error ? reject(error) : resolve(port)));
+        });
+      }),
+    catch: (cause) => new Error("Failed to allocate Iceberg REST port", { cause }),
+  });
 
 export class Instance extends Context.Service<
   Instance,
@@ -61,6 +81,7 @@ export const container = Layer.effect(Instance)(
         ),
     );
 
+    const icebergPort = yield* getFreePort();
     const seaweedfs = yield* Effect.acquireRelease(
       Effect.tryPromise({
         try: () =>
@@ -68,7 +89,7 @@ export const container = Layer.effect(Instance)(
             .withNetwork(network)
             .withNetworkAliases("seaweedfs")
             .withEntrypoint(["weed"])
-            .withCommand(["mini", "-s3", "-dir=/data"])
+            .withCommand(["mini", "-s3", `-s3.port.iceberg=${icebergPort}`, "-dir=/data"])
             .withEnvironment({
               AWS_ACCESS_KEY_ID: accessKeyId,
               AWS_SECRET_ACCESS_KEY: secretAccessKey,
@@ -76,11 +97,11 @@ export const container = Layer.effect(Instance)(
               S3_TABLE_BUCKET: "default-catalog",
             })
             .withTmpFs({ "/data": "rw" })
-            .withExposedPorts(8181)
+            .withExposedPorts({ container: icebergPort, host: icebergPort })
             .withWaitStrategy(
               Wait.forAll([
                 Wait.forLogMessage(/S3\s+ready/),
-                Wait.forHttp("/v1/default-catalog/namespaces", 8181),
+                Wait.forHttp("/v1/default-catalog/namespaces", icebergPort),
               ]),
             )
             .withStartupTimeout(30_000)
@@ -93,8 +114,16 @@ export const container = Layer.effect(Instance)(
         ),
     );
 
-    const upstreamUri = `http://${seaweedfs.getHost()}:${seaweedfs.getMappedPort(8181)}`;
-    const image = "docker.useairfoil.com/airfoil/storage-engine:0.2.0-alpha.10";
+    const seaweedfsIp = seaweedfs.getIpAddress(network.getName());
+    const seaweedfsHost = seaweedfs.getHost();
+    // Use a .localhost host mapped to SeaweedFS inside containers so one URI works
+    // from both the host test process and engine catalog probes.
+    const icebergHost =
+      seaweedfsHost === "localhost" || seaweedfsHost === "127.0.0.1"
+        ? "seaweedfs.localhost"
+        : seaweedfsHost;
+    const upstreamUri = `http://${icebergHost}:${icebergPort}`;
+    const image = "docker.useairfoil.com/airfoil/storage-engine:0.2.0";
     const environment = {
       RUST_LOG: "info",
       SE_S3_BUCKET: "default-bucket",
@@ -113,7 +142,8 @@ export const container = Layer.effect(Instance)(
             .withNetwork(network)
             // Podman network aliases may be unavailable through container DNS.
             .withExtraHosts([
-              { host: "seaweedfs", ipAddress: seaweedfs.getIpAddress(network.getName()) },
+              { host: "seaweedfs", ipAddress: seaweedfsIp },
+              { host: "seaweedfs.localhost", ipAddress: seaweedfsIp },
             ])
             .withCommand(["dev", "--server.address=0.0.0.0:7777"])
             .withEnvironment(environment)
@@ -135,7 +165,7 @@ export const container = Layer.effect(Instance)(
       secretAccessKey,
       uri: Effect.sync(() => `http://${engine.getHost()}:${engine.getMappedPort(7777)}`),
       icebergRestUri: Effect.succeed(upstreamUri),
-      engineIcebergRestUri: Effect.succeed("http://seaweedfs:8181"),
+      engineIcebergRestUri: Effect.succeed(`http://seaweedfs:${icebergPort}`),
       materializeAndCommit: Effect.fnUntraced(
         function* (catalog: string, table: { namespace: string[]; name: string }) {
           const namespace = encodeURIComponent(table.namespace.join("\u001f"));
@@ -157,7 +187,8 @@ export const container = Layer.effect(Instance)(
               new GenericContainer(image)
                 .withNetwork(network)
                 .withExtraHosts([
-                  { host: "seaweedfs", ipAddress: seaweedfs.getIpAddress(network.getName()) },
+                  { host: "seaweedfs", ipAddress: seaweedfsIp },
+                  { host: "seaweedfs.localhost", ipAddress: seaweedfsIp },
                   { host: "engine", ipAddress: engine.getIpAddress(network.getName()) },
                 ])
                 .withEnvironment(environment)
