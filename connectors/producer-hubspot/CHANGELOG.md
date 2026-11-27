@@ -4,6 +4,12 @@
 
 <!-- Start content -->
 
+## 0.2.5
+
+### Patch Changes
+
+- @useairfoil/connector-kit@0.12.1
+
 ## 0.2.4
 
 ### Patch Changes

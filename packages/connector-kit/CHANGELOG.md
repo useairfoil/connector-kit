@@ -4,6 +4,13 @@
 
 <!-- Start content -->
 
+## 0.12.1
+
+### Patch Changes
+
+- Updated dependencies [4da3202]
+  - @useairfoil/api@0.6.0
+
 ## 0.12.0
 
 ### Minor Changes
